@@ -1,13 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RecentOrders } from "./RecentOrders";
-import { NewSignup } from "./NewSignup";
 import { HierarchyDirect} from "./HierarchyDirect";
 import { HierarchySecond} from "./HierarchySecond"; 
 import { HierarchyThird} from "./HierarchyThird";
 import { SalesChart } from "./SalesChart";
 import { DollarSign, Package, ShoppingCart, Users, Boxes, ArrowBigLeft } from "lucide-react";
 import { useAuth0 } from '@auth0/auth0-react';
-import { getTransactionsAll, getUsers, loginAdmin } from './api/apiCalls';
+import { loginAdmin } from './api/apiCalls';
 import { useEffect, useState } from "react";
 import { formatPeso } from "./utils/utils";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -36,40 +35,7 @@ export function HierarchyView() {
           setUserID(dataUpdated.userID);
           setLoading(false);
 
-          const getTransData = await getTransactionsAll();
-          setTransactions(getTransData);
-      
-      
-          if (getTransData && getTransData.length > 0) {
-            const total = getTransData
-              .filter((trans) => trans.trans_type === "remit") // Get only transactions with type "remit"
-              .reduce((sum, trans) => sum + parseFloat(trans.amount), 0); // Sum up the amounts
-        
-            setTotalRemitAmount(total); // Update state
-          } else {
-            setTotalRemitAmount(0); // Reset if no transactions
-          }
-
-          if (getTransData && getTransData.length > 0) {
-            const total = getTransData
-              .filter((trans) => trans.trans_type === "redeem") // Get only transactions with type "remit"
-              .reduce((sum, trans) => sum + parseFloat(trans.amount), 0); // Sum up the amounts
-        
-            setTotalRedeemAmount(total); // Update state
-          } else {
-            setTotalRedeemAmount(0); // Reset if no transactions
-          }
-
-          const getUsersData = await getUsers();
-          setUsers(getUsersData);
-          if (getUsersData && getUsersData.length > 0) {
-            const total = getUsersData // Get only transactions with type "remit"
-              .reduce((sum, trans) => sum + parseFloat(trans.balance), 0); // Sum up the amounts
-        
-            setTotalBalance(total); // Update state
-          } else {
-            setTotalBalance(0); // Reset if no transactions
-          }
+          
         }
         else
         {

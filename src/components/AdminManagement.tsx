@@ -208,7 +208,7 @@ export function AdminManagement() {
     // In a real app, you would save these changes to the backend
     console.log(`Updated role for ${updatedUser.name} to ${role}`);
   };
-
+  return <div>Not allowed to manage this page</div>
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

@@ -1,10 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RecentOrders } from "./RecentOrders";
-import { NewSignup } from "./NewSignup";
 import { SalesChart } from "./SalesChart";
 import { HandIcon , HandMetalIcon, ShoppingCart, Users, Boxes, Wallet, CoinsIcon, Wallet2, BookAIcon, BookCheck, BookHeart, Banknote } from "lucide-react";
 import { useAuth0 } from '@auth0/auth0-react';
-import { getTransactionsAll, getUsers, loginAdmin } from './api/apiCalls';
+import { loginAdmin } from './api/apiCalls';
 import { useEffect, useState } from "react";
 import { formatPeso } from "./utils/utils";
 import { Button } from "@/components/ui/button";
@@ -58,16 +57,7 @@ export function Dashboard() {
             setTotalRedeemAmount(0); // Reset if no transactions
           } */
 
-          const getUsersData = await getUsers();
-          setUsers(getUsersData);
-          if (getUsersData && getUsersData.length > 0) {
-            const total = getUsersData // Get only transactions with type "remit"
-              .reduce((sum, trans) => sum + parseFloat(trans.balance), 0); // Sum up the amounts
-        
-            setTotalBalance(total); // Update state
-          } else {
-            setTotalBalance(0); // Reset if no transactions
-          }
+          
         }
         else
         {
@@ -85,6 +75,8 @@ export function Dashboard() {
     return <div>...</div>;
   }
 
+
+  return <div>Not allowed to manage this page</div>
   const stats = [
     {
       title: "Total Bets Earned",

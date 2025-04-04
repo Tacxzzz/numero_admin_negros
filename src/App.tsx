@@ -5,9 +5,7 @@ import { MobileHeader } from "./components/MobileHeader";
 import { Dashboard } from "./components/Dashboard";
 import { Bets } from "./components/Bets";
 import { Draws } from "./components/Draws";
-import { Customers } from "./components/Customers";
 import { Analytics } from "./components/Analytics";
-import { Settings } from "./components/Settings";
 import Login from "./components/auth/Login";
 import { ResetPassword } from "./components/auth/ResetPassword";
 import { ForgotPassword } from "./components/auth/ForgotPassword";
@@ -82,9 +80,7 @@ function App() {
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/bets" element={<Bets />} />
                     <Route path="/draws" element={<Draws />} />
-                    <Route path="/customers" element={<Customers />} />
                     <Route path="/logs" element={<Analytics />} />
-                    <Route path="/settings" element={<Settings />} />
                     <Route path="/winnings" element={<Winnings />} />
                     <Route path="/playersbets" element={<PlayersBets />} />
                     <Route path="/users" element={<Users />} />

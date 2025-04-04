@@ -12,64 +12,110 @@ import { Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { useAuth0 } from '@auth0/auth0-react';
+import { loginAdmin,getGames, updateGame } from './api/apiCalls';
+import { formatPeso } from './utils/utils';
 
 
 export function Bets() {
+
+  const { user,getAccessTokenSilently , logout} = useAuth0();
   const [showGameDialog, setshowGameDialog] = useState(false);
-  const [gamebets, setGamebets] = useState([
-    {
-      id: "GAME001",
-      game_name: "2D Game",
-      game_desc: "Choose 2 numbers from 1 to 31. Win with Target by matching the exact order or Rambol by matching in any order. Draws are held daily.",
-      game_type: "2D",
-      game_availabledays: "Daily",
-      game_ceiling: 150,
-      game_ceiling_percentage: 50,
-    },
-    {
-      id: "GAME002",
-      game_name: "3D Game",
-      game_desc: "Select 3 numbers from 0 to 9. Win with Target (exact order), Win 3 (two same digits), Rambol 3 (any order of 2 same + 1 distinct), or Rambol 6 (any order of 3 distinct).",
-      game_type: "3D",
-      game_availabledays: "Daily",
-      game_ceiling: 75,
-      game_ceiling_percentage: 20,
-    },
-    {
-      id: "GAME003",
-      game_name: "3D STL Game",
-      game_desc: "Same as 3D Game, where players choose 3 numbers with the same bet types: Target, Win 3, Rambol 3, and Rambol 6. Regular draws give more chances to win.",
-      game_type: "3D STL",
-      game_availabledays: "Daily",
-      game_ceiling: 200,
-      game_ceiling_percentage: 30,
-    },
-    {
-      id: "GAME004",
-      game_name: "4D Game",
-      game_desc: "Choose 4 numbers from 0 to 9. Win with an exact match (Target), or by matching the last 3 digits or last 2 digits of the drawn number. Draws are held on Monday, Wednesday, and Friday.",
-      game_type: "4D",
-      game_availabledays: "Daily",
-      game_ceiling: 200,
-      game_ceiling_percentage: 50,
-    },
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [userID, setUserID] = useState("none");
+  const [dbUpdated, setDbUpdated] = useState(false);
+  const [gamebets, setGamebets] = useState<any[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedGameBet, setSelectedGameBet] = useState(null);
+  const API_URL = import.meta.env.VITE_DATABASE_URL;
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+
+  useEffect(() => {
+      if (user && !dbUpdated) {
+        const handleUpdate = async () => {
+          const dataUpdated= await loginAdmin(user,getAccessTokenSilently);
+          if(dataUpdated.dbUpdate)
+          {
+            setDbUpdated(dataUpdated.dbUpdate);
+            setUserID(dataUpdated.userID);
+            setLoading(false);
+  
+            const gamesData = await getGames();
+            setGamebets(gamesData);
+        
+  
+            
+          }
+          else
+          {
+            alert("UNAUTHORIZED USER!");
+            logout({ logoutParams: { returnTo: window.location.origin } });
+          }
+          
+        };
+        handleUpdate();
+      }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
+  
+    if (loading ) {
+      return <div>...</div>;
+    }
 
   const handleEditClick = (game) => {
+    setImagePreview(null);
     setSelectedGameBet(game);
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
-    setGamebets((prev) =>
-      prev.map((game) =>
-        game.id === selectedGameBet.id ? selectedGameBet : game
-      )
-    );
-    setIsModalOpen(false);
+  const handleSave =  async (e: React.FormEvent) => {
+    e.preventDefault();
+    setUpdating(true);
+    console.log("click");
+
+    
+
+    const formData = new FormData();
+    formData.append('userID', selectedGameBet.id);
+    formData.append('name', selectedGameBet.name);
+    formData.append('type', selectedGameBet.type);
+    formData.append('range_start', selectedGameBet.range_start);
+    formData.append('range_end', selectedGameBet.range_end);
+    formData.append('num_digits', selectedGameBet.num_digits);
+    formData.append('available_days', selectedGameBet.available_days);
+    formData.append('status', selectedGameBet.status);
+    formData.append('description', selectedGameBet.description);
+    formData.append('ceiling', selectedGameBet.ceiling);
+    formData.append('ceiling_perc', selectedGameBet.ceiling_perc);
+
+    console.log(selectedGameBet.picture);
+    if (selectedGameBet.picture) {
+        formData.append('picture', selectedGameBet.picture);
+    }
+
+
+    setLoading(true);
+    const isAuthenticated = await updateGame(formData);
+    if (!isAuthenticated) {
+        
+      setUpdating(false);
+        setIsModalOpen(false);
+        setLoading(false);
+        
+    }
+    else
+    { 
+      setUpdating(false);
+      setIsModalOpen(false);
+      setLoading(false);
+        alert("game updated successfully.");
+        const gamesData = await getGames();
+            setGamebets(gamesData);
+    }
   };
 
   const handleChange = (e) => {
@@ -81,6 +127,25 @@ export function Bets() {
     setshowGameDialog(false);
   };
 
+  
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && selectedGameBet) { // Make sure selectedGameBet is not null
+      
+  
+      setSelectedFile(file);
+      setImagePreview(URL.createObjectURL(file));
+  
+      // Update selectedGameBet dynamically
+      setSelectedGameBet((prev) => ({
+        ...prev!,
+        picture: file, // Save the renamed filename or path to the database later
+      }));
+    }
+  };
+  
+  
+  
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -98,26 +163,30 @@ export function Bets() {
           <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px] text-center">ID</TableHead>
               <TableHead className="text-center">Game Name</TableHead>
               <TableHead className="text-center">Game Description</TableHead>
               <TableHead className="text-center">Game Type</TableHead>
+              <TableHead className="text-center">Range</TableHead>
+              <TableHead className="text-center">Digits</TableHead>
               <TableHead className="text-center">Available Days</TableHead>
               <TableHead className="text-center">Amount Ceiling</TableHead>
-              <TableHead className="text-center">Amount Ceiling Percentage</TableHead>
+              <TableHead className="text-center">Percentage Increase on Exceeding Ceiling</TableHead>
+              <TableHead className="text-center">Status</TableHead>
               <TableHead className="text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {gamebets.map((product) => (
               <TableRow key={product.id}>
-                <TableCell className="font-medium">{product.id}</TableCell>
-                <TableCell className="text-center">{product.game_name}</TableCell>
-                <TableCell className="text-center">{product.game_desc}</TableCell>
-                <TableCell className="text-center">{product.game_type}</TableCell>
-                <TableCell className="text-center">{product.game_availabledays}</TableCell>
-                <TableCell className="text-center">₱{product.game_ceiling}</TableCell>
-                <TableCell className="text-center">{product.game_ceiling_percentage} %</TableCell>
+                <TableCell className="text-center">{product.name}</TableCell>
+                <TableCell className="text-center">{product.description}</TableCell>
+                <TableCell className="text-center">{product.type}</TableCell>
+                <TableCell className="text-center">{product.range_start}-{product.range_end}</TableCell>
+                <TableCell className="text-center">{product.num_digits}</TableCell>
+                <TableCell className="text-center">{product.available_days}</TableCell>
+                <TableCell className="text-center">{formatPeso(product.ceiling)}</TableCell>
+                <TableCell className="text-center">{product.ceiling_perc} %</TableCell>
+                <TableCell className="text-center">{product.status}</TableCell>
                 <TableCell className="text-center">
                   <Button
                     className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
@@ -142,15 +211,16 @@ export function Bets() {
         <DialogTitle className="text-xl text-blue-600">Update Game Bets</DialogTitle>
       </DialogHeader>
       <div className="space-y-3">
-
+      <form onSubmit={handleSave}>
 
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Game Name
           <Input
             type="text"
-            name="game_name"
-            value={selectedGameBet.game_name || ""}
+            name="name"
+            value={selectedGameBet.name || ""}
             onChange={handleChange}
+            required
             className="border p-1 mt-2 w-full"
             placeholder="Enter Game Name"
           />
@@ -160,9 +230,10 @@ export function Bets() {
           Game Description
           <Input
             type="text"
-            name="game_desc"
-            value={selectedGameBet?.game_desc || ""}
+            name="description"
+            value={selectedGameBet?.description || ""}
             onChange={handleChange}
+            required
             className="border p-1 mt-2 w-full"
             placeholder="Enter Game Description"
           />
@@ -173,44 +244,113 @@ export function Bets() {
 <div>
   <label className="block text-sm font-medium text-gray-700 mb-1">Select Game Type</label>
   <select
-    name="game_type"
-    value={selectedGameBet?.game_type || ""}
+    name="type"
+    value={selectedGameBet?.type || ""}
     onChange={handleChange}
+    required
     className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
   >
     <option value="" disabled>
       Select a Game Option
     </option>
-    <option value="Lotto">Lotto</option>
-    <option value="2D">2D</option>
-    <option value="3D">3D</option>
-    <option value="4D">4D</option>
-    <option value="Pick 3">Pick 3</option>
+    <option value="lotto">Lotto</option>
   </select>
 </div>
 
 <div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">Select Available Days</label>
-  <select
-    name="game_type"
-    value={selectedGameBet?.game_availabledays || ""}
-    onChange={handleChange}
-    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-  >
-    <option value="" disabled>
-      Select an Option
-    </option>
-    <option value="Daily">Daily</option>
-  </select>
+<label className="block text-sm font-medium text-gray-700 mb-2">
+          Set Available Days
+          <Input
+            type="text"
+            name="available_days"
+            value={selectedGameBet.available_days || ""}
+            onChange={handleChange}
+            required
+            className="border p-1 mt-2 w-full"
+            placeholder="m-t-w-th-f-s-su or daily"
+          />
+        </label>
 </div>
-
+<label className="block text-sm font-medium text-gray-700 mb-2">
+          Number of Ball
+          <Input
+            type="number"
+            name="num_digits"
+            value={selectedGameBet?.num_digits || ""}
+            onChange={handleChange}
+            required
+            className="border p-1 mt-2 w-full"
+            placeholder="Enter Range Start"
+            style={{ appearance: 'textfield' }}
+          />
+            <style>{`
+                      input[type=number]::-webkit-outer-spin-button,
+                      input[type=number]::-webkit-inner-spin-button {
+                      -webkit-appearance: none;
+                      margin: 0;
+                      }
+                      input[type=number] {
+                      -moz-appearance: textfield;
+                      }
+                      `}
+            </style> 
+</label>
+<label className="block text-sm font-medium text-gray-700 mb-2">
+          Range Start
+          <Input
+            type="number"
+            name="range_start"
+            value={selectedGameBet?.range_start || ""}
+            onChange={handleChange}
+            required
+            className="border p-1 mt-2 w-full"
+            placeholder="Enter Range Start"
+            style={{ appearance: 'textfield' }}
+          />
+            <style>{`
+                      input[type=number]::-webkit-outer-spin-button,
+                      input[type=number]::-webkit-inner-spin-button {
+                      -webkit-appearance: none;
+                      margin: 0;
+                      }
+                      input[type=number] {
+                      -moz-appearance: textfield;
+                      }
+                      `}
+            </style> 
+</label>
+<label className="block text-sm font-medium text-gray-700 mb-2">
+          Range End
+          <Input
+            type="number"
+            name="range_end"
+            value={selectedGameBet?.range_end || ""}
+            onChange={handleChange}
+            required
+            className="border p-1 mt-2 w-full"
+            placeholder="Enter Range End"
+            style={{ appearance: 'textfield' }}
+          />
+            <style>{`
+                      input[type=number]::-webkit-outer-spin-button,
+                      input[type=number]::-webkit-inner-spin-button {
+                      -webkit-appearance: none;
+                      margin: 0;
+                      }
+                      input[type=number] {
+                      -moz-appearance: textfield;
+                      }
+                      `}
+            </style> 
+</label>
 <label className="block text-sm font-medium text-gray-700 mb-2">
           Amount Ceiling Applies
           <Input
-            type="text"
-            name="game_ceiling"
-            value={selectedGameBet?.game_ceiling || ""}
+            type="number"
+            name="ceiling"
+            value={selectedGameBet?.ceiling || ""}
             onChange={handleChange}
+            required
             className="border p-1 mt-2 w-full"
             placeholder="Enter Ceiling Applies"
             style={{ appearance: 'textfield' }}
@@ -231,10 +371,11 @@ export function Bets() {
 <label className="block text-sm font-medium text-gray-700 mb-2">
           Amount Ceiling Percentage
           <Input
-            type="text"
-            name="game_ceiling_percentage"
-            value={selectedGameBet?.game_ceiling_percentage || ""}
+            type="number"
+            name="ceiling_perc"
+            value={selectedGameBet?.ceiling_perc || ""}
             onChange={handleChange}
+            required
             className="border p-1 mt-2 w-full"
             placeholder="Enter Ceiling Percentage"
             style={{ appearance: 'textfield' }}
@@ -251,24 +392,58 @@ export function Bets() {
                       `}
             </style> 
 </label>
-        
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">Select Status</label>
+  <select
+    name="status"
+    value={selectedGameBet?.status || ""}
+    onChange={handleChange}
+    required
+    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+  >
+    <option value="" disabled>
+      Select a Game Option
+    </option>
+    <option value="enabled">Enabled</option>
+    <option value="disabled">Disabled</option>
+  </select>
+</div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Game Image</label>
+        {imagePreview ? (
+          <img src={imagePreview} alt="Preview" className="w-32 h-32 object-cover mt-2" />
+        ) : selectedGameBet.picture ? (
+          <img src={`${API_URL}/img/${selectedGameBet.picture}`} alt="Game Image" className="w-32 h-32 object-cover mt-2" />
+        ) : null}
+
+      
+        <input
+          type="file"
+          accept="image/*"
+          className="mt-2"
+          onChange={(e) => handleImageChange(e)}
+        />
+      </div>
 
         <DialogFooter className="flex flex-col gap-2 sm:flex-row">
-          <Button
+          {!updating ? (<Button
             variant="outline" 
             className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
-            onClick={handleSave}
+            type='submit'
           >
             Update
-          </Button>
+          </Button>) : (<>Updating....</>)}
           <Button
             variant="outline" 
             className="w-full sm:w-auto border-red-500 text-red-600 hover:bg-red-900/20"
             onClick={() => setIsModalOpen(false)}
+            type='button'
           >
             Cancel
           </Button>
         </DialogFooter>
+        </form>
       </div>
     </DialogContent>
   </Dialog>
@@ -295,10 +470,6 @@ export function Bets() {
                   <select name="options" className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"> 
                     <option value="" disabled selected>Select an Game Option</option>
                     <option value="lotto">Lotto</option>
-                    <option value="2d">2D</option>
-                    <option value="3d">3D</option>
-                    <option value="4d">4D</option>
-                    <option value="pick3">Pick 3</option>
                   </select>
                 </div>
                 <div>
@@ -341,7 +512,7 @@ export function Bets() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Upload Game Image</label>
                   <input 
-                    name="file_upload" 
+                    name="picture" 
                     type="file" 
                     accept="image/*" 
                     className="block w-full text-sm text-gray-700 border border-gray-300 rounded-md cursor-pointer focus:outline-none"
@@ -353,6 +524,7 @@ export function Bets() {
                   <Button 
                     variant="outline" 
                     onClick={() => setshowGameDialog(false)}
+                    disabled
                     className="w-full sm:w-auto bg-green-500 border-green-500 text-black-600 hover:bg-green-500/20 hover:text-green-700"
                   >
                     Add

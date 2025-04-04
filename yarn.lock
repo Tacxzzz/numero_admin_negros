@@ -1836,7 +1836,7 @@ lru-cache@^5.1.1:
 
 lucide-react@^0.294.0:
   version "0.294.0"
-  resolved "https://registry.npmjs.org/lucide-react/-/lucide-react-0.294.0.tgz"
+  resolved "https://registry.yarnpkg.com/lucide-react/-/lucide-react-0.294.0.tgz#dc406e1e7e2f722cf93218fe5b31cf3c95778817"
   integrity sha512-V7o0/VECSGbLHn3/1O67FUgBwWB+hmzshrgDVRJQhMh8uj5D3HBuIvhuAmQTtlupILSplwIZg5FTc4tTKMA2SA==
 
 math-intrinsics@^1.1.0:

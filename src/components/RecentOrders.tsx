@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
-import { approveRedeem, getTransactionsAll, loginAdmin, rejectRedeem } from "./api/apiCalls";
+import {  loginAdmin } from "./api/apiCalls";
 import { formatPeso, formatUSD, getTransCode } from "./utils/utils";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -42,8 +42,6 @@ export function RecentOrders() {
         setDbUpdated(dataUpdated.dbUpdate);
         setUserID(dataUpdated.userID);
         setLoading(false);
-        const getTransData = await getTransactionsAll();
-        setTransactions(getTransData);
       }
       else
       {
@@ -60,35 +58,8 @@ export function RecentOrders() {
     setIsModalOpen(true);
   };
 
-  const handleApprove = async (transaction: any) => {
-      
-        
-        const formData = new FormData();
-        formData.append('userID', userID);
-        formData.append('transaction', transaction.id);
-        formData.append('note', notes);
-        const approveData = await approveRedeem(formData);
-        if(approveData.authenticated)
-        {
-          const getTransData = await getTransactionsAll();
-          setTransactions(getTransData);
-        }
-    };
+  
 
-    const handleReject = async (transaction: any) => {
-      
-        
-      const formData = new FormData();
-      formData.append('userID', userID);
-      formData.append('transaction', transaction.id);
-      formData.append('note', notes);
-      const approveData = await rejectRedeem(formData);
-      if(approveData.authenticated)
-      {
-        const getTransData = await getTransactionsAll();
-        setTransactions(getTransData);
-      }
-  };
 
     if (loading ) {
       return <div>...</div>;

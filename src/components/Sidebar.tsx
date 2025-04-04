@@ -10,11 +10,16 @@ import {
   Settings,
   Trophy,
   Dices,
-  ShieldCheck
+  ShieldCheck,
+  Banknote,
+  DollarSign , 
+  Cuboid,
+  Crosshair,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DtakaLogoBeta from "@/assets/DtakaLogoBeta.svg";
 import { useAuth0 } from '@auth0/auth0-react';
+import { MdMoney } from "react-icons/md";
 
 interface SidebarProps {
   onClose?: () => void;
@@ -26,12 +31,19 @@ export function Sidebar({ onClose }: SidebarProps) {
 
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/" },
-    { icon: Coins, label: "Game Bets", path: "/bets" },
-    { icon: Dices, label: "Player Bets", path: "/playersbets" },
-    { icon: CalendarCheck2, label: "Draw Schedules", path: "/draws" }, 
+    { icon: Cuboid, label: "Games", path: "/bets" },
+    { icon: Crosshair, label: "Game Types", path: "/draws" },
+    { icon: CalendarCheck2, label: "Draws", path: "/#" },
+    { icon: Banknote, label: "Cash in history", path: "/#" },
+    { icon: DollarSign, label: "Cash out history", path: "/#" },
+    { icon: Dices, label: "Bets History", path: "/playersbets" },
+     
     // { icon: Trophy, label: "Winnings", path: "/winnings" },
     // { icon: Users, label: "Users", path: "/customers" },
-    { icon: Users, label: "Users", path: "/users" },
+    { icon: Trophy, label: "Winners History", path: "/#" },
+    { icon: Users, label: "Players Management", path: "/#" },
+    { icon: Users, label: "Agents Management", path: "/#" },
+    { icon: Users, label: "Agent Clients Management", path: "/#" },
     // { icon: Users, label: "Hierarchy", path: "/hierarchy" },
     { icon: BarChart, label: "Logs", path: "/logs" },
     { icon: UserCheck2, label: "Admin Management", path: "/adminmanagement" },

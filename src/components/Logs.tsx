@@ -7,7 +7,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
-import { getLogsAll } from "./api/apiCalls";
 import { formatPeso, formatUSD, getTransCode } from "./utils/utils";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -29,8 +28,8 @@ export function Logs() {
   useEffect(() => {
     const handleUpdate = async () => {
       
-        const getTransData = await getLogsAll();
-        setLogs(getTransData);
+        //const getTransData = await getLogsAll();
+        //setLogs(getTransData);
       
     };
     handleUpdate();
@@ -40,7 +39,7 @@ export function Logs() {
   
 
   
-
+  return <div>Not allowed to manage this page</div>
   return (
     <div className="overflow-x-auto">
       <Table>
