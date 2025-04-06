@@ -32,9 +32,9 @@ export function Sidebar({ onClose }: SidebarProps) {
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/" },
     { icon: Cuboid, label: "Games", path: "/bets" },
-    { icon: Crosshair, label: "Game Types", path: "/draws" },
-    { icon: CalendarCheck2, label: "Draws", path: "/#" },
-    { icon: Banknote, label: "Cash in history", path: "/#" },
+    { icon: Crosshair, label: "Game Types", path: "/gametypes" },
+    { icon: CalendarCheck2, label: "Draws", path: "/draws" },
+    { icon: Banknote, label: "Cash in history", path: "/cashinhistory" },
     { icon: DollarSign, label: "Cash out history", path: "/#" },
     { icon: Dices, label: "Bets History", path: "/playersbets" },
      

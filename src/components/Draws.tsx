@@ -12,76 +12,101 @@ import { Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { useAuth0 } from '@auth0/auth0-react';
+import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType, getDraws } from './api/apiCalls';
+import { formatPeso } from './utils/utils';
 
 
 export function Draws() {
+
+  const { user,getAccessTokenSilently , logout} = useAuth0();
   const [showGameDialog, setshowGameDialog] = useState(false);
-  const [gamebets, setGamebets] = useState([
-    {
-      id: "GAME001",
-      game_name: "2D Game",
-      winning_draw_date: "03/29/2025", 
-      winning_draw_time: "02:00:00 pm",
-      results: "4-14",
-      defult_ceiling: 10000,
-      base_ceiling: 10000,
-      percentage_ceiling: 50,
-      collection_percentage: 50,
-      winning_status: "Done",
-    },
-    {
-      id: "GAME002",
-      game_name: "3D Game",
-      winning_draw_date: "03/29/2025", 
-      winning_draw_time: "02:00:00 pm",
-      results: "1-11-16",
-      defult_ceiling: 10000,
-      base_ceiling: 10000,
-      percentage_ceiling: 50,
-      collection_percentage: 50,
-      winning_status: "Done",
-    },
-    {
-      id: "GAME003",
-      game_name: "3D STL Game",
-      winning_draw_date: "03/29/2025", 
-      winning_draw_time: "02:00:00 pm",
-      results: "3-4-7",
-      defult_ceiling: 10000,
-      base_ceiling: 10000,
-      percentage_ceiling: 50,
-      collection_percentage: 50,
-      winning_status: "Done",
-    },
-    {
-      id: "GAME004",
-      game_name: "4D Game",
-      winning_draw_date: "03/29/2025", 
-      winning_draw_time: "02:00:00 pm",
-      results: "6-15-17-19",
-      defult_ceiling: 10000,
-      base_ceiling: 10000,
-      percentage_ceiling: 50,
-      collection_percentage: 50,
-      winning_status: "Pending",
-    },
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [userID, setUserID] = useState("none");
+  const [dbUpdated, setDbUpdated] = useState(false);
+  const [gamebets, setGamebets] = useState<any[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedGameBet, setSelectedGameBet] = useState(null);
+  const API_URL = import.meta.env.VITE_DATABASE_URL;
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+
+  useEffect(() => {
+      if (user && !dbUpdated) {
+        const handleUpdate = async () => {
+          const dataUpdated= await loginAdmin(user,getAccessTokenSilently);
+          if(dataUpdated.dbUpdate)
+          {
+            setDbUpdated(dataUpdated.dbUpdate);
+            setUserID(dataUpdated.userID);
+            setLoading(false);
+  
+            const gamesData = await getDraws();
+            setGamebets(gamesData);
+        
+  
+            
+          }
+          else
+          {
+            alert("UNAUTHORIZED USER!");
+            logout({ logoutParams: { returnTo: window.location.origin } });
+          }
+          
+        };
+        handleUpdate();
+      }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
+  
+    if (loading ) {
+      return <div>...</div>;
+    }
 
   const handleEditClick = (game) => {
+    setImagePreview(null);
     setSelectedGameBet(game);
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
-    setGamebets((prev) =>
-      prev.map((game) =>
-        game.id === selectedGameBet.id ? selectedGameBet : game
-      )
-    );
-    setIsModalOpen(false);
+  const handleSave =  async (e: React.FormEvent) => {
+    e.preventDefault();
+    setUpdating(true);
+    console.log("click");
+
+    
+
+    const formData = new FormData();
+    formData.append('userID', selectedGameBet.id);
+    formData.append('game_type', selectedGameBet.game_type);
+    formData.append('bet', selectedGameBet.bet);
+    formData.append('jackpot', selectedGameBet.jackpot);
+    formData.append('status', selectedGameBet.status);
+
+   
+
+
+    setLoading(true);
+    const isAuthenticated = await updateGameType(formData);
+    if (!isAuthenticated) {
+        
+      setUpdating(false);
+        setIsModalOpen(false);
+        setLoading(false);
+        
+    }
+    else
+    { 
+      setUpdating(false);
+      setIsModalOpen(false);
+      setLoading(false);
+        alert("game type updated successfully.");
+        const gamesData = await getGamesTypes();
+          setGamebets(gamesData);
+    }
   };
 
   const handleChange = (e) => {
@@ -92,14 +117,33 @@ export function Draws() {
   const handleGameDialog = () => {
     setshowGameDialog(false);
   };
-  return <div>Not allowed to manage this page</div>
+
+  
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && selectedGameBet) { // Make sure selectedGameBet is not null
+      
+  
+      setSelectedFile(file);
+      setImagePreview(URL.createObjectURL(file));
+  
+      // Update selectedGameBet dynamically
+      setSelectedGameBet((prev) => ({
+        ...prev!,
+        picture: file, // Save the renamed filename or path to the database later
+      }));
+    }
+  };
+  
+  
+  
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl md:text-3xl font-bold">Draw Bets Schedules</h2>
-        <Button onClick={() => setshowGameDialog(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Add Draws Schedule
-        </Button>
+        <h2 className="text-2xl md:text-3xl font-bold">Draws</h2>
+       {/*  <Button onClick={() => setshowGameDialog(true)}>
+          <Plus className="mr-2 h-4 w-4" /> Add Bet Games
+        </Button> */}
       </div>
       
       <div className="overflow-x-auto">
@@ -110,40 +154,34 @@ export function Draws() {
           <Table>
           <TableHeader>
             <TableRow>
-              {/* <TableHead className="w-[100px] text-center">ID</TableHead> */}
-              <TableHead className="text-center">Game Name</TableHead>
-              <TableHead className="text-center">Winning Draw Date</TableHead>
-              <TableHead className="text-center">Winning Draw Time</TableHead>
-              <TableHead className="text-center">Results</TableHead>
-              <TableHead className="text-center">Default Ceiling</TableHead>
-              <TableHead className="text-center">Base Ceiling</TableHead>
-              <TableHead className="text-center">Amount Ceiling Percentage</TableHead>
-              <TableHead className="text-center">Collection Percentage</TableHead>
-              <TableHead className="text-center">Winning Status</TableHead>
-              <TableHead className="text-center">Action</TableHead>
+              <TableHead className="text-center">Date</TableHead>
+              <TableHead className="text-center">Time</TableHead>
+              <TableHead className="text-center">Game</TableHead>
+              <TableHead className="text-center">Result</TableHead>
+              <TableHead className="text-center">Current Ceiling</TableHead>
+              <TableHead className="text-center">Current number of bets</TableHead>
+              <TableHead className="text-center">Status</TableHead>
+              {/* <TableHead className="text-center">Action</TableHead> */}
             </TableRow>
           </TableHeader>
           <TableBody>
             {gamebets.map((product) => (
               <TableRow key={product.id}>
-                {/* <TableCell className="font-medium">{product.id}</TableCell> */}
+                <TableCell className="text-center">{product.date}</TableCell>
+                <TableCell className="text-center">{product.time}</TableCell>
                 <TableCell className="text-center">{product.game_name}</TableCell>
-                <TableCell className="text-center">{product.winning_draw_date}</TableCell>
-                <TableCell className="text-center">{product.winning_draw_time}</TableCell>
                 <TableCell className="text-center">{product.results}</TableCell>
-                <TableCell className="text-center">₱{product.defult_ceiling}</TableCell>
-                <TableCell className="text-center">₱{product.base_ceiling}</TableCell>
-                <TableCell className="text-center">{product.percentage_ceiling} %</TableCell>
-                <TableCell className="text-center">{product.collection_percentage} %</TableCell>
-                <TableCell className="text-center">{product.winning_status}</TableCell>
-                <TableCell className="text-center">
+                <TableCell className="text-center">{formatPeso(product.ceiling)}</TableCell>
+                <TableCell className="text-center">{product.total_bets}</TableCell>
+                <TableCell className="text-center">{product.status}</TableCell>
+                {/* <TableCell className="text-center">
                   <Button
                     className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
                     onClick={() => handleEditClick(product)}
                   >
                     Edit
                   </Button>
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             ))}
           </TableBody>
@@ -157,80 +195,65 @@ export function Draws() {
   <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
     <DialogContent className="bg-gray-50 border-[#34495e] max-h-[90vh] w-96 overflow-y-auto">
       <DialogHeader>
-        <DialogTitle className="text-xl text-blue-600">Update Draw Bets</DialogTitle>
+        <DialogTitle className="text-xl text-blue-600">Update Game Type</DialogTitle>
       </DialogHeader>
       <div className="space-y-3">
+      <form onSubmit={handleSave}>
 
-
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Game Name
-          <Input
-            type="text"
-            name="game_name"
-            value={selectedGameBet.game_name || ""}
-            onChange={handleChange}
-            className="border p-1 mt-2 w-full"
-            placeholder="Enter Game Name"
-          />
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+          Game Name : {selectedGameBet.game_name}
+          
         </label>
 
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Game Description
+          Game Type Title
           <Input
             type="text"
-            name="game_desc"
-            value={selectedGameBet?.game_desc || ""}
+            name="game_type"
+            value={selectedGameBet.game_type || ""}
             onChange={handleChange}
             className="border p-1 mt-2 w-full"
-            placeholder="Enter Game Description"
+            placeholder="Enter Game Type Title"
           />
         </label>
 
 
 
-<div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">Select Game Type</label>
-  <select
-    name="game_type"
-    value={selectedGameBet?.game_type || ""}
-    onChange={handleChange}
-    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-  >
-    <option value="" disabled>
-      Select a Game Option
-    </option>
-    <option value="Lotto">Lotto</option>
-    <option value="2D">2D</option>
-    <option value="3D">3D</option>
-    <option value="4D">4D</option>
-    <option value="Pick 3">Pick 3</option>
-  </select>
-</div>
-
-<div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">Select Available Days</label>
-  <select
-    name="game_type"
-    value={selectedGameBet?.game_availabledays || ""}
-    onChange={handleChange}
-    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-  >
-    <option value="" disabled>
-      Select an Option
-    </option>
-    <option value="Daily">Daily</option>
-  </select>
-</div>
 
 <label className="block text-sm font-medium text-gray-700 mb-2">
-          Amount Ceiling Applies
+          Bet
           <Input
-            type="text"
-            name="game_ceiling"
-            value={selectedGameBet?.game_ceiling || ""}
+            type="number"
+            name="bet"
+            value={selectedGameBet?.bet || ""}
             onChange={handleChange}
+            required
             className="border p-1 mt-2 w-full"
-            placeholder="Enter Ceiling Applies"
+            placeholder="Enter Range Start"
+            style={{ appearance: 'textfield' }}
+          />
+            <style>{`
+                      input[type=number]::-webkit-outer-spin-button,
+                      input[type=number]::-webkit-inner-spin-button {
+                      -webkit-appearance: none;
+                      margin: 0;
+                      }
+                      input[type=number] {
+                      -moz-appearance: textfield;
+                      }
+                      `}
+            </style> 
+</label>
+<label className="block text-sm font-medium text-gray-700 mb-2">
+          Jackpot
+          <Input
+            type="number"
+            name="jackpot"
+            value={selectedGameBet?.jackpot || ""}
+            onChange={handleChange}
+            required
+            className="border p-1 mt-2 w-full"
+            placeholder="Enter Range Start"
             style={{ appearance: 'textfield' }}
           />
             <style>{`
@@ -246,47 +269,44 @@ export function Draws() {
             </style> 
 </label>
 
-<label className="block text-sm font-medium text-gray-700 mb-2">
-          Amount Ceiling Percentage
-          <Input
-            type="text"
-            name="game_ceiling_percentage"
-            value={selectedGameBet?.game_ceiling_percentage || ""}
-            onChange={handleChange}
-            className="border p-1 mt-2 w-full"
-            placeholder="Enter Ceiling Percentage"
-            style={{ appearance: 'textfield' }}
-          />
-            <style>{`
-                      input[type=number]::-webkit-outer-spin-button,
-                      input[type=number]::-webkit-inner-spin-button {
-                      -webkit-appearance: none;
-                      margin: 0;
-                      }
-                      input[type=number] {
-                      -moz-appearance: textfield;
-                      }
-                      `}
-            </style> 
-</label>
-        
 
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Select Status</label>
+        <select
+          name="status"
+          value={selectedGameBet?.status || ""}
+          onChange={handleChange}
+          required
+          className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        >
+          <option value="" disabled>
+            Select a Game Option
+          </option>
+          <option value="enabled">Enabled</option>
+          <option value="hidden">Hidden</option>
+          <option value="disabled">Disabled</option>
+        </select>
+      </div>
+
+                <br/><br/>
         <DialogFooter className="flex flex-col gap-2 sm:flex-row">
-          <Button
+          {!updating ? (<Button
             variant="outline" 
             className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
-            onClick={handleSave}
+            type='submit'
           >
             Update
-          </Button>
+          </Button>) : (<>Updating....</>)}
           <Button
             variant="outline" 
             className="w-full sm:w-auto border-red-500 text-red-600 hover:bg-red-900/20"
             onClick={() => setIsModalOpen(false)}
+            type='button'
           >
             Cancel
           </Button>
         </DialogFooter>
+        </form>
       </div>
     </DialogContent>
   </Dialog>
@@ -296,127 +316,78 @@ export function Draws() {
         <Dialog open={showGameDialog} onOpenChange={setshowGameDialog}>
           <DialogContent className="bg-gray-50 border-[#34495e] max-h-[90vh] w-96 overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-xl text-blue-600">Add Draw Result</DialogTitle>
+              <DialogTitle className="text-xl text-blue-600">Add Betting Game</DialogTitle>
 
             </DialogHeader>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Select Game</label>
-                  <select name="options" className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"> 
-                    <option value="" disabled selected>Select an Game Option</option>
-                    <option value="lotto">Lotto</option>
-                    <option value="2d">2D</option>
-                    <option value="3d">3D</option>
-                    <option value="4d">4D</option>
-                    <option value="pick3">Pick 3</option>
-                  </select>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Game Name</label>
+                  <Input name='game_name' type="text" placeholder="Enter Game Name" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Game Draw Date</label>
-                  <Input name='winning_draw_date' type="date" placeholder="Select Date" />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Game Description</label>
+                  <Input name='game_description' type="text" placeholder="Enter Game Short Description" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Game Draw Time</label>
-                  <Input name='winning_draw_time' type="time" placeholder="Select Time" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Game Winning Result</label>
-                  <Input name='results' type="text" placeholder="Enter Winning Result" />
-                </div>
-                {/* <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Select Game Type</label>
                   <select name="options" className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"> 
                     <option value="" disabled selected>Select an Game Option</option>
                     <option value="lotto">Lotto</option>
-                    <option value="2d">2D</option>
-                    <option value="3d">3D</option>
-                    <option value="4d">4D</option>
-                    <option value="pick3">Pick 3</option>
                   </select>
-                </div> */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Default Ceiling</label>
-                  <Input name='default_ceiling' type="number" placeholder="Enter default ceiling " style={{ appearance: 'textfield' }}/>
-                    <style>{`
-                      input[type=number]::-webkit-outer-spin-button,
-                      input[type=number]::-webkit-inner-spin-button {
-                      -webkit-appearance: none;
-                      margin: 0;
-                      }
-                      input[type=number] {
-                      -moz-appearance: textfield;
-                      }
-                      `}
-                    </style>                  
-                </div>  
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Base Ceiling</label>
-                  <Input name='base_ceiling' type="number" placeholder="Enter default ceiling" style={{ appearance: 'textfield' }}/>
-                    <style>{`
-                      input[type=number]::-webkit-outer-spin-button,
-                      input[type=number]::-webkit-inner-spin-button {
-                      -webkit-appearance: none;
-                      margin: 0;
-                      }
-                      input[type=number] {
-                      -moz-appearance: textfield;
-                      }
-                      `}
-                    </style>                  
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Percentage Ceiling</label>
-                  <Input name='percentage_ceiling' type="number" placeholder="Enter Percentage ceiling" style={{ appearance: 'textfield' }}/>
-                    <style>{`
-                      input[type=number]::-webkit-outer-spin-button,
-                      input[type=number]::-webkit-inner-spin-button {
-                      -webkit-appearance: none;
-                      margin: 0;
-                      }
-                      input[type=number] {
-                      -moz-appearance: textfield;
-                      }
-                      `}
-                    </style>                  
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Add Collection Percentage</label>
-                  <Input name='collection_percentage' type="number" placeholder="Enter Percentage ceiling" style={{ appearance: 'textfield' }}/>
-                    <style>{`
-                      input[type=number]::-webkit-outer-spin-button,
-                      input[type=number]::-webkit-inner-spin-button {
-                      -webkit-appearance: none;
-                      margin: 0;
-                      }
-                      input[type=number] {
-                      -moz-appearance: textfield;
-                      }
-                      `}
-                    </style>                  
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Winning Staus</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Select Available Days</label>
                   <select name="options" className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"> 
-                    <option value="" disabled selected>Select Winning Status</option>
-                    <option value="Done">Done</option>
-                    <option value="Pending">Pending</option>
+                    <option value="" disabled selected>Select an Option</option>
+                    <option value="daily">Daily</option>
                   </select>
                 </div>
-                {/* <div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Amount Ceiling Applies</label>
+                  <Input name='ceiling' type="number" placeholder="Enter win amount ceiling applies" style={{ appearance: 'textfield' }}/>
+                    <style>{`
+                      input[type=number]::-webkit-outer-spin-button,
+                      input[type=number]::-webkit-inner-spin-button {
+                      -webkit-appearance: none;
+                      margin: 0;
+                      }
+                      input[type=number] {
+                      -moz-appearance: textfield;
+                      }
+                      `}
+                    </style>                  
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Amount Ceiling Percentage</label>
+                  <Input name='ceiling' type="number" placeholder="Enter ceiling % applies" style={{ appearance: 'textfield' }}/>
+                    <style>{`
+                      input[type=number]::-webkit-outer-spin-button,
+                      input[type=number]::-webkit-inner-spin-button {
+                      -webkit-appearance: none;
+                      margin: 0;
+                      }
+                      input[type=number] {
+                      -moz-appearance: textfield;
+                      }
+                      `}
+                    </style>                  
+                </div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Upload Game Image</label>
                   <input 
-                    name="file_upload" 
+                    name="picture" 
                     type="file" 
                     accept="image/*" 
                     className="block w-full text-sm text-gray-700 border border-gray-300 rounded-md cursor-pointer focus:outline-none"
                   />
-                </div> */}
+                </div>
               </div>
 
                 <DialogFooter className="flex flex-col gap-2 sm:flex-row">
                   <Button 
                     variant="outline" 
                     onClick={() => setshowGameDialog(false)}
+                    disabled
                     className="w-full sm:w-auto bg-green-500 border-green-500 text-black-600 hover:bg-green-500/20 hover:text-green-700"
                   >
                     Add

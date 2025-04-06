@@ -13,11 +13,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useAuth0 } from '@auth0/auth0-react';
-import { loginAdmin,getGames, updateGame } from './api/apiCalls';
+import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType } from './api/apiCalls';
 import { formatPeso } from './utils/utils';
 
 
-export function Bets() {
+export function GamesTypes() {
 
   const { user,getAccessTokenSilently , logout} = useAuth0();
   const [showGameDialog, setshowGameDialog] = useState(false);
@@ -44,7 +44,7 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
             setUserID(dataUpdated.userID);
             setLoading(false);
   
-            const gamesData = await getGames();
+            const gamesData = await getGamesTypes();
             setGamebets(gamesData);
         
   
@@ -81,25 +81,16 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     const formData = new FormData();
     formData.append('userID', selectedGameBet.id);
-    formData.append('name', selectedGameBet.name);
-    formData.append('type', selectedGameBet.type);
-    formData.append('range_start', selectedGameBet.range_start);
-    formData.append('range_end', selectedGameBet.range_end);
-    formData.append('num_digits', selectedGameBet.num_digits);
-    formData.append('available_days', selectedGameBet.available_days);
+    formData.append('game_type', selectedGameBet.game_type);
+    formData.append('bet', selectedGameBet.bet);
+    formData.append('jackpot', selectedGameBet.jackpot);
     formData.append('status', selectedGameBet.status);
-    formData.append('description', selectedGameBet.description);
-    formData.append('ceiling', selectedGameBet.ceiling);
-    formData.append('ceiling_perc', selectedGameBet.ceiling_perc);
 
-    console.log(selectedGameBet.picture);
-    if (selectedGameBet.picture) {
-        formData.append('picture', selectedGameBet.picture);
-    }
+   
 
 
     setLoading(true);
-    const isAuthenticated = await updateGame(formData);
+    const isAuthenticated = await updateGameType(formData);
     if (!isAuthenticated) {
         
       setUpdating(false);
@@ -112,9 +103,9 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
       setUpdating(false);
       setIsModalOpen(false);
       setLoading(false);
-        alert("game updated successfully.");
-        const gamesData = await getGames();
-            setGamebets(gamesData);
+        alert("game type updated successfully.");
+        const gamesData = await getGamesTypes();
+          setGamebets(gamesData);
     }
   };
 
@@ -149,10 +140,10 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl md:text-3xl font-bold">Game</h2>
-        <Button onClick={() => setshowGameDialog(true)}>
+        <h2 className="text-2xl md:text-3xl font-bold">Game Types</h2>
+       {/*  <Button onClick={() => setshowGameDialog(true)}>
           <Plus className="mr-2 h-4 w-4" /> Add Bet Games
-        </Button>
+        </Button> */}
       </div>
       
       <div className="overflow-x-auto">
@@ -164,13 +155,9 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
           <TableHeader>
             <TableRow>
               <TableHead className="text-center">Game Name</TableHead>
-              <TableHead className="text-center">Game Description</TableHead>
               <TableHead className="text-center">Game Type</TableHead>
-              <TableHead className="text-center">Range</TableHead>
-              <TableHead className="text-center">Digits</TableHead>
-              <TableHead className="text-center">Available Days</TableHead>
-              <TableHead className="text-center">Amount Ceiling</TableHead>
-              <TableHead className="text-center">Percentage Increase on Exceeding Ceiling</TableHead>
+              <TableHead className="text-center">Bet</TableHead>
+              <TableHead className="text-center">Jackpot</TableHead>
               <TableHead className="text-center">Status</TableHead>
               <TableHead className="text-center">Action</TableHead>
             </TableRow>
@@ -178,14 +165,10 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
           <TableBody>
             {gamebets.map((product) => (
               <TableRow key={product.id}>
-                <TableCell className="text-center">{product.name}</TableCell>
-                <TableCell className="text-center">{product.description}</TableCell>
-                <TableCell className="text-center">{product.type}</TableCell>
-                <TableCell className="text-center">{product.range_start}-{product.range_end}</TableCell>
-                <TableCell className="text-center">{product.num_digits}</TableCell>
-                <TableCell className="text-center">{product.available_days}</TableCell>
-                <TableCell className="text-center">{formatPeso(product.ceiling)}</TableCell>
-                <TableCell className="text-center">{product.ceiling_perc} %</TableCell>
+                <TableCell className="text-center">{product.game_name}</TableCell>
+                <TableCell className="text-center">{product.game_type}</TableCell>
+                <TableCell className="text-center">{formatPeso(product.bet)}</TableCell>
+                <TableCell className="text-center">{formatPeso(product.jackpot)}</TableCell>
                 <TableCell className="text-center">{product.status}</TableCell>
                 <TableCell className="text-center">
                   <Button
@@ -208,75 +191,37 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
   <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
     <DialogContent className="bg-gray-50 border-[#34495e] max-h-[90vh] w-96 overflow-y-auto">
       <DialogHeader>
-        <DialogTitle className="text-xl text-blue-600">Update Game Bets</DialogTitle>
+        <DialogTitle className="text-xl text-blue-600">Update Game Type</DialogTitle>
       </DialogHeader>
       <div className="space-y-3">
       <form onSubmit={handleSave}>
 
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Game Name
-          <Input
-            type="text"
-            name="name"
-            value={selectedGameBet.name || ""}
-            onChange={handleChange}
-            required
-            className="border p-1 mt-2 w-full"
-            placeholder="Enter Game Name"
-          />
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+          Game Name : {selectedGameBet.game_name}
+          
         </label>
 
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Game Description
+          Game Type Title
           <Input
             type="text"
-            name="description"
-            value={selectedGameBet?.description || ""}
+            name="game_type"
+            value={selectedGameBet.game_type || ""}
             onChange={handleChange}
-            required
             className="border p-1 mt-2 w-full"
-            placeholder="Enter Game Description"
+            placeholder="Enter Game Type Title"
           />
         </label>
 
 
 
-<div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">Select Game Type</label>
-  <select
-    name="type"
-    value={selectedGameBet?.type || ""}
-    onChange={handleChange}
-    required
-    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-  >
-    <option value="" disabled>
-      Select a Game Option
-    </option>
-    <option value="lotto">Lotto</option>
-  </select>
-</div>
 
-<div>
 <label className="block text-sm font-medium text-gray-700 mb-2">
-          Set Available Days
-          <Input
-            type="text"
-            name="available_days"
-            value={selectedGameBet.available_days || ""}
-            onChange={handleChange}
-            required
-            className="border p-1 mt-2 w-full"
-            placeholder="m-t-w-th-f-s-su or daily"
-          />
-        </label>
-</div>
-<label className="block text-sm font-medium text-gray-700 mb-2">
-          Number of Ball
+          Bet
           <Input
             type="number"
-            name="num_digits"
-            value={selectedGameBet?.num_digits || ""}
+            name="bet"
+            value={selectedGameBet?.bet || ""}
             onChange={handleChange}
             required
             className="border p-1 mt-2 w-full"
@@ -296,11 +241,11 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
             </style> 
 </label>
 <label className="block text-sm font-medium text-gray-700 mb-2">
-          Range Start
+          Jackpot
           <Input
             type="number"
-            name="range_start"
-            value={selectedGameBet?.range_start || ""}
+            name="jackpot"
+            value={selectedGameBet?.jackpot || ""}
             onChange={handleChange}
             required
             className="border p-1 mt-2 w-full"
@@ -319,113 +264,27 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
                       `}
             </style> 
 </label>
-<label className="block text-sm font-medium text-gray-700 mb-2">
-          Range End
-          <Input
-            type="number"
-            name="range_end"
-            value={selectedGameBet?.range_end || ""}
-            onChange={handleChange}
-            required
-            className="border p-1 mt-2 w-full"
-            placeholder="Enter Range End"
-            style={{ appearance: 'textfield' }}
-          />
-            <style>{`
-                      input[type=number]::-webkit-outer-spin-button,
-                      input[type=number]::-webkit-inner-spin-button {
-                      -webkit-appearance: none;
-                      margin: 0;
-                      }
-                      input[type=number] {
-                      -moz-appearance: textfield;
-                      }
-                      `}
-            </style> 
-</label>
-<label className="block text-sm font-medium text-gray-700 mb-2">
-          Amount Ceiling Applies
-          <Input
-            type="number"
-            name="ceiling"
-            value={selectedGameBet?.ceiling || ""}
-            onChange={handleChange}
-            required
-            className="border p-1 mt-2 w-full"
-            placeholder="Enter Ceiling Applies"
-            style={{ appearance: 'textfield' }}
-          />
-            <style>{`
-                      input[type=number]::-webkit-outer-spin-button,
-                      input[type=number]::-webkit-inner-spin-button {
-                      -webkit-appearance: none;
-                      margin: 0;
-                      }
-                      input[type=number] {
-                      -moz-appearance: textfield;
-                      }
-                      `}
-            </style> 
-</label>
 
-<label className="block text-sm font-medium text-gray-700 mb-2">
-          Amount Ceiling Percentage
-          <Input
-            type="number"
-            name="ceiling_perc"
-            value={selectedGameBet?.ceiling_perc || ""}
-            onChange={handleChange}
-            required
-            className="border p-1 mt-2 w-full"
-            placeholder="Enter Ceiling Percentage"
-            style={{ appearance: 'textfield' }}
-          />
-            <style>{`
-                      input[type=number]::-webkit-outer-spin-button,
-                      input[type=number]::-webkit-inner-spin-button {
-                      -webkit-appearance: none;
-                      margin: 0;
-                      }
-                      input[type=number] {
-                      -moz-appearance: textfield;
-                      }
-                      `}
-            </style> 
-</label>
-<div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">Select Status</label>
-  <select
-    name="status"
-    value={selectedGameBet?.status || ""}
-    onChange={handleChange}
-    required
-    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-  >
-    <option value="" disabled>
-      Select a Game Option
-    </option>
-    <option value="enabled">Enabled</option>
-    <option value="disabled">Disabled</option>
-  </select>
-</div>
 
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700">Game Image</label>
-        {imagePreview ? (
-          <img src={imagePreview} alt="Preview" className="w-32 h-32 object-cover mt-2" />
-        ) : selectedGameBet.picture ? (
-          <img src={`${API_URL}/img/${selectedGameBet.picture}`} alt="Game Image" className="w-32 h-32 object-cover mt-2" />
-        ) : null}
-
-      
-        <input
-          type="file"
-          accept="image/*"
-          className="mt-2"
-          onChange={(e) => handleImageChange(e)}
-        />
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Select Status</label>
+        <select
+          name="status"
+          value={selectedGameBet?.status || ""}
+          onChange={handleChange}
+          required
+          className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        >
+          <option value="" disabled>
+            Select a Game Option
+          </option>
+          <option value="enabled">Enabled</option>
+          <option value="hidden">Hidden</option>
+          <option value="disabled">Disabled</option>
+        </select>
       </div>
 
+                <br/><br/>
         <DialogFooter className="flex flex-col gap-2 sm:flex-row">
           {!updating ? (<Button
             variant="outline" 

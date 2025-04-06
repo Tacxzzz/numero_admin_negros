@@ -18,6 +18,8 @@ import { HierarchyThird } from "./components/HierarchyThird";
 import { HierarchyFourth } from "./components/HierarchyFourth";
 import { AdminManagement } from "./components/AdminManagement";
 import { useAuth0 } from "@auth0/auth0-react";
+import { GamesTypes } from "./components/GamesTypes";
+import { TransactionsCashin } from "./components/TransactionsCashin";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -79,7 +81,9 @@ function App() {
                   <Routes>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/bets" element={<Bets />} />
+                    <Route path="/gametypes" element={<GamesTypes />} />
                     <Route path="/draws" element={<Draws />} />
+                    <Route path="/cashinhistory" element={<TransactionsCashin />} />
                     <Route path="/logs" element={<Analytics />} />
                     <Route path="/winnings" element={<Winnings />} />
                     <Route path="/playersbets" element={<PlayersBets />} />

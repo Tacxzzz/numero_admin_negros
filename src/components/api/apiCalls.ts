@@ -67,12 +67,83 @@ export const getGames = async () => {
   }
 };
 
+export const getGamesTypes = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getGamesTypes`);
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+
+export const getDraws = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getDraws`);
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+
+export const getTransactionsCashin = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getTransactionsCashin`);
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
 
 export const updateGame = async (formData: FormData): Promise<boolean> => {
   try 
   {
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/updateGame',
+          formData,
+          { headers: {
+            'Content-Type': 'multipart/form-data' 
+          } }
+      );
+
+      
+      return response.data.authenticated;
+  } 
+  catch (error) 
+  {
+      console.error('Error authenticating user:', error);
+      return false;
+  }
+};
+
+
+
+
+export const updateGameType = async (formData: FormData): Promise<boolean> => {
+  try 
+  {
+      const response = await axios.post(
+          import.meta.env.VITE_DATABASE_URL+'/admin/updateGameType',
           formData,
           { headers: {
             'Content-Type': 'multipart/form-data' 
