@@ -3,11 +3,12 @@ import { RecentOrders } from "./RecentOrders";
 import { SalesChart } from "./SalesChart";
 import { HandIcon , HandMetalIcon, ShoppingCart, Users, Boxes, Wallet, CoinsIcon, Wallet2, BookAIcon, BookCheck, BookHeart, Banknote } from "lucide-react";
 import { useAuth0 } from '@auth0/auth0-react';
-import { loginAdmin } from './api/apiCalls';
+import { countBetsEarned, getRateChartData, loginAdmin, totalBalancePlayers, totalCashin, totalCashOut, totalClients, totalCommissions, totalPlayers, totalWins } from './api/apiCalls';
 import { useEffect, useState } from "react";
 import { formatPeso } from "./utils/utils";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+
 
 export function Dashboard() {
 
@@ -20,8 +21,16 @@ export function Dashboard() {
     const [totalRedeemAmount, setTotalRedeemAmount] = useState(0);
     const [users, setUsers] = useState<any[]>([]);
     const [totalBalance, setTotalBalance] = useState(0);
+    const [totalComm, setTotalComm] = useState(0);
+    const [totalPlayersAmount, setTotalPlayersAmount] = useState(0);
+    const [totalNonRegisteredPlayers, setTotalNonRegisteredPlayers] = useState(0);
+    const [totalCashins, setTotalCashins] = useState(0);
+    const [totalCashouts, setTotalCashouts] = useState(0);
     const [startDate, setStartDate] = useState<string>("");
     const [endDate, setEndDate] = useState<string>("");
+    const [rateChartData, setRateChartData] = useState<any[]>([]);
+
+
 
   useEffect(() => {
     if (user && !dbUpdated) {
@@ -33,31 +42,33 @@ export function Dashboard() {
           setUserID(dataUpdated.userID);
           setLoading(false);
 
-          /* const getTransData = await getTransactionsAll();
-          setTransactions(getTransData);
-      
-      
-          if (getTransData && getTransData.length > 0) {
-            const total = getTransData
-              .filter((trans) => trans.trans_type === "remit") // Get only transactions with type "remit"
-              .reduce((sum, trans) => sum + parseFloat(trans.amount), 0); // Sum up the amounts
-        
-            setTotalRemitAmount(total); // Update state
-          } else {
-            setTotalRemitAmount(0); // Reset if no transactions
-          }
+          const data = await getRateChartData();
+          setRateChartData(data);
+          console.log(data);
 
-          if (getTransData && getTransData.length > 0) {
-            const total = getTransData
-              .filter((trans) => trans.trans_type === "redeem") // Get only transactions with type "remit"
-              .reduce((sum, trans) => sum + parseFloat(trans.amount), 0); // Sum up the amounts
-        
-            setTotalRedeemAmount(total); // Update state
-          } else {
-            setTotalRedeemAmount(0); // Reset if no transactions
-          } */
+          const betsEarnedData= await countBetsEarned();
+          setTotalRemitAmount(betsEarnedData.count);
 
+          const data2= await totalWins();
+          setTotalRedeemAmount(data2.count);
+
+          const data3= await totalBalancePlayers();
+          setTotalBalance(data3.count);
+
+          const data4= await totalCommissions();
+          setTotalComm(data4.count);
           
+          const data5= await totalPlayers();
+          setTotalPlayersAmount(data5.count);
+
+          const data6= await totalClients();
+          setTotalNonRegisteredPlayers(data6.count);
+
+          const data7= await totalCashin();
+          setTotalCashins(data7.count);
+
+          const data8= await totalCashOut();
+          setTotalCashouts(data8.count);
         }
         else
         {
@@ -76,7 +87,6 @@ export function Dashboard() {
   }
 
 
-  return <div>Not allowed to manage this page</div>
   const stats = [
     {
       title: "Total Bets Earned",
@@ -84,56 +94,43 @@ export function Dashboard() {
       icon: CoinsIcon,
     },
     {
-      title: "Total Win Claimed",
+      title: "Total Wins",
       value: formatPeso(totalRedeemAmount),
       icon: CoinsIcon,
     },
-    // {
-    //   title: "Total Bet Balance Claimable",
-    //   value: formatPeso(totalBalance),
-    //   icon: Wallet2, 
-    // },
     {
-      title: "Total Collections",
+      title: "Total Credits From Players",
       value: formatPeso(totalBalance),
       icon: BookCheck,
     },
     {
       title: "Total Commision",
-      value: formatPeso(totalRemitAmount),
+      value: formatPeso(totalComm),
       icon: BookHeart,
     },
     {
       title: "Players",
-      value: users.length,
+      value: totalPlayersAmount,
       icon: Users,
     },
     {
-      title: "New Players",
-      value: users.length,
+      title: "Non-Registered Players",
+      value: totalNonRegisteredPlayers,
       icon: Users,
     },
     {
       title: "Cash In",
-      value: formatPeso(totalRemitAmount),
+      value: formatPeso(totalCashins),
       icon: Banknote,
     },
     {
       title: "Cash Out",
-      value: formatPeso(90000),
+      value: formatPeso(totalCashouts),
       icon: Banknote,
     },
   ];
 
-  const rateChartData = [
-    { date: "Mar 4", Cash_In: 56.10, Commission: 11.20, Cash_Out: 21.80 },
-    { date: "Mar 5", Cash_In: 36.25, Commission: 1.35, Cash_Out: 31.95 },
-    { date: "Mar 6", Cash_In: 46.40, Commission: 5.45, Cash_Out: 12.05 },
-    { date: "Mar 7", Cash_In: 26.55, Commission: 11.60, Cash_Out: 12.25 },
-    { date: "Mar 8", Cash_In: 36.65, Commission: 21.75, Cash_Out: 32.40 },
-    { date: "Mar 9", Cash_In: 16.70, Commission: 11.85, Cash_Out: 22.55 },
-    { date: "Mar 10", Cash_In: 36.75, Commission: 22.10, Cash_Out: 12.85 }
-  ];
+  
 
   const resetDateFilters = () => {
     setStartDate("");
@@ -213,7 +210,6 @@ export function Dashboard() {
                 <Tooltip />
                 <Legend />
                 <Line type="monotone" dataKey="Cash_In" stroke="#8884d8" name="Cash In" />
-                <Line type="monotone" dataKey="Commission" stroke="#82ca9d" name="Commission" />
                 <Line type="monotone" dataKey="Cash_Out" stroke="#ff7300" name="Cash Out" />
               </LineChart>
             </ResponsiveContainer>
@@ -221,25 +217,7 @@ export function Dashboard() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-7">
-        
-        {/* <Card className="lg:col-span-7">
-          <CardHeader>
-            <CardTitle>New Users Sign Up</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <NewSignup  />
-          </CardContent>
-        </Card> */}
-        <Card className="lg:col-span-7">
-          <CardHeader>
-            <CardTitle>Transactions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RecentOrders  />
-          </CardContent>
-        </Card>
-      </div>
+      
     </div>
   );
 }
