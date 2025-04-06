@@ -31,7 +31,10 @@ export function Bets() {
   const [selectedGameBet, setSelectedGameBet] = useState(null);
   const API_URL = import.meta.env.VITE_DATABASE_URL;
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    // New states for search and sorting
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
 
   useEffect(() => {
@@ -144,14 +147,42 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
     }
   };
   
-  
+    // Filter and sort logic
+    const filteredAndSortedBets = gamebets
+    .filter((bet) =>
+      bet.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (sortOrder === "asc") {
+        return a.name.localeCompare(b.name);
+      } else {
+        return b.name.localeCompare(a.name);
+      }
+    });
   
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-2xl md:text-3xl font-bold">Game</h2>
-        <Button onClick={() => setshowGameDialog(true)}>
+        <Button onClick={() => setshowGameDialog(true)} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" /> Add Bet Games
+        </Button>
+      </div>
+
+      {/* Search and Sort Controls */}
+      <div className="flex flex-row justify-end items-center gap-4">
+        <Input
+          type="text"
+          placeholder="Search games..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="border p-2 rounded w-full sm:w-auto"
+        />
+        <Button
+          onClick={() => setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))}
+          className="border p-2 rounded"
+        >
+          Sort {sortOrder === "asc" ? "Ascending" : "Descending"}
         </Button>
       </div>
       
@@ -176,7 +207,7 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
             </TableRow>
           </TableHeader>
           <TableBody>
-            {gamebets.map((product) => (
+            {filteredAndSortedBets.map((product) => (
               <TableRow key={product.id}>
                 <TableCell className="text-center">{product.name}</TableCell>
                 <TableCell className="text-center">{product.description}</TableCell>
