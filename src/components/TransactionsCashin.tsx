@@ -140,7 +140,7 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl md:text-3xl font-bold">Draws</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">Cash in History</h2>
        {/*  <Button onClick={() => setshowGameDialog(true)}>
           <Plus className="mr-2 h-4 w-4" /> Add Bet Games
         </Button> */}
