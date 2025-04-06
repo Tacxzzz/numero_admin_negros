@@ -14,10 +14,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType, getDraws, getTransactionsCashin, getTransactionsCashout, getBetsHistory, getBetsHistoryWinners, getPlayers, updatePlayer } from './api/apiCalls';
+import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType, getDraws, getTransactionsCashin, getTransactionsCashout, getBetsHistory, getBetsHistoryWinners, getPlayers, updatePlayer, getPlayersAgents } from './api/apiCalls';
 import { formatPeso } from './utils/utils';
 
-export function Users() {
+export function Agents() {
   const navigate = useNavigate();
   const { user,getAccessTokenSilently , logout} = useAuth0();
   const [loading, setLoading] = useState(true);
@@ -41,7 +41,7 @@ export function Users() {
               setUserID(dataUpdated.userID);
               setLoading(false);
     
-              const gamesData = await getPlayers();
+              const gamesData = await getPlayersAgents();
               setGamebets(gamesData);
           
     
@@ -95,7 +95,7 @@ export function Users() {
       setIsModalOpen(false);
       setLoading(false);
         alert("player updated successfully.");
-        const gamesData = await getPlayers();
+        const gamesData = await getPlayersAgents();
           setGamebets(gamesData);
     }
   };
@@ -112,7 +112,7 @@ export function Users() {
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl md:text-3xl font-bold">List of Users</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">List of Agents</h2>
         {/* <Button onClick={() => setshowGameDialog(true)}>
           <Plus className="mr-2 h-4 w-4" /> Add Draws Schedule
         </Button> */}

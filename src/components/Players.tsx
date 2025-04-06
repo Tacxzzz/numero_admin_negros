@@ -17,7 +17,7 @@ import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType, getDraw
 import { formatPeso } from './utils/utils';
 
 
-export function PlayersBets() {
+export function Players() {
 
   const { user,getAccessTokenSilently , logout} = useAuth0();
   const [showGameDialog, setshowGameDialog] = useState(false);

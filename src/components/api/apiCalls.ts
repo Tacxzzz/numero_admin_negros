@@ -209,3 +209,151 @@ export const getBetsHistoryWinners = async () => {
     return [];
   }
 };
+
+export const getPlayers = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getPlayers`);
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getPlayersAgents = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getPlayersAgents`);
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+
+export const getClients = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getClients`);
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const updateClient = async (formData: FormData): Promise<boolean> => {
+  try 
+  {
+      const response = await axios.post(
+          import.meta.env.VITE_DATABASE_URL+'/admin/updateClient',
+          formData,
+          { headers: {
+            'Content-Type': 'multipart/form-data' 
+          } }
+      );
+
+      
+      return response.data.authenticated;
+  } 
+  catch (error) 
+  {
+      console.error('Error authenticating user:', error);
+      return false;
+  }
+};
+
+export const updatePlayer = async (formData: FormData): Promise<boolean> => {
+  try 
+  {
+      const response = await axios.post(
+          import.meta.env.VITE_DATABASE_URL+'/admin/updatePlayer',
+          formData,
+          { headers: {
+            'Content-Type': 'multipart/form-data' 
+          } }
+      );
+
+      
+      return response.data.authenticated;
+  } 
+  catch (error) 
+  {
+      console.error('Error authenticating user:', error);
+      return false;
+  }
+};
+
+
+export const getLevel1Referrals = async (id: string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getLevel1Referrals`, { userID: id });
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+
+export const getLevel1ReferralsCount = async (id: string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getLevel1ReferralsCount`, { userID: id });
+    if (response.data) 
+    {
+      const userData = response.data;
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
+
+export const getLevel2ReferralsCount = async (id: string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getLevel2ReferralsCount`, { userID: id });
+    if (response.data) 
+      {
+      const userData = response.data;
+      console.log(response);
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};

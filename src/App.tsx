@@ -22,6 +22,8 @@ import { GamesTypes } from "./components/GamesTypes";
 import { TransactionsCashin } from "./components/TransactionsCashin";
 import { TransactionsCashOut } from "./components/TransactionsCashout";
 import { WinnerBets } from "./components/WinnersBets";
+import { Agents } from "./components/Agents";
+import { Clients } from "./components/Clients";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -92,6 +94,8 @@ function App() {
                     <Route path="/playersbets" element={<PlayersBets />} />
                     <Route path="/winners" element={<WinnerBets />} />
                     <Route path="/users" element={<Users />} />
+                    <Route path="/agents" element={<Agents />} />
+                    <Route path="/clients" element={<Clients />} />
                     <Route path="/hierarchy" element={<HierarchyView />} />
                     <Route path="/hierarchysecond" element={<HierarchySecond />} />
                     <Route path="/hierarchythird" element={<HierarchyThird />} />

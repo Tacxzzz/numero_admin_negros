@@ -14,10 +14,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType, getDraws, getTransactionsCashin, getTransactionsCashout, getBetsHistory, getBetsHistoryWinners, getPlayers, updatePlayer } from './api/apiCalls';
+import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType, getDraws, getTransactionsCashin, getTransactionsCashout, getBetsHistory, getBetsHistoryWinners, getPlayers, updatePlayer, getClients, updateClient } from './api/apiCalls';
 import { formatPeso } from './utils/utils';
 
-export function Users() {
+export function Clients() {
   const navigate = useNavigate();
   const { user,getAccessTokenSilently , logout} = useAuth0();
   const [loading, setLoading] = useState(true);
@@ -41,7 +41,7 @@ export function Users() {
               setUserID(dataUpdated.userID);
               setLoading(false);
     
-              const gamesData = await getPlayers();
+              const gamesData = await getClients();
               setGamebets(gamesData);
           
     
@@ -78,10 +78,9 @@ export function Users() {
     const formData = new FormData();
     formData.append('userID', selectedGameBet.id);
     formData.append('status', selectedGameBet.status);
-    formData.append('agent', selectedGameBet.agent);
 
     setLoading(true);
-    const isAuthenticated = await updatePlayer(formData);
+    const isAuthenticated = await updateClient(formData);
     if (!isAuthenticated) {
         alert("an error occurred!");
       setUpdating(false);
@@ -94,8 +93,8 @@ export function Users() {
       setUpdating(false);
       setIsModalOpen(false);
       setLoading(false);
-        alert("player updated successfully.");
-        const gamesData = await getPlayers();
+        alert("client updated successfully.");
+        const gamesData = await getClients();
           setGamebets(gamesData);
     }
   };
@@ -112,7 +111,7 @@ export function Users() {
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl md:text-3xl font-bold">List of Users</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">List of Non-Registered Users from Agents</h2>
         {/* <Button onClick={() => setshowGameDialog(true)}>
           <Plus className="mr-2 h-4 w-4" /> Add Draws Schedule
         </Button> */}
@@ -127,16 +126,11 @@ export function Users() {
           <TableHeader>
             <TableRow>
               {/* <TableHead className="w-[100px] text-center">ID</TableHead> */}
-              <TableHead className="text-center">Users Mobile #</TableHead>
-              <TableHead className="text-center">Created</TableHead>
-              <TableHead className="text-center">Modified</TableHead>
-              <TableHead className="text-center">Account Balance</TableHead>
-              <TableHead className="text-center">Wins</TableHead>
-              <TableHead className="text-center">Commissions</TableHead>
-              <TableHead className="text-center">Referred By</TableHead>
-              <TableHead className="text-center"># of Referrals</TableHead>
+              <TableHead className="text-center">Agent</TableHead>
+              <TableHead className="text-center">Added</TableHead>
+              <TableHead className="text-center">Full Name</TableHead>
+              <TableHead className="text-center">Bank</TableHead>
               <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-center">is Agent</TableHead>
               <TableHead className="text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -144,16 +138,11 @@ export function Users() {
             {gamebets.map((product) => (
               <TableRow key={product.id}>
                 {/* <TableCell className="font-medium">{product.id}</TableCell> */}
-                <TableCell className="text-center">{product.mobile}</TableCell>
-                <TableCell className="text-center">{product.created}</TableCell>
-                <TableCell className="text-center">{product.modified}</TableCell>
-                <TableCell className="text-center">{formatPeso(product.balance)}</TableCell>
-                <TableCell className="text-center">{formatPeso(product.wins)}</TableCell>
-                <TableCell className="text-center">{formatPeso(product.commissions)}</TableCell>
-                <TableCell className="text-center">{product.referrer_mobile}</TableCell>
-                <TableCell className="text-center">{product.referral_count}</TableCell>
-                <TableCell className="text-center">{product.status==="pending"?"Active":"Inactive"}</TableCell>
-                <TableCell className="text-center">{product.agent==="yes"?"Yes":"No"}</TableCell>
+                <TableCell className="text-center">{product.user_mobile}</TableCell>
+                <TableCell className="text-center">{product.date} {product.time}</TableCell>
+                <TableCell className="text-center">{product.full_name}</TableCell>
+                <TableCell className="text-center">{product.bank} - {product.account} </TableCell>
+                <TableCell className="text-center">{product.status}</TableCell>
                 <TableCell className="text-center">
                 <Button
                   className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700 mr-2 mb-2"
@@ -162,12 +151,6 @@ export function Users() {
                   Edit
                 </Button>
                 
-                <Button
-                className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
-                onClick={() => navigate(`/hierarchy?user_mobile=${product.mobile}&user_id=${product.id}`)}
-              >
-                Referrals
-              </Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -192,7 +175,7 @@ export function Users() {
   <label className="block text-sm font-medium text-gray-700 mb-1">Select Status</label>
   <select
     name="status"
-    value={selectedGameBet?.status || "blocked"}
+    value={selectedGameBet?.status || "disabled"}
     onChange={handleChange}
     required
     className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -200,26 +183,11 @@ export function Users() {
     <option value="" disabled>
       Set Status
     </option>
-    <option value="pending">Active</option>
-    <option value="blocked">Blocked</option>
+    <option value="enabled">Enabled</option>
+    <option value="disabled">Disabled</option>
   </select>
 </div>
-<div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">Set as Agent</label>
-  <select
-    name="agent"
-    value={selectedGameBet?.agent || "no"}
-    onChange={handleChange}
-    required
-    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-  >
-    <option value="" disabled>
-      Set Agent
-    </option>
-    <option value="yes">Yes</option>
-    <option value="no">No</option>
-  </select>
-</div>
+
 
         
 

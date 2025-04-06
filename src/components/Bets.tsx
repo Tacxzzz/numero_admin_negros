@@ -101,7 +101,7 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
     setLoading(true);
     const isAuthenticated = await updateGame(formData);
     if (!isAuthenticated) {
-        
+      alert("an error occurred!");
       setUpdating(false);
         setIsModalOpen(false);
         setLoading(false);

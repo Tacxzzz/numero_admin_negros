@@ -1,12 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RecentOrders } from "./RecentOrders";
 import { HierarchyDirect} from "./HierarchyDirect";
-import { HierarchySecond} from "./HierarchySecond"; 
 import { HierarchyThird} from "./HierarchyThird";
 import { SalesChart } from "./SalesChart";
 import { DollarSign, Package, ShoppingCart, Users, Boxes, ArrowBigLeft } from "lucide-react";
 import { useAuth0 } from '@auth0/auth0-react';
-import { loginAdmin } from './api/apiCalls';
+import { getLevel1ReferralsCount, getLevel2ReferralsCount, loginAdmin } from './api/apiCalls';
 import { useEffect, useState } from "react";
 import { formatPeso } from "./utils/utils";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -25,8 +24,17 @@ export function HierarchyView() {
     const [users, setUsers] = useState<any[]>([]);
     const [totalBalance, setTotalBalance] = useState(0);
 
+    const [countDirect, setCountDirect] = useState("");
+    const [countDirect2, setCountDirect2] = useState("");
+
+    const queryParams = new URLSearchParams(location.search);
+    const userMobile = queryParams.get("user_mobile");
+    const user_id = queryParams.get("user_id");
+
+
+
   useEffect(() => {
-    if (user && !dbUpdated) {
+    if (user) {
       const handleUpdate = async () => {
         const dataUpdated= await loginAdmin(user,getAccessTokenSilently);
         if(dataUpdated.dbUpdate)
@@ -35,7 +43,11 @@ export function HierarchyView() {
           setUserID(dataUpdated.userID);
           setLoading(false);
 
-          
+          const dataRefs= await getLevel1ReferralsCount(user_id);
+          setCountDirect(dataRefs.count);
+
+          const dataRefs2= await getLevel2ReferralsCount(user_id);
+          setCountDirect2(dataRefs2.count);
         }
         else
         {
@@ -47,14 +59,13 @@ export function HierarchyView() {
       handleUpdate();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, userMobile, user_id]);
 
   if (loading ) {
     return <div>...</div>;
   }
 
-  const queryParams = new URLSearchParams(location.search);
-  const userMobile = queryParams.get("user_mobile");
+  
 
   const stats = [
     {
@@ -69,27 +80,6 @@ export function HierarchyView() {
       value: (3),
       icon: Users,
     },
-    // {
-    //   title: "Level 3",
-    //   subtitle: "Third Referrals",
-    //   value: (5),
-    //   icon: Users,
-    // },
-    // {
-    //   title: "Total Collections",
-    //   value: formatPeso(totalBalance),
-    //   icon: Boxes,
-    // },
-    // {
-    //   title: "Total Commision",
-    //   value: formatPeso(totalRemitAmount),
-    //   icon: DollarSign,
-    // },
-    // {
-    //   title: "Players",
-    //   value: users.length,
-    //   icon: Users,
-    // },
   ];
 
   return (
@@ -111,25 +101,41 @@ export function HierarchyView() {
       )}
 
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
+        
+          <Card >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {stat.title}
+                Level 1
               </CardTitle>
               {/* <CardTitle className="text-sm font-medium">
                 {stat.subtitle}
               </CardTitle> */}
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
+              <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+              <div className="text-2xl font-bold">{countDirect}</div>
               <p className="text-xs text-muted-foreground">
-                Counted # {stat.subtitle}
+                Counted # Direct Referrals
               </p>
             </CardContent>
           </Card>
-        ))}
+          <Card >
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Level 2
+              </CardTitle>
+              {/* <CardTitle className="text-sm font-medium">
+                {stat.subtitle}
+              </CardTitle> */}
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{countDirect2}</div>
+              <p className="text-xs text-muted-foreground">
+                Counted # Level 2 Referrals
+              </p>
+            </CardContent>
+          </Card>
       </div>
 
       <div className="grid gap-4 grid-cols-1 lg:grid-cols-7">
@@ -139,25 +145,10 @@ export function HierarchyView() {
             <CardTitle>Direct Referrals</CardTitle>
           </CardHeader>
           <CardContent>
-            <HierarchyDirect  />
+            <HierarchyDirect user_id={user_id}  />
           </CardContent>
         </Card>
-        {/* <Card className="lg:col-span-7">
-          <CardHeader>
-            <CardTitle>Second Referrals</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <HierarchySecond  />
-          </CardContent>
-        </Card>
-        <Card className="lg:col-span-7">
-          <CardHeader>
-            <CardTitle>Third Referrals</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <HierarchyThird  />
-          </CardContent>
-        </Card> */}
+        
       </div>
     </div>
   );
