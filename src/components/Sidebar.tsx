@@ -35,7 +35,7 @@ export function Sidebar({ onClose }: SidebarProps) {
     { icon: Crosshair, label: "Game Types", path: "/gametypes" },
     { icon: CalendarCheck2, label: "Draws", path: "/draws" },
     { icon: Banknote, label: "Cash in history", path: "/cashinhistory" },
-    { icon: DollarSign, label: "Cash out history", path: "/#" },
+    { icon: DollarSign, label: "Cash out history", path: "/cashouthistory" },
     { icon: Dices, label: "Bets History", path: "/playersbets" },
      
     // { icon: Trophy, label: "Winnings", path: "/winnings" },

@@ -115,6 +115,22 @@ export const getTransactionsCashin = async () => {
 };
 
 
+export const getTransactionsCashout = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getTransactionsCashout`);
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+
 export const updateGame = async (formData: FormData): Promise<boolean> => {
   try 
   {
