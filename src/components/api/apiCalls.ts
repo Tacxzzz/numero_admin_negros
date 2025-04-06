@@ -175,3 +175,37 @@ export const updateGameType = async (formData: FormData): Promise<boolean> => {
       return false;
   }
 };
+
+
+
+
+export const getBetsHistory = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getBetsHistory`);
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+
+export const getBetsHistoryWinners = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getBetsHistoryWinners`);
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};

@@ -40,7 +40,7 @@ export function Sidebar({ onClose }: SidebarProps) {
      
     // { icon: Trophy, label: "Winnings", path: "/winnings" },
     // { icon: Users, label: "Users", path: "/customers" },
-    { icon: Trophy, label: "Winners History", path: "/#" },
+    { icon: Trophy, label: "Winners History", path: "/winners" },
     { icon: Users, label: "Players Management", path: "/#" },
     { icon: Users, label: "Agents Management", path: "/#" },
     { icon: Users, label: "Agent Clients Management", path: "/#" },

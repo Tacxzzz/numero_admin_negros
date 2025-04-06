@@ -13,11 +13,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useAuth0 } from '@auth0/auth0-react';
-import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType, getDraws, getTransactionsCashin, getTransactionsCashout, getBetsHistory } from './api/apiCalls';
+import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType, getDraws, getTransactionsCashin, getTransactionsCashout, getBetsHistory, getBetsHistoryWinners } from './api/apiCalls';
 import { formatPeso } from './utils/utils';
 
 
-export function PlayersBets() {
+export function WinnerBets() {
 
   const { user,getAccessTokenSilently , logout} = useAuth0();
   const [showGameDialog, setshowGameDialog] = useState(false);
@@ -44,7 +44,7 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
             setUserID(dataUpdated.userID);
             setLoading(false);
   
-            const gamesData = await getBetsHistory();
+            const gamesData = await getBetsHistoryWinners();
             setGamebets(gamesData);
         
   
@@ -140,7 +140,7 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl md:text-3xl font-bold">Bets History</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">Winners History</h2>
        {/*  <Button onClick={() => setshowGameDialog(true)}>
           <Plus className="mr-2 h-4 w-4" /> Add Bet Games
         </Button> */}

@@ -21,6 +21,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { GamesTypes } from "./components/GamesTypes";
 import { TransactionsCashin } from "./components/TransactionsCashin";
 import { TransactionsCashOut } from "./components/TransactionsCashout";
+import { WinnerBets } from "./components/WinnersBets";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -89,6 +90,7 @@ function App() {
                     <Route path="/logs" element={<Analytics />} />
                     <Route path="/winnings" element={<Winnings />} />
                     <Route path="/playersbets" element={<PlayersBets />} />
+                    <Route path="/winners" element={<WinnerBets />} />
                     <Route path="/users" element={<Users />} />
                     <Route path="/hierarchy" element={<HierarchyView />} />
                     <Route path="/hierarchysecond" element={<HierarchySecond />} />
