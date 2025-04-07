@@ -98,7 +98,6 @@ export function Users() {
     const formData = new FormData();
     formData.append('userID', selectedGameBet.id);
     formData.append('status', selectedGameBet.status);
-    formData.append('agent', selectedGameBet.agent);
 
     setLoading(true);
     const isAuthenticated = await updatePlayer(formData);
@@ -167,7 +166,6 @@ export function Users() {
                   <TableHead className="text-center">Referred By</TableHead>
                   <TableHead className="text-center"># of Referrals</TableHead>
                   <TableHead className="text-center">Status</TableHead>
-                  <TableHead className="text-center">is Agent</TableHead>
                   <TableHead className="text-center">Action</TableHead>
                 </TableRow>
               </TableHeader>
@@ -183,7 +181,6 @@ export function Users() {
                     <TableCell className="text-center">{product.referrer_mobile}</TableCell>
                     <TableCell className="text-center">{product.referral_count}</TableCell>
                     <TableCell className="text-center">{product.status === "pending" ? "Active" : "Inactive"}</TableCell>
-                    <TableCell className="text-center">{product.agent === "yes" ? "Yes" : "No"}</TableCell>
                     <TableCell className="text-center">
                       <Button
                         className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700 mr-2 mb-2"
@@ -204,7 +201,64 @@ export function Users() {
             </Table>
           </CardContent>
         </Card>
+
+          {/* Edit Game Dialog */}
+          {isModalOpen && (
+  <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+    <DialogContent className="bg-gray-50 border-[#34495e] max-h-[90vh] w-96 overflow-y-auto">
+      <DialogHeader>
+        <DialogTitle className="text-xl text-blue-600">Update Status</DialogTitle>
+      </DialogHeader>
+      <div className="space-y-3">
+      <form onSubmit={handleSave}>
+
+        
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">Select Status</label>
+  <select
+    name="status"
+    value={selectedGameBet?.status || ""}
+    onChange={handleChange}
+    required
+    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+  >
+    <option value="" disabled>
+      Select a Game Option
+    </option>
+    <option value="pending">Active</option>
+    <option value="blocked">Blocked</option>
+  </select>
+</div>
+
+     <br/>
+
+        <DialogFooter className="flex flex-col gap-2 sm:flex-row">
+          {!updating ? (<Button
+            variant="outline" 
+            className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
+            type='submit'
+          >
+            Update
+          </Button>) : (<>Updating....</>)}
+          <Button
+            variant="outline" 
+            className="w-full sm:w-auto border-red-500 text-red-600 hover:bg-red-900/20"
+            onClick={() => setIsModalOpen(false)}
+            type='button'
+          >
+            Cancel
+          </Button>
+        </DialogFooter>
+        </form>
+      </div>
+    </DialogContent>
+  </Dialog>
+)}
       </div>
     </div>
+
+
+
+
   );
 }

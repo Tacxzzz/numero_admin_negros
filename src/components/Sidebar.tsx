@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { X, LogOut, UserCheck2 } from "lucide-react";
+import { X, LogOut, UserCheck2, Grid } from "lucide-react";
 import {
   LayoutDashboard,
   Coins,
@@ -34,17 +34,13 @@ export function Sidebar({ onClose }: SidebarProps) {
     { icon: Cuboid, label: "Games", path: "/bets" },
     { icon: Crosshair, label: "Game Types", path: "/gametypes" },
     { icon: CalendarCheck2, label: "Draws", path: "/draws" },
+    { icon: Grid, label: "Draw Results", path: "#" },
     { icon: Banknote, label: "Cash in history", path: "/cashinhistory" },
     { icon: DollarSign, label: "Cash out history", path: "/cashouthistory" },
     { icon: Dices, label: "Bets History", path: "/playersbets" },
-     
-    // { icon: Trophy, label: "Winnings", path: "/winnings" },
-    // { icon: Users, label: "Users", path: "/customers" },
     { icon: Trophy, label: "Winners History", path: "/winners" },
     { icon: Users, label: "Players Management", path: "/users" },
-    { icon: Users, label: "Agents Management", path: "/agents" },
-    { icon: Users, label: "Agent Clients Management", path: "/clients" },
-    // { icon: Users, label: "Hierarchy", path: "/hierarchy" },
+    { icon: Users, label: "Clients Management", path: "/clients" },
     { icon: BarChart, label: "Logs", path: "/logs" },
     { icon: UserCheck2, label: "Admin Management", path: "/adminmanagement" },
   ];

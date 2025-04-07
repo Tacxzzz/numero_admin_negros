@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,26 +14,69 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, UserPlus, Filter, Download } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNavigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
+import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType, getDraws, getTransactionsCashin, getTransactionsCashout, getBetsHistory, getBetsHistoryWinners, getPlayers, updatePlayer, getPlayersAdmin } from './api/apiCalls';
+import { formatPeso } from './utils/utils';
 
 interface User {
   id: string;
-  name: string;
-  email: string;
-  role: string;
-  createdAt: string;
-  lastLoggedIn: string;
+  admin_mail: string;
+  type: string;
+  created: string;
   permissions: string[];
 //   avatarInitials: string;
 }
 
 export function AdminManagement() {
+  const navigate = useNavigate();
+  const { user,getAccessTokenSilently , logout} = useAuth0();
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [userID, setUserID] = useState("none");
+  const [dbUpdated, setDbUpdated] = useState(false);
+
+
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string | undefined>(undefined);
   const [activeTab, setActiveTab] = useState("users");
+  const [users, setUsers] = useState<any[]>([]);
+  
+
+   useEffect(() => {
+    if (user && !dbUpdated) {
+      const handleUpdate = async () => {
+        const dataUpdated= await loginAdmin(user,getAccessTokenSilently);
+        if(dataUpdated.dbUpdate)
+        {
+          setDbUpdated(dataUpdated.dbUpdate);
+          setUserID(dataUpdated.userID);
+          setLoading(false);
+
+          const gamesData = await getPlayersAdmin();
+          setUsers(gamesData);
+
+          
+        }
+        else
+        {
+          alert("UNAUTHORIZED USER!");
+          logout({ logoutParams: { returnTo: window.location.origin } });
+        }
+        
+      };
+      handleUpdate();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  if (loading ) {
+    return <div>...</div>;
+  }
 
   // Sample users data
-  const users: User[] = [
+  /* const users: User[] = [
     {
       id: "1",
       name: "Raymond Babst",
@@ -124,27 +167,32 @@ export function AdminManagement() {
       ],
     //   avatarInitials: "DR"
     }
-  ];
+  ]; */
 
   // Available roles
   const roles = [
     "SYSTEM ADMIN",
     "ADMIN LEVEL 1",
     "ADMIN LEVEL 2",
-    "COMPLIANCE LEVEL 1",
-    "COMPLIANCE LEVEL 2",
     "FINANCE MANAGER",
     "CUSTOMER SUPPORT"
   ];
 
   // All available permissions
   const allPermissions = [
-    { id: "VIEW_MANAGE_GAME_BETS", label: "VIEW AND MANAGE GAME BETS" },
-    { id: "VIEW_MANAGE_PLAYER_BETS", label: "VIEW AND MANAGE PLAYER BETS" },
-    { id: "VIEW_MANAGE_DRAW_SCHEDULES", label: "VIEW AND MANAGE DRAW SCHEDULES" },
-    { id: "VIEW_MANAGE_USERS", label: "VIEW AND MANAGE USERS" },
-    { id: "VIEW_LOGS", label: "VIEW LOGS" },
-    { id: "VIEW_MANAGE_ADMIN_MANAGEMENT", label: "VIEW AND MANAGE ADMIN MANAGEMENT" },
+    { id: "dashboard", label: "ACCESS DASHBOARD" },
+    { id: "games", label: "ACCESS GAMES" },
+    { id: "games_types", label: "ACCESS GAMES TYPES" },
+    { id: "draws", label: "ACCESS DRAWS" },
+    { id: "draws_results", label: "ACCESS MANAGE DRAW RESULTS" },
+    { id: "cashin", label: "ACCESS CASHIN HISTORY" },
+    { id: "cashout", label: "ACCESS CASHOUT HISTORY" },
+    { id: "bets", label: "ACCESS BETS" },
+    { id: "winners", label: "ACCESS WINNERS" },
+    { id: "players", label: "ACCESS PLAYERS" },
+    { id: "clients", label: "ACCESS CLIENTS" },
+    { id: "admin_management", label: "ACCESS ADMIN MANAGEMENT" },
+
     // { id: "VIEW_TRANSACTIONS", label: "VIEW TRANSACTIONS" },
     // { id: "EXPORT_DATA", label: "EXPORT DATA" },
     // { id: "VIEW_DASHBOARD", label: "VIEW DASHBOARD" },
@@ -179,7 +227,7 @@ export function AdminManagement() {
     return true;
   });
 
-  const handleUserSelect = (user: User) => {
+  const handleUserSelect = (user: any) => {
     setSelectedUser(user);
   };
 
@@ -196,7 +244,7 @@ export function AdminManagement() {
     setSelectedUser(updatedUser);
     
     // In a real app, you would save these changes to the backend
-    console.log(`Updated permissions for ${updatedUser.name}:`, updatedUser.permissions);
+    console.log(`Updated permissions for ${updatedUser.admin_mail}:`, updatedUser.permissions);
   };
 
   const handleRoleChange = (role: string) => {
@@ -206,9 +254,11 @@ export function AdminManagement() {
     setSelectedUser(updatedUser);
     
     // In a real app, you would save these changes to the backend
-    console.log(`Updated role for ${updatedUser.name} to ${role}`);
+    console.log(`Updated role for ${updatedUser.admin_mail} to ${role}`);
   };
-  return <div>Not allowed to manage this page</div>
+
+
+  /* return <div>Not allowed to manage this page</div> */
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -294,7 +344,7 @@ export function AdminManagement() {
                         </Avatar> */}
                         <div>
                           {/* <p className="font-medium">{user.name}</p> */}
-                          <p className="text-sm text-gray-500">{user.email}</p>
+                          <p className="text-sm text-gray-500">{user.admin_mail}</p>
                         </div>
                       </div>
                     </div>
@@ -317,7 +367,7 @@ export function AdminManagement() {
                       <div className="flex-grow space-y-6">
                         <div>
                           {/* <h3 className="text-xl font-bold">{selectedUser.name}</h3> */}
-                          <p className="text-gray-500">{selectedUser.email}</p>
+                          <p className="text-gray-500">{selectedUser.admin_mail}</p>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -328,7 +378,7 @@ export function AdminManagement() {
                           
                           <div>
                             <p className="text-sm text-gray-500">Role</p>
-                            <Select value={selectedUser.role} onValueChange={handleRoleChange}>
+                            <Select  onValueChange={handleRoleChange}>
                               <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select role" />
                               </SelectTrigger>
@@ -343,11 +393,10 @@ export function AdminManagement() {
 
                           
                           <div>
-                            <p className="text-sm text-gray-500 ">Last Logged In</p>
-                            <p>{selectedUser.lastLoggedIn}</p>
+                            
                             <div>
                             <p className="text-sm text-gray-500 mt-2">Created at</p>
-                            <p>{selectedUser.createdAt}</p>
+                            <p>{selectedUser.created}</p>
                           </div>
                           </div>
                         </div>
@@ -380,6 +429,13 @@ export function AdminManagement() {
                             Deactivate User
                           </Button>
                           <Button>Save Changes</Button>
+                          {selectedUser.type!=="admin" ? (
+                          <Button>Allow Access</Button>
+                          ):
+                          (
+                            <Button>Revoke Access</Button>
+                          )
+                          }
                         </div>
                       </div>
                     </div>

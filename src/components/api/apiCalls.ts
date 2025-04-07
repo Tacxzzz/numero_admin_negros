@@ -210,6 +210,21 @@ export const getBetsHistoryWinners = async () => {
   }
 };
 
+
+export const getPlayersAdmin = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getPlayersAdmin`);
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
 export const getPlayers = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getPlayers`);
