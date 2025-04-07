@@ -143,8 +143,7 @@ export function GamesTypes() {
     // Filter games based on search query and status filter
     const filteredGames = gamebets.filter(
       (game) =>
-        game.game_name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        game.status === statusFilter
+        game.game_name.toLowerCase().includes(searchQuery.toLowerCase()) 
       ).sort((a, b) => {
         if (sortOrder === "asc") {
           return a.game_name.localeCompare(b.game_name);
