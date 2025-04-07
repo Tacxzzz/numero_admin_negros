@@ -20,12 +20,14 @@ export function Draws() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortedDraws, setSortedDraws] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchDraws = async () => {
       const data = await getDraws();
       setDraws(data);
       setFilteredDraws(data);
+      setSortedDraws(data); // Initialize sorted data
     };
     fetchDraws();
   }, []);
@@ -48,15 +50,19 @@ export function Draws() {
       });
     }
 
-    // Sort by date
-    filtered.sort((a, b) => {
+    setFilteredDraws(filtered);
+  }, [searchQuery, selectedDate, draws]);
+
+  useEffect(() => {
+    // Sort the filtered draws by date
+    const sorted = [...filteredDraws].sort((a, b) => {
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
       return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
     });
 
-    setFilteredDraws(filtered);
-  }, [searchQuery, selectedDate, sortOrder, draws]);
+    setSortedDraws(sorted);
+  }, [sortOrder, filteredDraws]);
 
   const toggleSortOrder = () => {
     setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
@@ -81,18 +87,18 @@ export function Draws() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full sm:w-1/3"
         />
-        {/* <DatePicker
+        <DatePicker
           selected={selectedDate}
           onChange={(date: Date | null) => setSelectedDate(date)}
           placeholderText="Filter by Date"
           className="border p-2 rounded-md"
-        /> */}
-        {/* <Button
+        />
+        <Button
           onClick={toggleSortOrder}
           className="text-white px-4 py-2 rounded-md"
         >
           Sort by Date ({sortOrder === "asc" ? "Ascending" : "Descending"})
-        </Button> */}
+        </Button>
       </div>
 
       {/* Table */}
@@ -112,7 +118,7 @@ export function Draws() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredDraws.map((draw) => (
+                {sortedDraws.map((draw) => (
                   <TableRow key={draw.id}>
                     <TableCell className="text-center">{draw.date}</TableCell>
                     <TableCell className="text-center">{draw.time}</TableCell>

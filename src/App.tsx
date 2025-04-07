@@ -5,6 +5,7 @@ import { MobileHeader } from "./components/MobileHeader";
 import { Dashboard } from "./components/Dashboard";
 import { Bets } from "./components/Bets";
 import { Draws } from "./components/Draws";
+import { DrawsResults } from "./components/DrawsResults";
 import { Analytics } from "./components/Analytics";
 import Login from "./components/auth/Login";
 import { ResetPassword } from "./components/auth/ResetPassword";
@@ -101,6 +102,7 @@ function App() {
                     <Route path="/hierarchythird" element={<HierarchyThird />} />
                     <Route path="/hierarchyfourth" element={<HierarchyFourth />} />
                     <Route path="/adminmanagement" element={<AdminManagement />} />
+                    <Route path="/drawsresults" element={<DrawsResults />} />
                   </Routes>
                 </main>
               </div>

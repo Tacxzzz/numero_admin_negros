@@ -72,15 +72,8 @@ export function Users() {
       });
     }
 
-    // Sort by date
-    filtered.sort((a, b) => {
-      const dateA = new Date(a.created).getTime();
-      const dateB = new Date(b.created).getTime();
-      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
-    });
-
     setFilteredGamebets(filtered);
-  }, [searchQuery, startDate, sortOrder, gamebets]);
+  }, [searchQuery, startDate, gamebets]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -122,6 +115,12 @@ export function Users() {
     setSelectedGameBet((prev) => ({ ...prev, [name]: value }));
   };
 
+  const sortedGamebets = [...filteredGamebets].sort((a, b) => {
+    const dateA = new Date(a.created).getTime();
+    const dateB = new Date(b.created).getTime();
+    return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+  });
+
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -137,7 +136,7 @@ export function Users() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full sm:w-1/3"
         />
-        {/* <DatePicker
+        <DatePicker
           selected={startDate}
           onChange={(date: Date | null) => setStartDate(date)}
           placeholderText="Filter by Date"
@@ -148,7 +147,7 @@ export function Users() {
           className="text-white px-4 py-2 rounded-md"
         >
           Sort by Date ({sortOrder === "asc" ? "Ascending" : "Descending"})
-        </Button> */}
+        </Button>
       </div>
 
       <div className="overflow-x-auto">
@@ -170,7 +169,7 @@ export function Users() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredGamebets.map((product) => (
+                {sortedGamebets.map((product) => (
                   <TableRow key={product.id}>
                     <TableCell className="text-center">{product.mobile}</TableCell>
                     <TableCell className="text-center">{product.created}</TableCell>
@@ -181,6 +180,7 @@ export function Users() {
                     <TableCell className="text-center">{product.referrer_mobile}</TableCell>
                     <TableCell className="text-center">{product.referral_count}</TableCell>
                     <TableCell className="text-center">{product.status === "pending" ? "Active" : "Inactive"}</TableCell>
+                    <TableCell className="text-center">{product.agent === "yes" ? "Yes" : "No"}</TableCell>
                     <TableCell className="text-center">
                       <Button
                         className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700 mr-2 mb-2"
@@ -202,63 +202,59 @@ export function Users() {
           </CardContent>
         </Card>
 
-          {/* Edit Game Dialog */}
-          {isModalOpen && (
-  <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-    <DialogContent className="bg-gray-50 border-[#34495e] max-h-[90vh] w-96 overflow-y-auto">
-      <DialogHeader>
-        <DialogTitle className="text-xl text-blue-600">Update Status</DialogTitle>
-      </DialogHeader>
-      <div className="space-y-3">
-      <form onSubmit={handleSave}>
-
-        
-<div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">Select Status</label>
-  <select
-    name="status"
-    value={selectedGameBet?.status || ""}
-    onChange={handleChange}
-    required
-    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-  >
-    <option value="" disabled>
-      Select a Game Option
-    </option>
-    <option value="pending">Active</option>
-    <option value="blocked">Blocked</option>
-  </select>
-</div>
-
-     <br/>
-
-        <DialogFooter className="flex flex-col gap-2 sm:flex-row">
-          {!updating ? (<Button
-            variant="outline" 
-            className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
-            type='submit'
-          >
-            Update
-          </Button>) : (<>Updating....</>)}
-          <Button
-            variant="outline" 
-            className="w-full sm:w-auto border-red-500 text-red-600 hover:bg-red-900/20"
-            onClick={() => setIsModalOpen(false)}
-            type='button'
-          >
-            Cancel
-          </Button>
-        </DialogFooter>
-        </form>
-      </div>
-    </DialogContent>
-  </Dialog>
-)}
+        {/* Edit Game Dialog */}
+        {isModalOpen && (
+          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+            <DialogContent className="bg-gray-50 border-[#34495e] max-h-[90vh] w-96 overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-xl text-blue-600">Update Status</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3">
+                <form onSubmit={handleSave}>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Select Status</label>
+                    <select
+                      name="status"
+                      value={selectedGameBet?.status || ""}
+                      onChange={handleChange}
+                      required
+                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    >
+                      <option value="" disabled>
+                        Select a Game Option
+                      </option>
+                      <option value="pending">Active</option>
+                      <option value="blocked">Blocked</option>
+                    </select>
+                  </div>
+                  <br />
+                  <DialogFooter className="flex flex-col gap-2 sm:flex-row">
+                    {!updating ? (
+                      <Button
+                        variant="outline"
+                        className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
+                        type="submit"
+                      >
+                        Update
+                      </Button>
+                    ) : (
+                      <>Updating....</>
+                    )}
+                    <Button
+                      variant="outline"
+                      className="w-full sm:w-auto border-red-500 text-red-600 hover:bg-red-900/20"
+                      onClick={() => setIsModalOpen(false)}
+                      type="button"
+                    >
+                      Cancel
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </div>
-
-
-
-
   );
 }

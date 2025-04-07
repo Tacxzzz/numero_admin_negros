@@ -71,22 +71,26 @@ export function Clients() {
       });
     }
 
+    setFilteredGamebets(filtered);
+  }, [searchQuery, startDate, gamebets]);
+
+  useEffect(() => {
     // Sort by date
-    filtered.sort((a, b) => {
+    const sorted = [...filteredGamebets].sort((a, b) => {
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
       return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
     });
 
-    setFilteredGamebets(filtered);
-  }, [searchQuery, startDate, sortOrder, gamebets]);
+    setFilteredGamebets(sorted);
+  }, [sortOrder, gamebets]);
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
   const handleEditClick = (game) => {
-    setSelectedGameBet(game);
+    setSelectedGameBet({ ...game });
     setIsModalOpen(true);
   };
 
@@ -101,15 +105,22 @@ export function Clients() {
     const isAuthenticated = await updateClient(formData);
     if (!isAuthenticated) {
       alert("An error occurred!");
-      setUpdating(false);
-      setIsModalOpen(false);
     } else {
-      setUpdating(false);
-      setIsModalOpen(false);
-      const gamesData = await getClients();
-      setGamebets(gamesData);
-      setFilteredGamebets(gamesData);
+      // Update the specific row in the table without refetching all data
+      setGamebets((prevGamebets) =>
+        prevGamebets.map((bet) =>
+          bet.id === selectedGameBet.id ? { ...bet, status: selectedGameBet.status } : bet
+        )
+      );
+      setFilteredGamebets((prevFilteredGamebets) =>
+        prevFilteredGamebets.map((bet) =>
+          bet.id === selectedGameBet.id ? { ...bet, status: selectedGameBet.status } : bet
+        )
+      );
     }
+
+    setUpdating(false);
+    setIsModalOpen(false);
   };
 
   const handleChange = (e) => {
@@ -132,7 +143,7 @@ export function Clients() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full sm:w-1/3"
         />
-        {/* <DatePicker
+        <DatePicker
           selected={startDate}
           onChange={(date: Date | null) => setStartDate(date)}
           placeholderText="Filter by Date"
@@ -143,7 +154,7 @@ export function Clients() {
           className="text-white px-4 py-2 rounded-md"
         >
           Sort by Date ({sortOrder === "asc" ? "Ascending" : "Descending"})
-        </Button> */}
+        </Button>
       </div>
 
       <div className="overflow-x-auto">
@@ -209,7 +220,7 @@ export function Clients() {
                     <option value="disabled">Disabled</option>
                   </select>
                 </div>
-                <DialogFooter className="flex flex-col gap-2 sm:flex-row">
+                <DialogFooter className="mt-4 flex flex-col gap-2 sm:flex-row">
                   <Button
                     variant="outline"
                     className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"

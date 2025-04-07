@@ -47,7 +47,7 @@ export function TransactionsCashin() {
   }, [user, dbUpdated, getAccessTokenSilently, logout]);
 
   useEffect(() => {
-    let filtered = gamebets;
+    let filtered = [...gamebets]; // Create a copy of the original array
 
     // Filter by search query
     if (searchQuery) {
@@ -97,7 +97,7 @@ export function TransactionsCashin() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full sm:w-1/3"
         />
-        {/* <DatePicker
+        <DatePicker
           selected={startDate}
           onChange={(date: Date | null) => setStartDate(date)}
           placeholderText="Filter by Date"
@@ -108,7 +108,7 @@ export function TransactionsCashin() {
           className="text-white px-4 py-2 rounded-md"
         >
           Sort by Date ({sortOrder === "asc" ? "Ascending" : "Descending"})
-        </Button> */}
+        </Button>
       </div>
 
       {/* Table */}
@@ -146,4 +146,4 @@ export function TransactionsCashin() {
       </div>
     </div>
   );
-} 
+}

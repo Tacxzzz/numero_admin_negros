@@ -51,15 +51,14 @@ export function DrawsResults() {
       });
     }
 
-    // Sort by date
-    filtered.sort((a, b) => {
-      const dateA = new Date(a.date).getTime();
-      const dateB = new Date(b.date).getTime();
-      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
-    });
-
     setFilteredDraws(filtered);
-  }, [searchQuery, selectedDate, sortOrder, draws]);
+  }, [searchQuery, selectedDate, draws]);
+
+  const sortedDraws = [...filteredDraws].sort((a, b) => {
+    const dateA = new Date(a.date).getTime();
+    const dateB = new Date(b.date).getTime();
+    return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+  });
 
   const toggleSortOrder = () => {
     setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
@@ -80,11 +79,6 @@ export function DrawsResults() {
     if (selectedDrawId !== null) {
       setDraws((prevDraws) =>
         prevDraws.map((draw) =>
-          draw.id === selectedDrawId ? { ...draw, results: updatedResult } : draw
-        )
-      );
-      setFilteredDraws((prevFilteredDraws) =>
-        prevFilteredDraws.map((draw) =>
           draw.id === selectedDrawId ? { ...draw, results: updatedResult } : draw
         )
       );
@@ -111,7 +105,7 @@ export function DrawsResults() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full sm:w-1/3"
         />
-        {/* <DatePicker
+        <DatePicker
           selected={selectedDate}
           onChange={(date: Date | null) => setSelectedDate(date)}
           placeholderText="Filter by Date"
@@ -122,7 +116,7 @@ export function DrawsResults() {
           className="text-white px-4 py-2 rounded-md"
         >
           Sort by Date ({sortOrder === "asc" ? "Ascending" : "Descending"})
-        </Button> */}
+        </Button>
       </div>
 
       {/* Table */}
@@ -137,20 +131,18 @@ export function DrawsResults() {
                   <TableHead className="text-center">Game</TableHead>
                   <TableHead className="text-center">Result</TableHead>
                   <TableHead className="text-center">Prize Pool</TableHead>
-                  {/* <TableHead className="text-center">Current number of bets</TableHead> */}
                   <TableHead className="text-center">Status</TableHead>
                   <TableHead className="text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredDraws.map((draw) => (
+                {sortedDraws.map((draw) => (
                   <TableRow key={draw.id}>
                     <TableCell className="text-center">{draw.date}</TableCell>
                     <TableCell className="text-center">{draw.time}</TableCell>
                     <TableCell className="text-center">{draw.game_name}</TableCell>
                     <TableCell className="text-center">{draw.results}</TableCell>
                     <TableCell className="text-center">₱{draw.ceiling}</TableCell>
-                    {/* <TableCell className="text-center">{draw.total_bets}</TableCell> */}
                     <TableCell className="text-center">{draw.status}</TableCell>
                     <TableCell className="text-center">
                       <Button
@@ -184,22 +176,15 @@ export function DrawsResults() {
               <Button onClick={updateResult} className="text-white bg-blue-500 px-4 py-2 rounded-md">
                 Save
               </Button>
-              {/* <Button onClick={closeModal} className="w-full sm:w-auto border-red-500 text-red-600 hover:bg-red-900/20">
+              <Button
+                variant="outline"
+                className="w-full sm:w-auto border-red-500 text-red-600 hover:bg-red-900/20"
+                onClick={closeModal}
+                type="button"
+              >
                 Cancel
-              </Button> */}
-
-          <Button
-            variant="outline" 
-            className="w-full sm:w-auto border-red-500 text-red-600 hover:bg-red-900/20"
-            onClick={closeModal}
-            type='button'
-          >
-            Cancel
-          </Button>
+              </Button>
             </div>
-
-
-
           </div>
         </div>
       )}

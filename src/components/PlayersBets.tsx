@@ -25,6 +25,7 @@ export function PlayersBets() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [startDate, setStartDate] = useState<Date | null>(null);
+  const [sortedGamebets, setSortedGamebets] = useState<any[]>([]);
 
   useEffect(() => {
     if (user && !dbUpdated) {
@@ -36,6 +37,7 @@ export function PlayersBets() {
           const gamesData = await getBetsHistory();
           setGamebets(gamesData);
           setFilteredGamebets(gamesData);
+          setSortedGamebets(gamesData); // Initialize sorted data
         } else {
           alert("UNAUTHORIZED USER!");
           logout({ logoutParams: { returnTo: window.location.origin } });
@@ -63,15 +65,19 @@ export function PlayersBets() {
       });
     }
 
-    // Sort by date
-    filtered.sort((a, b) => {
+    setFilteredGamebets(filtered);
+  }, [searchQuery, startDate, gamebets]);
+
+  useEffect(() => {
+    // Sort the filtered gamebets by date
+    const sorted = [...filteredGamebets].sort((a, b) => {
       const dateA = new Date(a.created_date).getTime();
       const dateB = new Date(b.created_date).getTime();
       return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
     });
 
-    setFilteredGamebets(filtered);
-  }, [searchQuery, startDate, sortOrder, gamebets]);
+    setSortedGamebets(sorted);
+  }, [sortOrder, filteredGamebets]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -96,7 +102,7 @@ export function PlayersBets() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full sm:w-1/3"
         />
-        {/* <DatePicker
+        <DatePicker
           selected={startDate}
           onChange={(date: Date | null) => setStartDate(date)}
           placeholderText="Filter by Date"
@@ -107,7 +113,7 @@ export function PlayersBets() {
           className="text-white px-4 py-2 rounded-md"
         >
           Sort by Date ({sortOrder === "asc" ? "Ascending" : "Descending"})
-        </Button> */}
+        </Button>
       </div>
 
       {/* Table */}
@@ -126,7 +132,7 @@ export function PlayersBets() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredGamebets.map((product) => (
+                {sortedGamebets.map((product) => (
                   <TableRow key={product.id}>
                     <TableCell className="text-center">
                       {product.created_date}

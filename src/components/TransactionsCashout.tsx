@@ -48,7 +48,7 @@ export function TransactionsCashOut() {
   }, [user, dbUpdated, getAccessTokenSilently, logout]);
 
   useEffect(() => {
-    let filtered = gamebets;
+    let filtered = [...gamebets];
 
     // Filter by search query
     if (searchQuery) {
@@ -65,15 +65,14 @@ export function TransactionsCashOut() {
       });
     }
 
-    // Sort by date
-    filtered.sort((a, b) => {
-      const dateA = new Date(a.date).getTime();
-      const dateB = new Date(b.date).getTime();
-      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
-    });
-
     setFilteredGamebets(filtered);
-  }, [searchQuery, startDate, sortOrder, gamebets]);
+  }, [searchQuery, startDate, gamebets]);
+
+  const sortedGamebets = [...filteredGamebets].sort((a, b) => {
+    const dateA = new Date(a.date).getTime();
+    const dateB = new Date(b.date).getTime();
+    return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+  });
 
   if (loading) {
     return <div>Loading...</div>;
@@ -98,7 +97,7 @@ export function TransactionsCashOut() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full sm:w-1/3"
         />
-        {/* <DatePicker
+        <DatePicker
           selected={startDate}
           onChange={(date: Date | null) => setStartDate(date)}
           placeholderText="Filter by Date"
@@ -109,7 +108,7 @@ export function TransactionsCashOut() {
           className="text-white px-4 py-2 rounded-md"
         >
           Sort by Date ({sortOrder === "asc" ? "Ascending" : "Descending"})
-        </Button> */}
+        </Button>
       </div>
 
       {/* Table */}
@@ -129,7 +128,7 @@ export function TransactionsCashOut() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredGamebets.map((product) => (
+                {sortedGamebets.map((product) => (
                   <TableRow key={product.id}>
                     <TableCell className="text-center">{product.date}</TableCell>
                     <TableCell className="text-center">{product.mobile}</TableCell>

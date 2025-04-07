@@ -170,12 +170,12 @@ export function GamesTypes() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="border p-2 rounded w-full sm:w-auto"
             />
-            {/* <Button
+            <Button
               className="border p-2 rounded"
               onClick={toggleSortOrder}
             >
               {sortOrder === "asc" ? "Sort Descending" : "Sort Ascending"}
-            </Button> */}
+            </Button>
           </div>
       </div>
       <div className="overflow-x-auto">

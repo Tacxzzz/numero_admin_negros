@@ -178,12 +178,12 @@ export function Bets() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="border p-2 rounded w-full sm:w-auto"
         />
-        {/* <Button
+        <Button
           onClick={() => setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))}
           className="border p-2 rounded"
         >
           Sort {sortOrder === "asc" ? "Ascending" : "Descending"}
-        </Button> */}
+        </Button>
       </div>
       
       <div className="overflow-x-auto">
