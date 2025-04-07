@@ -26,13 +26,14 @@ export function GamesTypes() {
   const [userID, setUserID] = useState("none");
   const [dbUpdated, setDbUpdated] = useState(false);
   const [gamebets, setGamebets] = useState<any[]>([]);
-
+  const [searchQuery, setSearchQuery] = useState(""); // Added search query state
+  const [statusFilter, setStatusFilter] = useState("enabled"); // Added status filter state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedGameBet, setSelectedGameBet] = useState(null);
   const API_URL = import.meta.env.VITE_DATABASE_URL;
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   useEffect(() => {
       if (user && !dbUpdated) {
@@ -65,6 +66,10 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
     if (loading ) {
       return <div>...</div>;
     }
+
+    const toggleSortOrder = () => {
+      setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+    };
 
   const handleEditClick = (game) => {
     setImagePreview(null);
@@ -135,7 +140,18 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
     }
   };
   
-  
+    // Filter games based on search query and status filter
+    const filteredGames = gamebets.filter(
+      (game) =>
+        game.game_name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        game.status === statusFilter
+      ).sort((a, b) => {
+        if (sortOrder === "asc") {
+          return a.game_name.localeCompare(b.game_name);
+        } else {
+          return b.game_name.localeCompare(a.game_name);
+        }
+      });
   
   return (
     <div className="p-4 md:p-6 space-y-6">
@@ -144,10 +160,26 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
        {/*  <Button onClick={() => setshowGameDialog(true)}>
           <Plus className="mr-2 h-4 w-4" /> Add Bet Games
         </Button> */}
-      </div>
-      
-      <div className="overflow-x-auto">
 
+
+          <div className="flex items-center gap-2">
+            {/* Search Box */}
+            <Input
+              type="text"
+              placeholder="Search games..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border p-2 rounded w-full sm:w-auto"
+            />
+            <Button
+              className="border p-2 rounded"
+              onClick={toggleSortOrder}
+            >
+              {sortOrder === "asc" ? "Sort Descending" : "Sort Ascending"}
+            </Button>
+          </div>
+      </div>
+      <div className="overflow-x-auto">
       <Card className="lg:col-span-7">
          
           <CardContent>
@@ -163,7 +195,7 @@ const [selectedFile, setSelectedFile] = useState<File | null>(null);
             </TableRow>
           </TableHeader>
           <TableBody>
-            {gamebets.map((product) => (
+            {filteredGames.map((product) => (
               <TableRow key={product.id}>
                 <TableCell className="text-center">{product.game_name}</TableCell>
                 <TableCell className="text-center">{product.game_type}</TableCell>
