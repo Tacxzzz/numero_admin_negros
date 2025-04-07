@@ -226,6 +226,7 @@ export const getPlayersAdmin = async () => {
     return [];
   }
 };
+
 export const getPlayersAdminChoice = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getPlayersAdminChoice`);
@@ -243,6 +244,21 @@ export const getPlayersAdminChoice = async () => {
 export const getPlayers = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getPlayers`);
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getPlayersTeam = async (id: string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getPlayersTeam`, { userID: id });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -378,6 +394,27 @@ export const updatePlayer = async (formData: FormData): Promise<boolean> => {
   {
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/updatePlayer',
+          formData,
+          { headers: {
+            'Content-Type': 'multipart/form-data' 
+          } }
+      );
+
+      
+      return response.data.authenticated;
+  } 
+  catch (error) 
+  {
+      console.error('Error authenticating user:', error);
+      return false;
+  }
+};
+
+export const updatePlayerTeam = async (formData: FormData): Promise<boolean> => {
+  try 
+  {
+      const response = await axios.post(
+          import.meta.env.VITE_DATABASE_URL+'/admin/updatePlayerTeam',
           formData,
           { headers: {
             'Content-Type': 'multipart/form-data' 
@@ -634,6 +671,214 @@ export const totalCashin = async () => {
 export const totalCashOut = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/totalCashOut`);
+    if (response.data) 
+      {
+      const userData = response.data;
+      console.log(response);
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///TEAM DASHBOARD
+
+export const getRateChartDataTeam = async (id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getRateChartDataTeam`, { userID: id });
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+
+export const countBetsEarnedTeam = async (id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/countBetsEarnedTeam`, { userID: id });
+    if (response.data) 
+      {
+      const userData = response.data;
+      console.log(response);
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
+
+export const totalWinsTeam = async (id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/totalWinsTeam`, { userID: id });
+    if (response.data) 
+      {
+      const userData = response.data;
+      console.log(response);
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
+
+export const totalBalancePlayersTeam = async (id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/totalBalancePlayersTeam`, { userID: id });
+    if (response.data) 
+      {
+      const userData = response.data;
+      console.log(response);
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
+export const totalCommissionsTeam = async (id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/totalCommissionsTeam`, { userID: id });
+    if (response.data) 
+      {
+      const userData = response.data;
+      console.log(response);
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
+export const totalPlayersTeam = async (id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/totalPlayersTeam`, { userID: id });
+    if (response.data) 
+      {
+      const userData = response.data;
+      console.log(response);
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
+export const totalClientsTeam = async (id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/totalClientsTeam`, { userID: id });
+    if (response.data) 
+      {
+      const userData = response.data;
+      console.log(response);
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
+export const totalCashinTeam = async (id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/totalCashinTeam`, { userID: id });
+    if (response.data) 
+      {
+      const userData = response.data;
+      console.log(response);
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
+export const totalCashOutTeam = async (id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/totalCashOutTeam`, { userID: id });
     if (response.data) 
       {
       const userData = response.data;

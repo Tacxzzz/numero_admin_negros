@@ -20,30 +20,59 @@ import { Button } from "@/components/ui/button";
 import DtakaLogoBeta from "@/assets/DtakaLogoBeta.svg";
 import { useAuth0 } from '@auth0/auth0-react';
 import { MdMoney } from "react-icons/md";
+import { useEffect, useState } from "react";
+import { loginAdmin } from "./api/apiCalls";
 
 interface SidebarProps {
   onClose?: () => void;
 }
 
 export function Sidebar({ onClose }: SidebarProps) {
-  const { logout} = useAuth0();
+  const { user, getAccessTokenSilently, logout } = useAuth0();
+  const [userID, setUserID] = useState("none");
+  const [dbUpdated, setDbUpdated] = useState(false);
   const location = useLocation(); 
+  const [permissionsString, setPermissionsString] = useState([]);
 
-  const menuItems = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/" },
-    { icon: Cuboid, label: "Games", path: "/bets" },
-    { icon: Crosshair, label: "Game Types", path: "/gametypes" },
-    { icon: CalendarCheck2, label: "Draws", path: "/draws" },
-    { icon: Grid, label: "Draw Results", path: "/drawsresults" },
-    { icon: Banknote, label: "Cash in history", path: "/cashinhistory" },
-    { icon: DollarSign, label: "Cash out history", path: "/cashouthistory" },
-    { icon: Dices, label: "Bets History", path: "/playersbets" },
-    { icon: Trophy, label: "Winners History", path: "/winners" },
-    { icon: Users, label: "Players Management", path: "/users" },
-    { icon: Users, label: "Clients Management", path: "/clients" },
-    { icon: BarChart, label: "Logs", path: "/logs" },
-    { icon: UserCheck2, label: "Admin Management", path: "/adminmanagement" },
+
+  useEffect(() => {
+      if (user && !dbUpdated) {
+        const handleUpdate = async () => {
+          const dataUpdated = await loginAdmin(user, getAccessTokenSilently);
+          if (dataUpdated.dbUpdate) {
+            setDbUpdated(dataUpdated.dbUpdate);
+            setUserID(dataUpdated.userID);
+            setPermissionsString(JSON.parse(dataUpdated.permissions));
+            
+          } 
+        };
+        handleUpdate();
+      }
+    }, [user, dbUpdated, getAccessTokenSilently, logout]);
+
+  const menuItemsMain = [
+    { icon: LayoutDashboard, label: "Dashboard", path: "/", permission: "dashboard" },
+    { icon: Cuboid, label: "Games", path: "/bets", permission: "games" },
+    { icon: Crosshair, label: "Game Types", path: "/gametypes", permission: "games_types" },
+    { icon: CalendarCheck2, label: "Draws", path: "/draws", permission: "draws" },
+    { icon: Grid, label: "Draw Results", path: "/drawsresults", permission: "draws_results" },
+    { icon: Banknote, label: "Cash in history", path: "/cashinhistory", permission: "cashin" },
+    { icon: DollarSign, label: "Cash out history", path: "/cashouthistory", permission: "cashout" },
+    { icon: Dices, label: "Bets History", path: "/playersbets", permission: "bets" },
+    { icon: Trophy, label: "Winners History", path: "/winners", permission: "winners" },
+    { icon: Users, label: "Players Management", path: "/users", permission: "players" },
+    { icon: Users, label: "Clients Management", path: "/clients", permission: "clients" },
+    { icon: BarChart, label: "Logs", path: "/logs", permission: "logs" },
+    { icon: UserCheck2, label: "Admin Management", path: "/adminmanagement", permission: "admin_management" },
+    { icon: LayoutDashboard, label: "My TEAM Dashboard", path: "/teamdashboard", permission: "team_dashboard" },
+    { icon: Users, label: "My TEAM", path: "/teamusers", permission: "team_players" },
   ];
+  
+
+  const menuItems = menuItemsMain.filter(item =>
+    permissionsString.includes(item.permission)
+  );
+  
 
   return (
     <div className="flex h-full w-64 flex-col bg-white">

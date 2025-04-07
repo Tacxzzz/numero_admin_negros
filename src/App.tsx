@@ -25,6 +25,8 @@ import { TransactionsCashOut } from "./components/TransactionsCashout";
 import { WinnerBets } from "./components/WinnersBets";
 import { Agents } from "./components/Agents";
 import { Clients } from "./components/Clients";
+import { TeamUsers } from "./components/TeamUsers";
+import { TeamDashboard } from "./components/TeamDashboard";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -103,6 +105,9 @@ function App() {
                     <Route path="/hierarchyfourth" element={<HierarchyFourth />} />
                     <Route path="/adminmanagement" element={<AdminManagement />} />
                     <Route path="/drawsresults" element={<DrawsResults />} />
+
+                    <Route path="/teamdashboard" element={<TeamDashboard />} />
+                    <Route path="/teamusers" element={<TeamUsers />} />
                   </Routes>
                 </main>
               </div>
