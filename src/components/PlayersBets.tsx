@@ -26,6 +26,7 @@ export function PlayersBets() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [sortedGamebets, setSortedGamebets] = useState<any[]>([]);
+  const [permissionsString, setPermissionsString] = useState([]);
 
   useEffect(() => {
     if (user && !dbUpdated) {
@@ -33,6 +34,7 @@ export function PlayersBets() {
         const dataUpdated = await loginAdmin(user, getAccessTokenSilently);
         if (dataUpdated.dbUpdate) {
           setDbUpdated(dataUpdated.dbUpdate);
+          setPermissionsString(JSON.parse(dataUpdated.permissions));
           setLoading(false);
           const gamesData = await getBetsHistory();
           setGamebets(gamesData);
@@ -81,6 +83,11 @@ export function PlayersBets() {
 
   if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if(!permissionsString.includes("bets"))
+  {
+    return <div>Not allowed to manage this page</div>
   }
 
   const toggleSortOrder = () => {

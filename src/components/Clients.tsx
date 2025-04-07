@@ -32,6 +32,7 @@ export function Clients() {
   const [searchQuery, setSearchQuery] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [permissionsString, setPermissionsString] = useState([]);
 
   useEffect(() => {
     if (user && !dbUpdated) {
@@ -40,6 +41,7 @@ export function Clients() {
         if (dataUpdated.dbUpdate) {
           setDbUpdated(dataUpdated.dbUpdate);
           setUserID(dataUpdated.userID);
+          setPermissionsString(JSON.parse(dataUpdated.permissions));
           setLoading(false);
           const gamesData = await getClients();
           setGamebets(gamesData);
@@ -127,6 +129,11 @@ export function Clients() {
     const { name, value } = e.target;
     setSelectedGameBet((prev) => ({ ...prev, [name]: value }));
   };
+
+  if(!permissionsString.includes("clients"))
+  {
+    return <div>Not allowed to manage this page</div>
+  }
 
   return (
     <div className="p-4 md:p-6 space-y-6">

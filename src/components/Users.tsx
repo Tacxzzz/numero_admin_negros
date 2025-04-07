@@ -16,7 +16,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { loginAdmin, getPlayers, updatePlayer } from './api/apiCalls';
+import { loginAdmin, getPlayers, updatePlayer, getPlayersAdminChoice } from './api/apiCalls';
 import { formatPeso } from './utils/utils';
 
 export function Users() {
@@ -33,6 +33,9 @@ export function Users() {
   const [searchQuery, setSearchQuery] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [permissionsString, setPermissionsString] = useState([]);
+
+  const [adminChoice, setAdminChoice] = useState<any[]>([]);
 
   useEffect(() => {
     if (user && !dbUpdated) {
@@ -41,9 +44,13 @@ export function Users() {
         if (dataUpdated.dbUpdate) {
           setDbUpdated(dataUpdated.dbUpdate);
           setUserID(dataUpdated.userID);
+          setPermissionsString(JSON.parse(dataUpdated.permissions));
           setLoading(false);
           const gamesData = await getPlayers();
           setGamebets(gamesData);
+          const adminData = await getPlayersAdminChoice();
+          setAdminChoice(adminData);
+
           setFilteredGamebets(gamesData);
         } else {
           alert("UNAUTHORIZED USER!");
@@ -79,6 +86,11 @@ export function Users() {
     return <div>Loading...</div>;
   }
 
+  if(!permissionsString.includes("players"))
+  {
+    return <div>Not allowed to manage this page</div>
+  }
+
   const handleEditClick = (game) => {
     setSelectedGameBet(game);
     setIsModalOpen(true);
@@ -91,6 +103,7 @@ export function Users() {
     const formData = new FormData();
     formData.append('userID', selectedGameBet.id);
     formData.append('status', selectedGameBet.status);
+    formData.append('under_admin', selectedGameBet.under_admin);
 
     setLoading(true);
     const isAuthenticated = await updatePlayer(formData);
@@ -164,6 +177,7 @@ export function Users() {
                   <TableHead className="text-center">Commissions</TableHead>
                   <TableHead className="text-center">Referred By</TableHead>
                   <TableHead className="text-center"># of Referrals</TableHead>
+                  <TableHead className="text-center">if With a Admin Team</TableHead>
                   <TableHead className="text-center">Status</TableHead>
                   <TableHead className="text-center">Action</TableHead>
                 </TableRow>
@@ -179,8 +193,9 @@ export function Users() {
                     <TableCell className="text-center">{formatPeso(product.commissions)}</TableCell>
                     <TableCell className="text-center">{product.referrer_mobile}</TableCell>
                     <TableCell className="text-center">{product.referral_count}</TableCell>
+                    <TableCell className="text-center">{product.under_admin_mail}</TableCell>
+                    
                     <TableCell className="text-center">{product.status === "pending" ? "Active" : "Inactive"}</TableCell>
-                    <TableCell className="text-center">{product.agent === "yes" ? "Yes" : "No"}</TableCell>
                     <TableCell className="text-center">
                       <Button
                         className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700 mr-2 mb-2"
@@ -225,6 +240,26 @@ export function Users() {
                       </option>
                       <option value="pending">Active</option>
                       <option value="blocked">Blocked</option>
+                    </select>
+                  </div>
+
+                <br/>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Set Under Admin Team</label>
+                    <select
+                      name="under_admin"
+                      value={selectedGameBet?.under_admin || ""}
+                      onChange={handleChange}
+                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    >
+                      <option value="" disabled>
+                        Select a Admin Team
+                      </option>
+                      {adminChoice.map((admin: any) => (
+                        <option key={admin.id} value={admin.id}>
+                          {admin.admin_mail}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <br />

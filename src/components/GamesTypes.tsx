@@ -34,6 +34,8 @@ export function GamesTypes() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [permissionsString, setPermissionsString] = useState([]);
+  
 
   useEffect(() => {
       if (user && !dbUpdated) {
@@ -43,6 +45,7 @@ export function GamesTypes() {
           {
             setDbUpdated(dataUpdated.dbUpdate);
             setUserID(dataUpdated.userID);
+            setPermissionsString(JSON.parse(dataUpdated.permissions));
             setLoading(false);
   
             const gamesData = await getGamesTypes();
@@ -152,6 +155,13 @@ export function GamesTypes() {
         }
       });
   
+
+  if(!permissionsString.includes("games_types"))
+  {
+    return <div>Not allowed to manage this page</div>
+  }
+
+
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

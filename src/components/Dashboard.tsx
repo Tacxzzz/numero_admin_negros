@@ -29,7 +29,7 @@ export function Dashboard() {
     const [startDate, setStartDate] = useState<string>("");
     const [endDate, setEndDate] = useState<string>("");
     const [rateChartData, setRateChartData] = useState<any[]>([]);
-
+    const [permissionsString, setPermissionsString] = useState([]);
 
 
   useEffect(() => {
@@ -40,6 +40,7 @@ export function Dashboard() {
         {
           setDbUpdated(dataUpdated.dbUpdate);
           setUserID(dataUpdated.userID);
+          setPermissionsString(JSON.parse(dataUpdated.permissions));
           setLoading(false);
 
           const data = await getRateChartData();
@@ -136,6 +137,12 @@ export function Dashboard() {
     setStartDate("");
     setEndDate("");
   };
+
+  if(!permissionsString.includes("dashboard"))
+  {
+    return <div>Not allowed to manage this page</div>
+  }
+  
 
   return (
     <div className="p-4 md:p-6 space-y-6">

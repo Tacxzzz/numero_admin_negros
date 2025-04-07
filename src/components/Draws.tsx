@@ -13,24 +13,57 @@ import { Input } from "@/components/ui/input";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getDraws } from "./api/apiCalls";
+import { useAuth0 } from '@auth0/auth0-react';
+import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType } from './api/apiCalls';
+import { formatPeso } from './utils/utils';
 
 export function Draws() {
+
+  const { user,getAccessTokenSilently , logout} = useAuth0();
+  const [showGameDialog, setshowGameDialog] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [userID, setUserID] = useState("none");
+  const [dbUpdated, setDbUpdated] = useState(false);
   const [draws, setDraws] = useState<any[]>([]);
   const [filteredDraws, setFilteredDraws] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [sortedDraws, setSortedDraws] = useState<any[]>([]);
+  const [permissionsString, setPermissionsString] = useState([]);
+
 
   useEffect(() => {
-    const fetchDraws = async () => {
-      const data = await getDraws();
-      setDraws(data);
-      setFilteredDraws(data);
-      setSortedDraws(data); // Initialize sorted data
-    };
-    fetchDraws();
-  }, []);
+        if (user && !dbUpdated) {
+          const handleUpdate = async () => {
+            const dataUpdated= await loginAdmin(user,getAccessTokenSilently);
+            if(dataUpdated.dbUpdate)
+            {
+              setDbUpdated(dataUpdated.dbUpdate);
+              setUserID(dataUpdated.userID);
+              setPermissionsString(JSON.parse(dataUpdated.permissions));
+              setLoading(false);
+              
+              const data = await getDraws();
+              setDraws(data);
+              setFilteredDraws(data);
+              setSortedDraws(data); // Initialize sorted data
+              
+            }
+            else
+            {
+              alert("UNAUTHORIZED USER!");
+              logout({ logoutParams: { returnTo: window.location.origin } });
+            }
+            
+          };
+          handleUpdate();
+        }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [user]);
+    
+      
 
   useEffect(() => {
     let filtered = draws;
@@ -68,9 +101,15 @@ export function Draws() {
     setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
   };
 
-  if (!draws.length) {
-    return <div>Loading...</div>;
+  if (loading ) {
+    return <div>...</div>;
   }
+
+  if(!permissionsString.includes("draws"))
+  {
+    return <div>Not allowed to manage this page</div>
+  }
+
 
   return (
     <div className="p-4 md:p-6 space-y-6">

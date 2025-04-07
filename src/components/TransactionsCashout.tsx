@@ -27,6 +27,7 @@ export function TransactionsCashOut() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [startDate, setStartDate] = useState<Date | null>(null);
+  const [permissionsString, setPermissionsString] = useState([]);
 
   useEffect(() => {
     if (user && !dbUpdated) {
@@ -34,6 +35,7 @@ export function TransactionsCashOut() {
         const dataUpdated = await loginAdmin(user, getAccessTokenSilently);
         if (dataUpdated.dbUpdate) {
           setDbUpdated(dataUpdated.dbUpdate);
+          setPermissionsString(JSON.parse(dataUpdated.permissions));
           setLoading(false);
           const gamesData = await getTransactionsCashout();
           setGamebets(gamesData);
@@ -76,6 +78,11 @@ export function TransactionsCashOut() {
 
   if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if(!permissionsString.includes("cashout"))
+  {
+    return <div>Not allowed to manage this page</div>
   }
 
   const toggleSortOrder = () => {
@@ -122,8 +129,10 @@ export function TransactionsCashOut() {
                   <TableHead className="text-center">User</TableHead>
                   <TableHead className="text-center">Client No</TableHead>
                   <TableHead className="text-center">Order No</TableHead>
-                  <TableHead className="text-center">Amount Paid</TableHead>
-                  <TableHead className="text-center">Credit</TableHead>
+                  <TableHead className="text-center">Amount to Cashout</TableHead>
+                  <TableHead className="text-center">If from Client</TableHead>
+                  <TableHead className="text-center">Bank</TableHead>
+                  <TableHead className="text-center">Account</TableHead>
                   <TableHead className="text-center">Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -135,7 +144,9 @@ export function TransactionsCashOut() {
                     <TableCell className="text-center">{product.trans_num}</TableCell>
                     <TableCell className="text-center">{product.invoice}</TableCell>
                     <TableCell className="text-center">{formatPeso(product.amount)}</TableCell>
-                    <TableCell className="text-center">{formatPeso(product.credit)}</TableCell>
+                    <TableCell className="text-center">{product.full_name}</TableCell>
+                    <TableCell className="text-center">{product.bank}</TableCell>
+                    <TableCell className="text-center">{product.account}</TableCell>
                     <TableCell className="text-center">{product.status}</TableCell>
                   </TableRow>
                 ))}

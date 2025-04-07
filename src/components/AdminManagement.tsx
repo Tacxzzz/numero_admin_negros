@@ -16,7 +16,7 @@ import { Search, UserPlus, Filter, Download } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType, getDraws, getTransactionsCashin, getTransactionsCashout, getBetsHistory, getBetsHistoryWinners, getPlayers, updatePlayer, getPlayersAdmin } from './api/apiCalls';
+import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType, getDraws, getTransactionsCashin, getTransactionsCashout, getBetsHistory, getBetsHistoryWinners, getPlayers, updatePlayer, getPlayersAdmin, updateAdmin, revokeAccess, allowAccess } from './api/apiCalls';
 import { formatPeso } from './utils/utils';
 
 interface User {
@@ -25,6 +25,7 @@ interface User {
   type: string;
   created: string;
   permissions: string[];
+  role: string;
 //   avatarInitials: string;
 }
 
@@ -42,7 +43,30 @@ export function AdminManagement() {
   const [roleFilter, setRoleFilter] = useState<string | undefined>(undefined);
   const [activeTab, setActiveTab] = useState("users");
   const [users, setUsers] = useState<any[]>([]);
+  const [permissionsString, setPermissionsString] = useState([]);
   
+
+  const handleUpdate = async () => {
+    const dataUpdated= await loginAdmin(user,getAccessTokenSilently);
+    if(dataUpdated.dbUpdate)
+    {
+      setDbUpdated(dataUpdated.dbUpdate);
+      setUserID(dataUpdated.userID);
+      setPermissionsString(JSON.parse(dataUpdated.permissions));
+      setLoading(false);
+
+      const gamesData = await getPlayersAdmin();
+      setUsers(gamesData);
+
+      
+    }
+    else
+    {
+      alert("UNAUTHORIZED USER!");
+      logout({ logoutParams: { returnTo: window.location.origin } });
+    }
+    
+  };
 
    useEffect(() => {
     if (user && !dbUpdated) {
@@ -52,6 +76,7 @@ export function AdminManagement() {
         {
           setDbUpdated(dataUpdated.dbUpdate);
           setUserID(dataUpdated.userID);
+          setPermissionsString(JSON.parse(dataUpdated.permissions));
           setLoading(false);
 
           const gamesData = await getPlayersAdmin();
@@ -75,105 +100,16 @@ export function AdminManagement() {
     return <div>...</div>;
   }
 
-  // Sample users data
-  /* const users: User[] = [
-    {
-      id: "1",
-      name: "Raymond Babst",
-      email: "ceo.da5@gmail.com",
-      role: "COMPLIANCE LEVEL 1",
-      createdAt: "March 28, 2025",
-      lastLoggedIn: "March 28, 2025",
-      permissions: [
-        "VIEW_MANAGE_GAME_BETS",
-        "VIEW_MANAGE_PLAYER_BETS",
-        "VIEW_MANAGE_DRAW_SCHEDULES",
-      ],
-    //   avatarInitials: "RB"
-    },
-    {
-        id: "2",
-        name: "Raymond Babst",
-        email: "cqo.aa5@gmail.com",
-        role: "ADMIN LEVEL 1",
-        createdAt: "March 28, 2025",
-        lastLoggedIn: "March 28, 2025",
-        permissions: [
-            "VIEW_MANAGE_GAME_BETS",
-            "VIEW_MANAGE_PLAYER_BETS",
-            "VIEW_MANAGE_USERS",
-            "VIEW_LOGS",
-        ],
-      //   avatarInitials: "RB"
-      },
-    {
-      id: "3",
-      name: "Sarah Johnson",
-      email: "sarah.j@example.com",
-      role: "ADMIN LEVEL 2",
-      createdAt: "March 25, 2025",
-      lastLoggedIn: "March 27, 2025",
-      permissions: [
-        "VIEW_MANAGE_GAME_BETS",
-        "VIEW_MANAGE_PLAYER_BETS",
-        "VIEW_MANAGE_DRAW_SCHEDULES",
-        "VIEW_MANAGE_USERS",
-        "VIEW_LOGS",
-      ],
-    //   avatarInitials: "SJ"
-    },
-    {
-      id: "4",
-      name: "Michael Chen",
-      email: "m.chen@example.com",
-      role: "FINANCE MANAGER",
-      createdAt: "March 20, 2025",
-      lastLoggedIn: "March 28, 2025",
-      permissions: [
-        "VIEW_MANAGE_GAME_BETS",
-        "VIEW_MANAGE_PLAYER_BETS",
-        "VIEW_LOGS"
-      ],
-    //   avatarInitials: "MC"
-    },
-    {
-      id: "5",
-      name: "Jessica Williams",
-      email: "j.williams@example.com",
-      role: "COMPLIANCE LEVEL 2",
-      createdAt: "March 15, 2025",
-      lastLoggedIn: "March 26, 2025",
-      permissions: [
-        "VIEW_MANAGE_USERS",
-        "VIEW_LOGS"
-        
-      ],
-    //   avatarInitials: "JW"
-    },
-    {
-      id: "6",
-      name: "David Rodriguez",
-      email: "d.rodriguez@example.com",
-      role: "SYSTEM ADMIN",
-      createdAt: "March 10, 2025",
-      lastLoggedIn: "March 28, 2025",
-      permissions: [
-        "VIEW_MANAGE_GAME_BETS",
-        "VIEW_MANAGE_PLAYER_BETS",
-        "VIEW_MANAGE_DRAW_SCHEDULES",
-        "VIEW_MANAGE_USERS",
-        "VIEW_LOGS",
-        "VIEW_MANAGE_ADMIN_MANAGEMENT"
-      ],
-    //   avatarInitials: "DR"
-    }
-  ]; */
+
+  
+
 
   // Available roles
   const roles = [
     "SYSTEM ADMIN",
     "ADMIN LEVEL 1",
     "ADMIN LEVEL 2",
+    "TEAM LEVEL ADMIN",
     "FINANCE MANAGER",
     "CUSTOMER SUPPORT"
   ];
@@ -192,20 +128,55 @@ export function AdminManagement() {
     { id: "players", label: "ACCESS PLAYERS" },
     { id: "clients", label: "ACCESS CLIENTS" },
     { id: "admin_management", label: "ACCESS ADMIN MANAGEMENT" },
+    { id: "team_dashboard", label: "ACCESS YOUR TEAM DASHBOARD" },
+    { id: "team_players", label: "ACCESS YOUR TEAM PLAYERS" },
+    { id: "team_cashin", label: "ACCESS YOUR TEAM CASHIN HISTORY" },
+    { id: "team_cashout", label: "ACCESS YOUR TEAM CASHOUT HISTORY" },
 
-    // { id: "VIEW_TRANSACTIONS", label: "VIEW TRANSACTIONS" },
-    // { id: "EXPORT_DATA", label: "EXPORT DATA" },
-    // { id: "VIEW_DASHBOARD", label: "VIEW DASHBOARD" },
-    // { id: "ADMIN_VIEW", label: "ADMIN VIEW" },
-    // { id: "ADMIN_EDIT", label: "ADMIN EDIT" },
-    // { id: "VIEW_CRYPTO_WALLET", label: "VIEW CRYPTO WALLET" },
-    // { id: "UPDATE_CRYPTO_WALLET", label: "UPDATE CRYPTO WALLET" },
-    // { id: "VIEW_CRYPTO_TRANSACTION", label: "VIEW CRYPTO TRANSACTION" },
-    // { id: "VIEW_ORGANIZATION", label: "VIEW ORGANIZATION" },
-    // { id: "CREATE_ORGANIZATION", label: "CREATE ORGANIZATION" },
-    // { id: "MANAGE_ORGANIZATION", label: "MANAGE ORGANIZATION" },
-    // { id: "MANAGE_TRANSACTION", label: "MANAGE TRANSACTION" }
   ];
+
+
+  const rolePermissionsMap: Record<string, string[]> = {
+    "SYSTEM ADMIN": allPermissions.map(p => p.id), // all permissions
+    "ADMIN LEVEL 1": [
+      "dashboard",
+      "games",
+      "games_types",
+      "draws",
+      "draws_results",
+      "cashin",
+      "cashout",
+      "bets",
+      "players"
+    ],
+    "ADMIN LEVEL 2": [
+      "dashboard",
+      "games",
+      "draws",
+      "cashin",
+      "team_cashout"
+    ],
+    "TEAM LEVEL ADMIN": [
+      "team_dashboard",
+      "team_players",
+      "team_cashin",
+      "team_cashout"
+    ],
+    "FINANCE MANAGER": [
+      "dashboard",
+      "cashin",
+      "cashout",
+      "winners"
+    ],
+    "CUSTOMER SUPPORT": [
+      "dashboard",
+      "players",
+      "bets"
+    ]
+  };
+  
+
+  
 
   // Filter users based on search and role filter
   const filteredUsers = users.filter((user) => {
@@ -233,55 +204,123 @@ export function AdminManagement() {
 
   const handlePermissionChange = (permission: string) => {
     if (!selectedUser) return;
+  
+    const updatedUser = { 
+      ...selectedUser, 
+      permissions: Array.isArray(selectedUser.permissions) ? selectedUser.permissions : [] 
+    };
     
-    const updatedUser = { ...selectedUser };
+  
+    // Toggle permission
     if (updatedUser.permissions.includes(permission)) {
       updatedUser.permissions = updatedUser.permissions.filter(p => p !== permission);
     } else {
       updatedUser.permissions = [...updatedUser.permissions, permission];
     }
-    
+  
+    // Clear the role to signify custom permissions
+    updatedUser.role = "";
+  
     setSelectedUser(updatedUser);
-    
-    // In a real app, you would save these changes to the backend
+  
     console.log(`Updated permissions for ${updatedUser.admin_mail}:`, updatedUser.permissions);
+    console.log(`Role cleared due to manual permission change.`);
   };
+  
 
   const handleRoleChange = (role: string) => {
     if (!selectedUser) return;
-    
-    const updatedUser = { ...selectedUser, role };
+  
+    const newPermissions = rolePermissionsMap[role] || [];
+  
+    const updatedUser = { ...selectedUser, role, permissions: newPermissions };
     setSelectedUser(updatedUser);
-    
-    // In a real app, you would save these changes to the backend
+  
     console.log(`Updated role for ${updatedUser.admin_mail} to ${role}`);
+    console.log(`Updated permissions:`, newPermissions);
   };
+  
 
 
-  /* return <div>Not allowed to manage this page</div> */
+
+  const handleSave = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setUpdating(true);
+  
+      const formData = new FormData();
+      formData.append('userID', selectedUser.id);
+      formData.append('role', selectedUser.role);
+      formData.append('permissions', JSON.stringify(selectedUser.permissions));
+
+  
+      setLoading(true);
+      const isAuthenticated = await updateAdmin(formData);
+      if (!isAuthenticated) {
+        alert("An error occurred!");
+        setUpdating(false);
+        setLoading(false);
+      } else {
+        setUpdating(false);
+        setLoading(false);
+        alert("Admin updated successfully.");
+        const gamesData = await getPlayersAdmin();
+        setUsers(gamesData);
+      }
+
+      
+    };
+
+
+    const handleDynamicSave = async (e: React.FormEvent, action: string) => {
+      e.preventDefault();
+      setUpdating(true);
+    
+      const formData = new FormData();
+      formData.append('userID', selectedUser.id);
+      formData.append('action', action); // Add the action to formData if needed
+    
+      setLoading(true);
+    
+      let success = false;
+    
+      if (action === "revoke") {
+        success = await revokeAccess(formData);
+      } else if (action === "allow") {
+        success = await allowAccess(formData); // Example
+      }
+    
+      if (!success) {
+        alert("An error occurred!");
+      } else {
+        alert("Admin updated successfully.");
+        const gamesData = await getPlayersAdmin();
+        setUsers(gamesData);
+        setSelectedUser(null);
+        handleUpdate();
+      }
+    
+      setUpdating(false);
+      setLoading(false);
+    };
+    
+
+
+  if(!permissionsString.includes("admin_management"))
+  {
+    return <div>Not allowed to manage this page</div>
+  }
+
+
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h2 className="text-2xl md:text-3xl font-bold">Admin Management</h2>
         
-        {/* <div className="flex flex-col sm:flex-row gap-2">
-          <Button variant="outline" className="flex items-center">
-            <Download className="mr-2 h-4 w-4" />
-            Export Users
-          </Button>
-          <Button className="flex items-center">
-            <UserPlus className="mr-2 h-4 w-4" />
-            Add New Admin
-          </Button>
-        </div> */}
+       
       </div>
 
       <Tabs defaultValue="users" value={activeTab} onValueChange={setActiveTab}>
-        {/* <TabsList>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="roles">Roles</TabsTrigger>
-          <TabsTrigger value="audit">Audit Log</TabsTrigger>
-        </TabsList> */}
+        
         
         <TabsContent value="users" className="space-y-4">
           <div className="flex flex-col md:flex-row gap-4 justify-between">
@@ -378,7 +417,7 @@ export function AdminManagement() {
                           
                           <div>
                             <p className="text-sm text-gray-500">Role</p>
-                            <Select  onValueChange={handleRoleChange}>
+                            <Select value={selectedUser.role} onValueChange={handleRoleChange}>
                               <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select role" />
                               </SelectTrigger>
@@ -425,17 +464,19 @@ export function AdminManagement() {
                         
                         <div className="flex justify-end space-x-2 pt-4">
                           {/* <Button variant="outline">Reset Password</Button> */}
-                          <Button variant="outline" className="text-red-600 hover:text-red-700 hover:bg-red-50">
-                            Deactivate User
-                          </Button>
-                          <Button>Save Changes</Button>
+                          
                           {selectedUser.type!=="admin" ? (
-                          <Button>Allow Access</Button>
+                          <Button onClick={(e) => handleDynamicSave(e, "allow")}>Allow Access</Button>
                           ):
                           (
-                            <Button>Revoke Access</Button>
+                            <Button
+                            onClick={(e) => handleDynamicSave(e, "revoke")}
+                            variant="outline" className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                            Revoke Access</Button>
                           )
                           }
+                          <Button onClick={handleSave}>Save Changes</Button>
+                          
                         </div>
                       </div>
                     </div>

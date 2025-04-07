@@ -35,6 +35,7 @@ export function Bets() {
     // New states for search and sorting
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [permissionsString, setPermissionsString] = useState([]);
 
 
   useEffect(() => {
@@ -45,6 +46,7 @@ export function Bets() {
           {
             setDbUpdated(dataUpdated.dbUpdate);
             setUserID(dataUpdated.userID);
+            setPermissionsString(JSON.parse(dataUpdated.permissions));
             setLoading(false);
   
             const gamesData = await getGames();
@@ -159,6 +161,12 @@ export function Bets() {
         return b.name.localeCompare(a.name);
       }
     });
+
+
+    if(!permissionsString.includes("games"))
+      {
+        return <div>Not allowed to manage this page</div>
+      }
   
   return (
     <div className="p-4 md:p-6 space-y-6">

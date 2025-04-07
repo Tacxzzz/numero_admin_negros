@@ -19,15 +19,16 @@ export const loginAdmin = async (user: any , getAccessTokenSilently: any) => {
         const userData = response.data;
         return {
           userID: userData.userID,
+          permissions: userData.permissions,
           dbUpdate: true,
         };
       } else {
         console.warn("User data is empty or invalid.");
-        return { dbUpdate: false, userID: "id"};
+        return { dbUpdate: false,permissions: "", userID: "id"};
       }
   } catch (error) {
     console.error("Database update failed:", error);
-    return { dbUpdate: false, userID: "id" };
+    return { dbUpdate: false,permissions: "", userID: "id" };
   } 
 };
 
@@ -225,6 +226,20 @@ export const getPlayersAdmin = async () => {
     return [];
   }
 };
+export const getPlayersAdminChoice = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getPlayersAdminChoice`);
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
 export const getPlayers = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getPlayers`);
@@ -291,6 +306,72 @@ export const updateClient = async (formData: FormData): Promise<boolean> => {
       return false;
   }
 };
+
+
+export const updateAdmin = async (formData: FormData): Promise<boolean> => {
+  try 
+  {
+      const response = await axios.post(
+          import.meta.env.VITE_DATABASE_URL+'/admin/updateAdmin',
+          formData,
+          { headers: {
+            'Content-Type': 'multipart/form-data' 
+          } }
+      );
+
+      
+      return response.data.authenticated;
+  } 
+  catch (error) 
+  {
+      console.error('Error authenticating user:', error);
+      return false;
+  }
+};
+
+export const revokeAccess = async (formData: FormData): Promise<boolean> => {
+  try 
+  {
+      const response = await axios.post(
+          import.meta.env.VITE_DATABASE_URL+'/admin/revokeAccess',
+          formData,
+          { headers: {
+            'Content-Type': 'multipart/form-data' 
+          } }
+      );
+
+      
+      return response.data.authenticated;
+  } 
+  catch (error) 
+  {
+      console.error('Error authenticating user:', error);
+      return false;
+  }
+};
+
+
+export const allowAccess = async (formData: FormData): Promise<boolean> => {
+  try 
+  {
+      const response = await axios.post(
+          import.meta.env.VITE_DATABASE_URL+'/admin/allowAccess',
+          formData,
+          { headers: {
+            'Content-Type': 'multipart/form-data' 
+          } }
+      );
+
+      
+      return response.data.authenticated;
+  } 
+  catch (error) 
+  {
+      console.error('Error authenticating user:', error);
+      return false;
+  }
+};
+
 
 export const updatePlayer = async (formData: FormData): Promise<boolean> => {
   try 
