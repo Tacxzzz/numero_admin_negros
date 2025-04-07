@@ -98,7 +98,7 @@ export function TransactionsCashOut() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full sm:w-1/3"
         />
-        <DatePicker
+        {/* <DatePicker
           selected={startDate}
           onChange={(date: Date | null) => setStartDate(date)}
           placeholderText="Filter by Date"
@@ -109,7 +109,7 @@ export function TransactionsCashOut() {
           className="text-white px-4 py-2 rounded-md"
         >
           Sort by Date ({sortOrder === "asc" ? "Ascending" : "Descending"})
-        </Button>
+        </Button> */}
       </div>
 
       {/* Table */}

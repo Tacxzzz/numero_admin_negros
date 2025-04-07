@@ -14,12 +14,15 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getDraws } from "./api/apiCalls";
 
-export function Draws() {
+export function DrawsResults() {
   const [draws, setDraws] = useState<any[]>([]);
   const [filteredDraws, setFilteredDraws] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDrawId, setSelectedDrawId] = useState<number | null>(null);
+  const [updatedResult, setUpdatedResult] = useState("");
 
   useEffect(() => {
     const fetchDraws = async () => {
@@ -62,6 +65,33 @@ export function Draws() {
     setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
   };
 
+  const openModal = (drawId: number) => {
+    setSelectedDrawId(drawId);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedDrawId(null);
+    setUpdatedResult("");
+  };
+
+  const updateResult = () => {
+    if (selectedDrawId !== null) {
+      setDraws((prevDraws) =>
+        prevDraws.map((draw) =>
+          draw.id === selectedDrawId ? { ...draw, results: updatedResult } : draw
+        )
+      );
+      setFilteredDraws((prevFilteredDraws) =>
+        prevFilteredDraws.map((draw) =>
+          draw.id === selectedDrawId ? { ...draw, results: updatedResult } : draw
+        )
+      );
+      closeModal();
+    }
+  };
+
   if (!draws.length) {
     return <div>Loading...</div>;
   }
@@ -86,8 +116,8 @@ export function Draws() {
           onChange={(date: Date | null) => setSelectedDate(date)}
           placeholderText="Filter by Date"
           className="border p-2 rounded-md"
-        /> */}
-        {/* <Button
+        />
+        <Button
           onClick={toggleSortOrder}
           className="text-white px-4 py-2 rounded-md"
         >
@@ -106,9 +136,10 @@ export function Draws() {
                   <TableHead className="text-center">Time</TableHead>
                   <TableHead className="text-center">Game</TableHead>
                   <TableHead className="text-center">Result</TableHead>
-                  <TableHead className="text-center">Current Ceiling</TableHead>
-                  <TableHead className="text-center">Current number of bets</TableHead>
+                  <TableHead className="text-center">Prize Pool</TableHead>
+                  {/* <TableHead className="text-center">Current number of bets</TableHead> */}
                   <TableHead className="text-center">Status</TableHead>
+                  <TableHead className="text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -118,9 +149,17 @@ export function Draws() {
                     <TableCell className="text-center">{draw.time}</TableCell>
                     <TableCell className="text-center">{draw.game_name}</TableCell>
                     <TableCell className="text-center">{draw.results}</TableCell>
-                    <TableCell className="text-center">{draw.ceiling}</TableCell>
-                    <TableCell className="text-center">{draw.total_bets}</TableCell>
+                    <TableCell className="text-center">₱{draw.ceiling}</TableCell>
+                    {/* <TableCell className="text-center">{draw.total_bets}</TableCell> */}
                     <TableCell className="text-center">{draw.status}</TableCell>
+                    <TableCell className="text-center">
+                      <Button
+                        onClick={() => openModal(draw.id)}
+                        className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700 mr-2 mb-2"
+                      >
+                        Update Winning Result
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -128,6 +167,42 @@ export function Draws() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-md space-y-4">
+            <h3 className="text-xl font-bold">Enter the Winning Results</h3>
+            <Input
+              type="text"
+              placeholder="Enter Winning result"
+              value={updatedResult}
+              onChange={(e) => setUpdatedResult(e.target.value)}
+              className="w-full"
+            />
+            <div className="flex justify-end gap-2">
+              <Button onClick={updateResult} className="text-white bg-blue-500 px-4 py-2 rounded-md">
+                Save
+              </Button>
+              {/* <Button onClick={closeModal} className="w-full sm:w-auto border-red-500 text-red-600 hover:bg-red-900/20">
+                Cancel
+              </Button> */}
+
+          <Button
+            variant="outline" 
+            className="w-full sm:w-auto border-red-500 text-red-600 hover:bg-red-900/20"
+            onClick={closeModal}
+            type='button'
+          >
+            Cancel
+          </Button>
+            </div>
+
+
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
