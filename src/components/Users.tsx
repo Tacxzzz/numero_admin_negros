@@ -169,34 +169,55 @@ export function Users() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-center">Users Mobile #</TableHead>
-                  <TableHead className="text-center">Created</TableHead>
-                  <TableHead className="text-center">Modified</TableHead>
-                  <TableHead className="text-center">Account Balance</TableHead>
-                  <TableHead className="text-center">Wins</TableHead>
-                  <TableHead className="text-center">Commissions</TableHead>
-                  <TableHead className="text-center">Referred By</TableHead>
-                  <TableHead className="text-center"># of Referrals</TableHead>
-                  <TableHead className="text-center">if With a Admin Team</TableHead>
-                  <TableHead className="text-center">Status</TableHead>
-                  <TableHead className="text-center">Action</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell">Users Mobile #</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell">Created</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell">Modified</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell">Account Balance</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell">Wins</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell">Commissions</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell">Referred By</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell"># of Referrals</TableHead>
+
+
+                  {/* <TableHead className="text-center hidden sm:table-cell">if With a Admin Team</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell">Status</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell">Action</TableHead> */}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {sortedGamebets.map((product) => (
                   <TableRow key={product.id}>
-                    <TableCell className="text-center">{product.mobile}</TableCell>
-                    <TableCell className="text-center">{product.created}</TableCell>
-                    <TableCell className="text-center">{product.modified}</TableCell>
-                    <TableCell className="text-center">{formatPeso(product.balance)}</TableCell>
-                    <TableCell className="text-center">{formatPeso(product.wins)}</TableCell>
-                    <TableCell className="text-center">{formatPeso(product.commissions)}</TableCell>
-                    <TableCell className="text-center">{product.referrer_mobile}</TableCell>
-                    <TableCell className="text-center">{product.referral_count}</TableCell>
-                    <TableCell className="text-center">{product.under_admin_mail}</TableCell>
-                    
-                    <TableCell className="text-center">{product.status === "pending" ? "Active" : "Inactive"}</TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="text-center hidden sm:table-cell">{product.mobile}</TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">{product.created}</TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">{product.modified}</TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">{formatPeso(product.balance)}</TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">{formatPeso(product.wins)}</TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">{formatPeso(product.commissions)}</TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">{product.referrer_mobile}</TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">{product.referral_count}</TableCell>
+
+
+                    <TableCell className="text-center hidden sm:table-cell">
+                    <div><strong>if With a Admin Team:</strong> {product.under_admin_mail}</div>
+                    <div><strong>Status:</strong> <span className={product.status === "pending" ? "text-green-600" : "text-orange-500"}> {product.status === "pending" ? "Active" : "Inactive"} </span></div>
+                    <div className="flex gap-2 align-items-center justify-center mt-2">
+                      <Button
+                        className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
+                        onClick={() => handleEditClick(product)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
+                        onClick={() => navigate(`/hierarchy?user_mobile=${product.mobile}&user_id=${product.id}`)}
+                      >
+                        Referrals
+                      </Button>
+                    </div>
+                  </TableCell>
+                    {/* <TableCell className="text-center hidden sm:table-cell">{product.under_admin_mail}</TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">{product.status === "pending" ? "Active" : "Inactive"}</TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">
                       <Button
                         className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700 mr-2 mb-2"
                         onClick={() => handleEditClick(product)}
@@ -209,7 +230,37 @@ export function Users() {
                       >
                         Referrals
                       </Button>
-                    </TableCell>
+                    </TableCell> */}
+
+                {/* Additional row for mobile */}
+                <TableCell className="block sm:hidden col-span-full">
+                  <div className="flex flex-col gap-2">
+                    <div><strong>Users Mobile #:</strong> {product.mobile}</div>
+                    <div><strong>Created:</strong> {product.created}</div>
+                    <div><strong>Modified:</strong> {product.modified}</div>
+                    <div><strong>Account Balance:</strong> {formatPeso(product.balance)}</div>
+                    <div><strong>Wins:</strong> {formatPeso(product.wins)}</div>
+                    <div><strong>Commissions:</strong> {formatPeso(product.commissions)}</div>
+                    <div><strong>Referred By:</strong> {product.referrer_mobile}</div>
+                    <div><strong># of Referrals:</strong> {product.referral_count}</div>
+                    <div><strong>if With a Admin Team:</strong> {product.under_admin_mail}</div>
+                    <div><strong>Status:</strong> <span className={product.status === "pending" ? "text-green-600" : "text-orange-500"}> {product.status === "pending" ? "Active" : "Inactive"} </span></div>
+                    <div className="flex gap-2">
+                      <Button
+                        className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
+                        onClick={() => handleEditClick(product)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
+                        onClick={() => navigate(`/hierarchy?user_mobile=${product.mobile}&user_id=${product.id}`)}
+                      >
+                        Referrals
+                      </Button>
+                    </div>
+                  </div>
+                </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
