@@ -143,32 +143,44 @@ export function PlayersBets() {
               </TableHeader>
               <TableBody>
                 {sortedGamebets.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell className="text-center">
-                      {product.created_date}
-                      <br />
-                      {product.created_time}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {product.game_name}
-                      <br />
-                      {product.game_type_name}
-                      <br />
-                      {product.draw_date} {product.draw_time}
-                    </TableCell>
-                    <TableCell className="text-center">{product.user_mobile}</TableCell>
-                    <TableCell className="text-center">{product.bets}</TableCell>
-                    <TableCell className="text-center">{formatPeso(product.bet)}</TableCell>
-                    <TableCell className="text-center">{formatPeso(product.jackpot)}</TableCell>
-                    <TableCell className="text-center">
-                      {product.bakas_fullname}
-                      <br />
-                      {product.bakas_bank}
-                      <br />
-                      {product.bakas_account}
-                    </TableCell>
-                    <TableCell className="text-center">{product.status}</TableCell>
-                  </TableRow>
+                  <TableRow
+                  key={product.id}
+                  className={
+                    product.status === "win"
+                      ? "bg-green-200"
+                      : product.status === "loss"
+                      ? "bg-red-200"
+                      : product.status === "pending"
+                      ? ""
+                      : ""
+                  }
+                >
+                  <TableCell className="text-center">
+                    {product.created_date}
+                    <br />
+                    {product.created_time}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {product.game_name}
+                    <br />
+                    {product.game_type_name}
+                    <br />
+                    {product.draw_date} {product.draw_time}
+                  </TableCell>
+                  <TableCell className="text-center">{product.user_mobile}</TableCell>
+                  <TableCell className="text-center">{product.bets}</TableCell>
+                  <TableCell className="text-center">{formatPeso(product.bet)}</TableCell>
+                  <TableCell className="text-center">{formatPeso(product.jackpot)}</TableCell>
+                  <TableCell className="text-center">
+                    {product.bakas_fullname}
+                    <br />
+                    {product.bakas_bank}
+                    <br />
+                    {product.bakas_account}
+                  </TableCell>
+                  <TableCell className="text-center">{product.status}</TableCell>
+                </TableRow>
+                
                 ))}
               </TableBody>
             </Table>
