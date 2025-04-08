@@ -15,7 +15,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { getDraws } from "./api/apiCalls";
 import { useAuth0 } from '@auth0/auth0-react';
 import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType } from './api/apiCalls';
-import { formatPeso } from './utils/utils';
+import { formatPeso, getTransCode } from './utils/utils';
 
 export function Draws() {
 
@@ -149,6 +149,7 @@ export function Draws() {
                 <TableRow>
                   <TableHead className="text-center">Date</TableHead>
                   <TableHead className="text-center">Time</TableHead>
+                  <TableHead className="text-center">Draw ID</TableHead>
                   <TableHead className="text-center">Game</TableHead>
                   <TableHead className="text-center">Result</TableHead>
                   <TableHead className="text-center">Current Ceiling</TableHead>
@@ -161,6 +162,7 @@ export function Draws() {
                   <TableRow key={draw.id}>
                     <TableCell className="text-center">{draw.date}</TableCell>
                     <TableCell className="text-center">{draw.time}</TableCell>
+                    <TableCell className="text-center">DRAW{getTransCode(draw.date + ' ' + draw.time)}-{draw.id}</TableCell>
                     <TableCell className="text-center">{draw.game_name}</TableCell>
                     <TableCell className="text-center">{draw.results}</TableCell>
                     <TableCell className="text-center">{draw.ceiling}</TableCell>

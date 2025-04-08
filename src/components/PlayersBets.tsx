@@ -15,6 +15,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuth0 } from '@auth0/auth0-react';
 import { loginAdmin, getBetsHistory } from './api/apiCalls';
+import { formatPeso } from './utils/utils';
 
 export function PlayersBets() {
   const { user, getAccessTokenSilently, logout } = useAuth0();
@@ -133,7 +134,9 @@ export function PlayersBets() {
                   <TableHead className="text-center">Date</TableHead>
                   <TableHead className="text-center">Game</TableHead>
                   <TableHead className="text-center">Player</TableHead>
+                  <TableHead className="text-center">Combination</TableHead>
                   <TableHead className="text-center">Bet</TableHead>
+                  <TableHead className="text-center">Reward</TableHead>
                   <TableHead className="text-center">If Player from agent</TableHead>
                   <TableHead className="text-center">Status</TableHead>
                 </TableRow>
@@ -155,6 +158,8 @@ export function PlayersBets() {
                     </TableCell>
                     <TableCell className="text-center">{product.user_mobile}</TableCell>
                     <TableCell className="text-center">{product.bets}</TableCell>
+                    <TableCell className="text-center">{formatPeso(product.bet)}</TableCell>
+                    <TableCell className="text-center">{formatPeso(product.jackpot)}</TableCell>
                     <TableCell className="text-center">
                       {product.bakas_fullname}
                       <br />
