@@ -130,7 +130,7 @@ export function TransactionsCashOut() {
                   <TableHead className="text-center">Client No</TableHead>
                   <TableHead className="text-center">Order No</TableHead>
                   <TableHead className="text-center">Amount to Cashout</TableHead>
-                  <TableHead className="text-center">If from Client</TableHead>
+                  <TableHead className="text-center">Name</TableHead>
                   <TableHead className="text-center">Bank</TableHead>
                   <TableHead className="text-center">Account</TableHead>
                   <TableHead className="text-center">Status</TableHead>

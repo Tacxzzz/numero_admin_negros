@@ -151,7 +151,7 @@ export function PlayersBets() {
                       : product.status === "loss"
                       ? "bg-red-200"
                       : product.status === "pending"
-                      ? ""
+                      ? "bg-yellow-100"
                       : ""
                   }
                 >
