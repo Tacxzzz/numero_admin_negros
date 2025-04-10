@@ -55,10 +55,18 @@ export function PlayersBets() {
 
     // Filter by search query
     if (searchQuery) {
-      filtered = filtered.filter((bet) =>
-        bet.game_name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      const lowerSearch = searchQuery.toLowerCase();
+      filtered = filtered.filter((bet) => {
+        return (
+          bet.game_name.toLowerCase().includes(lowerSearch) ||
+          bet.status.toLowerCase().includes(lowerSearch) ||
+          String(bet.bets).toLowerCase().includes(lowerSearch) || // in case bets is a number
+          bet.draw_time.toLowerCase().includes(lowerSearch) ||
+          bet.draw_date.toLowerCase().includes(lowerSearch)
+        );
+      });
     }
+    
 
     // Filter by date
     if (startDate) {
@@ -105,7 +113,7 @@ export function PlayersBets() {
       <div className="flex flex-col sm:flex-row gap-4 items-center">
         <Input
           type="text"
-          placeholder="Search by Game Name"
+          placeholder="Search by Game, Status, Draw Time e.g 09:00:00 pm, combination "
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full sm:w-1/3"
