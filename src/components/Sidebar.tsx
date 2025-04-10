@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { X, LogOut, UserCheck2, Grid } from "lucide-react";
+import { X, LogOut, UserCheck2, Grid, Calendar } from "lucide-react";
 import {
   LayoutDashboard,
   Coins,
@@ -59,11 +59,14 @@ export function Sidebar({ onClose }: SidebarProps) {
     { icon: Banknote, label: "Cash in history", path: "/cashinhistory", permission: "cashin" },
     { icon: DollarSign, label: "Cash out history", path: "/cashouthistory", permission: "cashout" },
     { icon: Dices, label: "Bets History", path: "/playersbets", permission: "bets" },
-    { icon: Trophy, label: "Winners History", path: "/winners", permission: "winners" },
+    { icon: Trophy, label: "Process Client Winners", path: "/clientwinners", permission: "winners" },
+    { icon: Trophy, label: "Player Winners History", path: "/winners", permission: "winners" },
     { icon: Users, label: "Players Management", path: "/users", permission: "players" },
     { icon: Users, label: "Clients Management", path: "/clients", permission: "clients" },
     { icon: BarChart, label: "Logs", path: "/logs", permission: "logs" },
     { icon: UserCheck2, label: "Admin Management", path: "/adminmanagement", permission: "admin_management" },
+    { icon: Calendar, label: "Announcements", path: "/announcements", permission: "admin_management" },
+    
     { icon: LayoutDashboard, label: "My TEAM Dashboard", path: "/teamdashboard", permission: "team_dashboard" },
     { icon: Users, label: "My TEAM", path: "/teamusers", permission: "team_players" },
   ];

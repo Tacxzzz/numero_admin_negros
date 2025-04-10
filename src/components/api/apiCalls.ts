@@ -1,4 +1,5 @@
 import axios from "axios";
+import CryptoJS from "crypto-js";
 
 const API_URL = import.meta.env.VITE_DATABASE_URL;
 
@@ -194,7 +195,20 @@ export const getBetsHistory = async () => {
     return [];
   }
 };
+export const getClientWinners = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getClientWinners`);
 
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
 
 export const getBetsHistoryWinners = async () => {
   try {
@@ -896,4 +910,199 @@ export const totalCashOutTeam = async (id:string) => {
     console.error("Failed to fetch games:", error);
     return { count: '-' };
   }
+};
+
+
+
+
+
+
+
+
+export const getAnnouncements = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getAnnouncements`);
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const addAnnouncement = async (formData: FormData): Promise<boolean> => {
+  try 
+  {
+      const response = await axios.post(
+          import.meta.env.VITE_DATABASE_URL+'/admin/addAnnouncement',
+          formData,
+          { headers: {
+            'Content-Type': 'multipart/form-data' 
+          } }
+      );
+
+      
+      return response.data.authenticated;
+  } 
+  catch (error) 
+  {
+      console.error('Error authenticating user:', error);
+      return false;
+  }
+};
+
+
+export const updateAnnouncement = async (formData: FormData): Promise<boolean> => {
+  try 
+  {
+      const response = await axios.post(
+          import.meta.env.VITE_DATABASE_URL+'/admin/updateAnnouncement',
+          formData,
+          { headers: {
+            'Content-Type': 'multipart/form-data' 
+          } }
+      );
+
+      
+      return response.data.authenticated;
+  } 
+  catch (error) 
+  {
+      console.error('Error authenticating user:', error);
+      return false;
+  }
+};
+
+
+
+export const getTodayDraws = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getTodayDraws`);
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+
+
+
+export const getWebData = async (id:string) => {
+  try {
+
+    const response = await axios.post(`${API_URL}/admin/getWebData`, { gameID: id });
+    console.log('Raw Response:', response.data); // Log the raw response to debug
+
+    let rawData = response.data;
+
+    // Step 1: Clean up the response if there's a 'null' at the end
+    if (rawData.endsWith('null')) {
+      rawData = rawData.slice(0, -4); // Remove 'null' at the end
+    }
+
+    // Step 2: Parse the cleaned response into JSON
+    let parsedData;
+    try {
+      parsedData = JSON.parse(rawData);
+      console.log('Parsed Data:', parsedData);
+    } catch (error) {
+      console.error('Error parsing cleaned data:', error);
+      return [];
+    }
+
+    // Check if parsedData is valid and contains results
+    if (parsedData && Array.isArray(parsedData.results)) {
+      return parsedData.results;
+    } else {
+      console.error('Invalid data format or no results found');
+      return [];
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return [];
+  }
+};
+
+
+export const cashOutCashko = async (
+  transID: string,
+  winnings: string,
+  full_name: string,
+  bank: string,
+  account: string
+) => {
+  try {
+    const timestamp = Date.now().toString();
+    const clientNo = `PPCO${timestamp}`;
+    const clientCode = import.meta.env.VITE_CLIENT_CODE;
+    const privateKey = import.meta.env.VITE_PRIVATE_KEY;
+    const chainName = "BANK";
+    const coinUnit = "PHP";
+
+    const formData = new FormData();
+    formData.append("clientCode", clientCode);
+    formData.append("chainName", chainName);
+    formData.append("coinUnit", coinUnit);
+    formData.append("bankCardNum", account);
+    formData.append("bankUserName", full_name);
+    formData.append("ifsc", "null");
+    formData.append("bankName", bank);
+    formData.append("amount", (parseFloat(winnings) - 12).toString());
+    formData.append("clientNo", clientNo);
+    formData.append("requestTimestamp", timestamp);
+    formData.append("callbackurl", `${API_URL}/main/requestCashOutCashko`);
+    formData.append("sign", generateSign(clientCode, clientNo, timestamp, privateKey));
+
+    const response = await axios.post(
+      "https://gw01.ckogway.com/api/bank/agentPay/request",
+      formData
+    );
+    console.log(response);
+
+    if (
+      response.data &&
+      response.data.success &&
+      response.data.code === 200 &&
+      response.data.data &&
+      response.data.data.orderNo
+    ) {
+      const { orderNo } = response.data.data;
+
+      const res = await axios.post(`${API_URL}/admin/cashOutRequest`, {
+        transID,
+        clientNo,
+        orderNo,
+      });
+
+      if (res.data && res.data.authenticated) {
+        return { error: false };
+      } else {
+        console.warn("User data is empty or invalid.");
+        return { error: true, message:"User data is empty or invalid." };
+      }
+    } else {
+      console.warn("Cashko request failed.");
+      return { error: true, message:"Transaction response is missing orderNo." };
+    }
+  } catch (error) {
+    console.error("Cashko request failed:", error);
+    return { error: true , message:"Cashko request failed." };
+  }
+};
+
+
+const generateSign = (clientCode: string, clientNo: string, latest_requestTimestamp: string, privateKey: string) => {
+  const signString = `${clientCode}&BANK&PHP&${clientNo}&${latest_requestTimestamp}${privateKey}`;
+  const resultHash = CryptoJS.MD5(signString).toString(CryptoJS.enc.Hex);
+  return resultHash;
 };
