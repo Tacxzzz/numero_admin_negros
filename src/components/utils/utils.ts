@@ -30,3 +30,15 @@ export const formatPeso = (amount: number): string => {
   
     return `${month}${day}${year}${hours}${minutes}${seconds}`;
   }
+
+
+  export const getFormattedDate = () => {
+    const now = new Date();
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
+    const day = String(now.getDate()).padStart(2, '0');
+    const year = now.getFullYear();
+  
+    return `${month}/${day}/${year}`; // returns "04/11/2025"
+  };
+  
+  

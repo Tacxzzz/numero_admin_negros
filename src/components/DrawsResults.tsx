@@ -12,184 +12,254 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { getDraws } from "./api/apiCalls";
+import { getDraws, getTodayDraws, getWebData, setResultsDraw } from "./api/apiCalls";
+import { useAuth0 } from '@auth0/auth0-react';
+import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType } from './api/apiCalls';
+import { formatPeso, getFormattedDate, getTransCode } from './utils/utils';
+import CountdownTimer from "./CountdownTimer";
+import { useRef } from "react";
+
 
 export function DrawsResults() {
-  const [draws, setDraws] = useState<any[]>([]);
-  const [filteredDraws, setFilteredDraws] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDrawId, setSelectedDrawId] = useState<number | null>(null);
-  const [updatedResult, setUpdatedResult] = useState("");
+
+  const { user,getAccessTokenSilently , logout} = useAuth0();
+  const [showGameDialog, setshowGameDialog] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [userID, setUserID] = useState("none");
+  const [dbUpdated, setDbUpdated] = useState(false);
+  const [permissionsString, setPermissionsString] = useState([]);
+  const [todaysDraws, setTodaysDraws] = useState<any[]>([]);
+  const [games, setGames] = useState<any[]>([]);
+  const [draws, setDraws] = useState([]);
+  const triggeredMap = useRef(new Set()); // store triggered states
+  const [savedResults, setSavedResults] = useState(new Set());
+  const [failedResults, setFailedResults] = useState(new Set());
+
+
+
+
 
   useEffect(() => {
-    const fetchDraws = async () => {
-      const data = await getDraws();
-      setDraws(data);
-      setFilteredDraws(data);
-    };
-    fetchDraws();
-  }, []);
+        if (user && !dbUpdated) {
+          const handleUpdate = async () => {
+            const dataUpdated= await loginAdmin(user,getAccessTokenSilently);
+            if(dataUpdated.dbUpdate)
+            {
+              setDbUpdated(dataUpdated.dbUpdate);
+              setUserID(dataUpdated.userID);
+              setPermissionsString(JSON.parse(dataUpdated.permissions));
+              setLoading(false);
 
-  useEffect(() => {
-    let filtered = draws;
+              if(permissionsString.includes("draws_results_unique"))
+                {
+                const todayData = await getTodayDraws();
+                setGames(todayData); 
 
-    // Filter by search query
-    if (searchQuery) {
-      filtered = filtered.filter((draw) =>
-        draw.game_name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
 
-    // Filter by date
-    if (selectedDate) {
-      filtered = filtered.filter((draw) => {
-        const drawDate = new Date(draw.date);
-        return drawDate.toDateString() === selectedDate.toDateString();
+                console.log(todayData);
+                 const allResults = [];
+
+                 for (const draw of todayData) {
+                  const data = await getWebData(draw.id); // data will be like { "1": [ {time, numbers}, ... ] }
+                
+                  const gameID = draw.id;
+                  const results = data[gameID] || [];
+                
+                  allResults.push({
+                    ...draw,
+                    result: results
+                  });
+                }
+                setDraws(allResults);
+                console.log(allResults);
+              
+                }
+            }
+            else
+            {
+              alert("UNAUTHORIZED USER!");
+              logout({ logoutParams: { returnTo: window.location.origin } });
+            }
+            
+          };
+          handleUpdate();
+        }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [user]);
+    
+      
+
+  
+
+
+  const formattedDate = getFormattedDate();
+
+  const refetchResults = async (gameId) => {
+    try {
+
+      console.log("IS THIS CALLED?");
+      const data = await getWebData(gameId);
+      const newResults = data[gameId] || [];
+  
+      let updatedGame = null;
+      console.log("IS THIS CALLED?"+newResults);
+      setDraws((prevDraws) => {
+        return prevDraws.map((game) => {
+          if (game.id === gameId) {
+            const oldResults = game.result || [];
+            const nonEmptyNewResults = newResults.filter(
+              (r) => r.numbers && r.numbers.trim() !== ""
+            );
+  
+            const mergedResultsMap = new Map();
+            oldResults.forEach((r) => mergedResultsMap.set(r.time, r));
+            nonEmptyNewResults.forEach((r) => mergedResultsMap.set(r.time, r));
+  
+            const mergedResults = Array.from(mergedResultsMap.values()).sort(
+              (a, b) => a.time.localeCompare(b.time)
+            );
+  
+            updatedGame = {
+              ...game,
+              result: mergedResults,
+            };
+  
+            return updatedGame;
+          }
+          return game;
+        });
       });
-    }
-
-    setFilteredDraws(filtered);
-  }, [searchQuery, selectedDate, draws]);
-
-  const sortedDraws = [...filteredDraws].sort((a, b) => {
-    const dateA = new Date(a.date).getTime();
-    const dateB = new Date(b.date).getTime();
-    return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
-  });
-
-  const toggleSortOrder = () => {
-    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
-  };
-
-  const openModal = (drawId: number) => {
-    setSelectedDrawId(drawId);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedDrawId(null);
-    setUpdatedResult("");
-  };
-
-  const updateResult = () => {
-    if (selectedDrawId !== null) {
-      setDraws((prevDraws) =>
-        prevDraws.map((draw) =>
-          draw.id === selectedDrawId ? { ...draw, results: updatedResult } : draw
-        )
-      );
-      closeModal();
+  
+      return updatedGame;
+    } catch (err) {
+      console.error("Failed to refetch draw results:", err);
+      return null;
     }
   };
+  
+  
+  
+  
+  
+  
 
-  if (!draws.length) {
-    return <div>Loading...</div>;
-  }
+    const handleNumbersAvailable = (game, result) => {
+      console.log("Numbers available!", result);
+    };
+    
 
-  return <div>Not allowed to manage this page</div>
+    if (loading ) {
+      return <div>...</div>;
+    }
+  
+    if(!permissionsString.includes("draws_results_unique"))
+    {
+      return <div>Not allowed to manage this page</div>
+    }
 
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl md:text-3xl font-bold">Draws</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">WEB SCRAPE</h2>
       </div>
 
-      {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center">
-        <Input
-          type="text"
-          placeholder="Search by Game Name"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full sm:w-1/3"
-        />
-        <DatePicker
-          selected={selectedDate}
-          onChange={(date: Date | null) => setSelectedDate(date)}
-          placeholderText="Filter by Date"
-          className="border p-2 rounded-md"
-        />
-        <Button
-          onClick={toggleSortOrder}
-          className="text-white px-4 py-2 rounded-md"
-        >
-          Sort by Date ({sortOrder === "asc" ? "Ascending" : "Descending"})
-        </Button>
-      </div>
 
       {/* Table */}
       <div className="overflow-x-auto">
         <Card className="lg:col-span-7">
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-center">Date</TableHead>
-                  <TableHead className="text-center">Time</TableHead>
-                  <TableHead className="text-center">Game</TableHead>
-                  <TableHead className="text-center">Result</TableHead>
-                  <TableHead className="text-center">Prize Pool</TableHead>
-                  <TableHead className="text-center">Status</TableHead>
-                  <TableHead className="text-center">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedDraws.map((draw) => (
-                  <TableRow key={draw.id}>
-                    <TableCell className="text-center">{draw.date}</TableCell>
-                    <TableCell className="text-center">{draw.time}</TableCell>
-                    <TableCell className="text-center">{draw.game_name}</TableCell>
-                    <TableCell className="text-center">{draw.results}</TableCell>
-                    <TableCell className="text-center">₱{draw.ceiling}</TableCell>
-                    <TableCell className="text-center">{draw.status}</TableCell>
-                    <TableCell className="text-center">
-                      <Button
-                        onClick={() => openModal(draw.id)}
-                        className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700 mr-2 mb-2"
-                      >
-                        Update Winning Result
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+          <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-center">Game</TableHead>
+              <TableHead className="text-center">Time</TableHead>
+              <TableHead className="text-center">Combination</TableHead>
+              <TableHead className="text-center">Process</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+                {draws.map((game) =>
+                  game.result?.map((res, index) => {
+                    const key = `${game.id}-${res.time}`;
+                    const alreadyTriggered = triggeredMap.current.has(key);
+
+                    if (res.numbers !== "" && !alreadyTriggered) {
+                      triggeredMap.current.add(key);
+                      handleNumbersAvailable(game, res);
+                    }
+
+                    return (
+                      <TableRow key={`${game.id}-${res.time}-${res.numbers}`}>
+                        <TableCell className="text-center">{game.name}</TableCell>
+                        <TableCell className="text-center">{res.time}</TableCell>
+                        <TableCell className="text-center">{res.numbers}</TableCell>
+                        <TableCell className="text-center">
+                        {savedResults.has(`${game.id}-${res.time}`) ? (
+                          <span>✅</span>
+                        ) : failedResults.has(`${game.id}-${res.time}`) && res.numbers ? (
+                          <span>DONE</span>
+                        ) : (
+                          <CountdownTimer
+                            key={key}
+                            date={formattedDate}
+                            addMinutes={1}
+                            time={"05:30:00 pm"}
+                            onTimeUp={async () => {
+                              console.log("⏱ Countdown finished for", game.name, res.time);
+                            
+                              const updatedGame = await refetchResults(game.id);
+                              const updatedResult = updatedGame?.result?.find((r) => r.time === res.time);
+                            
+                              if (updatedResult && updatedResult.numbers && updatedResult.numbers.trim() !== "") {
+                                const formData = new FormData();
+                                formData.append("results", updatedResult.numbers);
+                                formData.append("game_id", game.id);
+                                formData.append("date", formattedDate);
+                                formData.append("time", updatedResult.time);
+                            
+                                const isAuthenticated = await setResultsDraw(formData);
+                            
+                                if (isAuthenticated) {
+                                  console.log("✅ Result saved on time-up:", updatedResult);
+                                  setSavedResults((prev) => new Set(prev).add(`${game.id}-${res.time}`));
+                                } else {
+                                  console.log("❌ Failed to save on time-up:", updatedResult);
+                                  setFailedResults((prev) => new Set(prev).add(`${game.id}-${res.time}`));
+                                }
+                              } else {
+                                console.log("🕐 Still empty, will try again later");
+                              }
+                            }}
+                            
+                            
+                            shouldRetry={() => {
+                              console.log("retry");
+                              const found = draws.find((d) => d.id === game.id);
+                              const thisResult = found?.result?.find((r) => r.time === res.time);
+                              return !thisResult?.numbers || thisResult.numbers.trim() === "";
+                            }}
+                          />
+
+
+                        )}
+                      </TableCell>
+
+
+
+                      </TableRow>
+
+                    );
+                  })
+                )}
               </TableBody>
-            </Table>
+
+        </Table>
+
+
           </CardContent>
         </Card>
       </div>
-
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-md space-y-4">
-            <h3 className="text-xl font-bold">Enter the Winning Results</h3>
-            <Input
-              type="text"
-              placeholder="Enter Winning result"
-              value={updatedResult}
-              onChange={(e) => setUpdatedResult(e.target.value)}
-              className="w-full"
-            />
-            <div className="flex justify-end gap-2">
-              <Button onClick={updateResult} className="text-white bg-blue-500 px-4 py-2 rounded-md">
-                Save
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full sm:w-auto border-red-500 text-red-600 hover:bg-red-900/20"
-                onClick={closeModal}
-                type="button"
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

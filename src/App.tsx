@@ -97,7 +97,7 @@ function App() {
                     <Route path="/logs" element={<Analytics />} />
                     <Route path="/winnings" element={<Winnings />} />
                     <Route path="/playersbets" element={<PlayersBets />} />
-                    {/* <Route path="/clientwinners" element={<NonRegisteredPlayers />} /> */}
+                    <Route path="/clientwinners" element={<NonRegisteredPlayers />} />
                     <Route path="/winners" element={<WinnerBets />} />
                     <Route path="/users" element={<Users />} />
                     <Route path="/agents" element={<Agents />} />

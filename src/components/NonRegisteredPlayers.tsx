@@ -194,7 +194,7 @@ export function NonRegisteredPlayers() {
                     <TableCell className="text-center">{product.bank}</TableCell>
                     <TableCell className="text-center">{product.account}</TableCell>
                     <TableCell className="text-center">
-                    {
+                   {/*  {
                     product.status ==="syncing" && (
                       <>
                        <Button
@@ -205,7 +205,7 @@ export function NonRegisteredPlayers() {
                       </Button>
                       </>
                     )
-                    }
+                    } */}
                     </TableCell>
                   </TableRow>
                 ))}

@@ -99,6 +99,8 @@ export function Clients() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setUpdating(true);
+    setLoading(true);
+    setIsModalOpen(false);
 
     const formData = new FormData();
     formData.append('userID', selectedGameBet.id);
@@ -119,10 +121,15 @@ export function Clients() {
           bet.id === selectedGameBet.id ? { ...bet, status: selectedGameBet.status } : bet
         )
       );
-    }
 
-    setUpdating(false);
-    setIsModalOpen(false);
+      const gamesData = await getClients();
+      setGamebets(gamesData);
+      setFilteredGamebets(gamesData);
+      setUpdating(false);
+      
+    }
+    setLoading(false);
+    
   };
 
   const handleChange = (e) => {

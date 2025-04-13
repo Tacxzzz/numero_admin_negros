@@ -13,7 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from '@/components/ui/input';
 import { useAuth0 } from '@auth0/auth0-react';
 import { loginAdmin, getTransactionsCashin } from './api/apiCalls';
-import { formatPeso } from './utils/utils';
+import { formatPeso, getTransCode } from './utils/utils';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -125,6 +125,7 @@ export function TransactionsCashin() {
             <Table>
               <TableHeader>
                 <TableRow>
+                <TableHead className="text-center">ID</TableHead>
                   <TableHead className="text-center">Date</TableHead>
                   <TableHead className="text-center">User</TableHead>
                   <TableHead className="text-center">Client No</TableHead>
@@ -137,6 +138,8 @@ export function TransactionsCashin() {
               <TableBody>
                 {filteredGamebets.map((product) => (
                   <TableRow key={product.id}>
+                    
+                    <TableCell className="text-center">{getTransCode(product.date)}{product.id}</TableCell>
                     <TableCell className="text-center">{product.date}</TableCell>
                     <TableCell className="text-center">{product.mobile}</TableCell>
                     <TableCell className="text-center">{product.trans_num}</TableCell>

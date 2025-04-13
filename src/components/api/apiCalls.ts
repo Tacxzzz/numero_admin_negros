@@ -997,41 +997,59 @@ export const getTodayDraws = async () => {
 
 
 
-export const getWebData = async (id:string) => {
+export const getWebData = async (id: string) => {
   try {
-
     const response = await axios.post(`${API_URL}/admin/getWebData`, { gameID: id });
-    console.log('Raw Response:', response.data); // Log the raw response to debug
+    console.log('Raw Response:', response.data);
 
     let rawData = response.data;
 
-    // Step 1: Clean up the response if there's a 'null' at the end
+    // Remove unwanted null data
     if (rawData.endsWith('null')) {
       rawData = rawData.slice(0, -4); // Remove 'null' at the end
     }
 
-    // Step 2: Parse the cleaned response into JSON
+    // Parse the response data
     let parsedData;
     try {
       parsedData = JSON.parse(rawData);
       console.log('Parsed Data:', parsedData);
+      return parsedData;
     } catch (error) {
       console.error('Error parsing cleaned data:', error);
       return [];
     }
 
-    // Check if parsedData is valid and contains results
-    if (parsedData && Array.isArray(parsedData.results)) {
-      return parsedData.results;
-    } else {
-      console.error('Invalid data format or no results found');
-      return [];
-    }
   } catch (error) {
     console.error('Error fetching data:', error);
     return [];
   }
 };
+
+
+
+export const setResultsDraw = async (formData: FormData): Promise<boolean> => {
+  try 
+  {
+      const response = await axios.post(
+          import.meta.env.VITE_DATABASE_URL+'/admin/setResultsDraw',
+          formData,
+          { headers: {
+            'Content-Type': 'multipart/form-data' 
+          } }
+      );
+
+      
+      return response.data.authenticated;
+  } 
+  catch (error) 
+  {
+      console.error('Error authenticating user:', error);
+      return false;
+  }
+};
+
+
 
 
 export const cashOutCashko = async (

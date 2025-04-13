@@ -90,7 +90,7 @@ export function WinnerBets() {
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl md:text-3xl font-bold">Winners History</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">Player Winners History</h2>
       </div>
 
       {/* Search and Filters */}
@@ -127,7 +127,6 @@ export function WinnerBets() {
                   <TableHead className="text-center">Game</TableHead>
                   <TableHead className="text-center">Player</TableHead>
                   <TableHead className="text-center">Bet</TableHead>
-                  <TableHead className="text-center">If Player from agent</TableHead>
                   <TableHead className="text-center">Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -148,13 +147,6 @@ export function WinnerBets() {
                     </TableCell>
                     <TableCell className="text-center">{product.user_mobile}</TableCell>
                     <TableCell className="text-center">{product.bets}</TableCell>
-                    <TableCell className="text-center">
-                      {product.bakas_fullname}
-                      <br />
-                      {product.bakas_bank}
-                      <br />
-                      {product.bakas_account}
-                    </TableCell>
                     <TableCell className="text-center">{product.status}</TableCell>
                   </TableRow>
                 ))}
