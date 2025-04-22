@@ -1124,3 +1124,20 @@ const generateSign = (clientCode: string, clientNo: string, latest_requestTimest
   const resultHash = CryptoJS.MD5(signString).toString(CryptoJS.enc.Hex);
   return resultHash;
 };
+
+
+
+export const getLogs = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getLogs`);
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};

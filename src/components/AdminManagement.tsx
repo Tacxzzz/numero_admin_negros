@@ -132,6 +132,7 @@ export function AdminManagement() {
     { id: "team_players", label: "ACCESS YOUR TEAM PLAYERS" },
     { id: "team_cashin", label: "ACCESS YOUR TEAM CASHIN HISTORY" },
     { id: "team_cashout", label: "ACCESS YOUR TEAM CASHOUT HISTORY" },
+    { id: "logs", label: "ACCESS USER LOGS" },
 
   ];
 

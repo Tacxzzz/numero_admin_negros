@@ -29,6 +29,7 @@ import { TeamUsers } from "./components/TeamUsers";
 import { TeamDashboard } from "./components/TeamDashboard";
 import { NonRegisteredPlayers } from "./components/NonRegisteredPlayers";
 import { Announcements } from "./components/Announcements";
+import { Logs } from "./components/Logs";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -94,7 +95,7 @@ function App() {
                     <Route path="/draws" element={<Draws />} />
                     <Route path="/cashinhistory" element={<TransactionsCashin />} />
                     <Route path="/cashouthistory" element={<TransactionsCashOut />} />
-                    <Route path="/logs" element={<Analytics />} />
+                    <Route path="/logs" element={<Logs />} />
                     <Route path="/winnings" element={<Winnings />} />
                     <Route path="/playersbets" element={<PlayersBets />} />
                     <Route path="/clientwinners" element={<NonRegisteredPlayers />} />
