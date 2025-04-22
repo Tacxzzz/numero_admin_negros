@@ -124,7 +124,8 @@ export function WinnerBets() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-center">Date</TableHead>
+                  <TableHead className="text-center">Bet Placed</TableHead>
+                  <TableHead className="text-center">Draw Date</TableHead>
                   <TableHead className="text-center">Game</TableHead>
                   <TableHead className="text-center">Player</TableHead>
                   <TableHead className="text-center">Bet</TableHead>
@@ -142,11 +143,14 @@ export function WinnerBets() {
                       {product.created_time}
                     </TableCell>
                     <TableCell className="text-center">
+                      {product.draw_date}
+                      <br />
+                      {product.draw_time}
+                    </TableCell>
+                    <TableCell className="text-center">
                       {product.game_name}
                       <br />
                       {product.game_type_name}
-                      <br />
-                      {product.draw_date} {product.draw_time}
                     </TableCell>
                     <TableCell className="text-center">{product.user_mobile}</TableCell>
                     <TableCell className="text-center">{formatPeso(product.bet)}</TableCell>
