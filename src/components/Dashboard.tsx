@@ -80,7 +80,7 @@ export function Dashboard() {
           setPermissionsString(JSON.parse(dataUpdated.permissions));
           setLoading(false);
 
-          const startDate = '2025-04-12';
+          const startDate = '2025-03-17';
           const endDate = new Intl.DateTimeFormat('en-GB', {
             timeZone: 'Asia/Manila',
             year: 'numeric',
