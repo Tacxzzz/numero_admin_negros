@@ -31,6 +31,43 @@ export function Dashboard() {
     const [rateChartData, setRateChartData] = useState<any[]>([]);
     const [permissionsString, setPermissionsString] = useState([]);
 
+  useEffect(() => {
+    const fetchRateChartData = async () => {
+      try {
+        const data = await getRateChartData(startDate, endDate); // Call the function to fetch data
+        setRateChartData(data); 
+
+        const betsEarnedData= await countBetsEarned(startDate,endDate);
+        setTotalRemitAmount(betsEarnedData.count);
+
+        const data2= await totalWins(startDate,endDate);
+          setTotalRedeemAmount(data2.count);
+
+          const data3= await totalBalancePlayers(startDate,endDate);
+          setTotalBalance(data3.count);
+
+          const data4= await totalCommissions(startDate,endDate);
+          setTotalComm(data4.count);
+
+          const data5= await totalPlayers(startDate,endDate);
+          setTotalPlayersAmount(data5.count);
+
+          const data6= await totalClients(startDate,endDate);
+          setTotalNonRegisteredPlayers(data6.count);
+
+          const data7= await totalCashin(startDate,endDate);
+          setTotalCashins(data7.count);
+
+          const data8= await totalCashOut(startDate,endDate);
+          setTotalCashouts(data8.count);
+      } catch (error) {
+        console.error('Error fetching rate chart data:', error);
+      }
+    };
+
+    fetchRateChartData(); // Fetch data when startDate or endDate changes
+  }, [startDate, endDate]);
+
 
   useEffect(() => {
     if (user && !dbUpdated) {
@@ -43,32 +80,47 @@ export function Dashboard() {
           setPermissionsString(JSON.parse(dataUpdated.permissions));
           setLoading(false);
 
-          const data = await getRateChartData();
+          const startDate = '2025-04-12';
+          const endDate = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Asia/Manila',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }).format(new Date()).split('/').reverse().join('-');
+
+          setStartDate(startDate);
+          setEndDate(endDate);
+
+          console.log('Start:', startDate);
+          console.log('End:', endDate);
+
+
+          const data = await getRateChartData(startDate,endDate);
           setRateChartData(data);
           console.log(data);
 
-          const betsEarnedData= await countBetsEarned();
+          const betsEarnedData= await countBetsEarned(startDate,endDate);
           setTotalRemitAmount(betsEarnedData.count);
 
-          const data2= await totalWins();
+          const data2= await totalWins(startDate,endDate);
           setTotalRedeemAmount(data2.count);
 
-          const data3= await totalBalancePlayers();
+          const data3= await totalBalancePlayers(startDate,endDate);
           setTotalBalance(data3.count);
 
-          const data4= await totalCommissions();
+          const data4= await totalCommissions(startDate,endDate);
           setTotalComm(data4.count);
           
-          const data5= await totalPlayers();
+          const data5= await totalPlayers(startDate,endDate);
           setTotalPlayersAmount(data5.count);
 
-          const data6= await totalClients();
+          const data6= await totalClients(startDate,endDate);
           setTotalNonRegisteredPlayers(data6.count);
 
-          const data7= await totalCashin();
+          const data7= await totalCashin(startDate,endDate);
           setTotalCashins(data7.count);
 
-          const data8= await totalCashOut();
+          const data8= await totalCashOut(startDate,endDate);
           setTotalCashouts(data8.count);
         }
         else
