@@ -79,8 +79,18 @@ export function Dashboard() {
           setUserID(dataUpdated.userID);
           setPermissionsString(JSON.parse(dataUpdated.permissions));
           setLoading(false);
+          
 
-          const startDate = '2025-03-17';
+          const initialStartDate = new Date();
+          initialStartDate.setDate(initialStartDate.getDate() - 20); // Subtract 20 days from the current date
+
+          const startDate = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Asia/Manila',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }).format(initialStartDate).split('/').reverse().join('-'); // Format the date as YYYY-MM-DD
+          
           const endDate = new Intl.DateTimeFormat('en-GB', {
             timeZone: 'Asia/Manila',
             year: 'numeric',
