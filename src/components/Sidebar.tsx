@@ -69,6 +69,8 @@ export function Sidebar({ onClose }: SidebarProps) {
     
     { icon: LayoutDashboard, label: "My TEAM Dashboard", path: "/teamdashboard", permission: "team_dashboard" },
     { icon: Users, label: "My TEAM", path: "/teamusers", permission: "team_players" },
+    { icon: Banknote, label: "My TEAM Cashin", path: "/teamcashin", permission: "team_cashin" },
+    { icon: DollarSign, label: "My TEAM Cashout", path: "/teamcashout", permission: "team_cashout" },
   ];
   
 

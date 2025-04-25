@@ -101,6 +101,36 @@ export const getDraws = async () => {
 };
 
 
+export const getTeamTransactionsCashin = async (id:string) => {
+  try {
+
+    const response = await axios.post(`${API_URL}/admin/getTeamTransactionsCashin`, { userID: id });
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getTeamTransactionsCashout = async (id:string) => {
+  try {
+
+    const response = await axios.post(`${API_URL}/admin/getTeamTransactionsCashout`, { userID: id });
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
 export const getTransactionsCashin = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getTransactionsCashin`);

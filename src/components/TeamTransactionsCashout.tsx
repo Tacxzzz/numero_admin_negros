@@ -10,15 +10,15 @@ import {
 } from "@/components/ui/table";
 import { Plus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useAuth0 } from '@auth0/auth0-react';
-import { loginAdmin, getTransactionsCashin, getTeamTransactionsCashin } from './api/apiCalls';
-import { formatPeso, getTransCode } from './utils/utils';
+import { loginAdmin, getTransactionsCashout, getTeamTransactionsCashout } from './api/apiCalls';
+import { formatPeso } from './utils/utils';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-
-export function TeamTransactionsCashin() {
+export function TeamTransactionsCashOut() {
   const { user, getAccessTokenSilently, logout } = useAuth0();
   const [loading, setLoading] = useState(true);
   const [dbUpdated, setDbUpdated] = useState(false);
@@ -37,7 +37,7 @@ export function TeamTransactionsCashin() {
           setDbUpdated(dataUpdated.dbUpdate);
           setPermissionsString(JSON.parse(dataUpdated.permissions));
           setLoading(false);
-          const gamesData = await getTeamTransactionsCashin(dataUpdated.userID);
+          const gamesData = await getTeamTransactionsCashout(dataUpdated.userID);
           setGamebets(gamesData);
           setFilteredGamebets(gamesData);
         } else {
@@ -50,7 +50,7 @@ export function TeamTransactionsCashin() {
   }, [user, dbUpdated, getAccessTokenSilently, logout]);
 
   useEffect(() => {
-    let filtered = [...gamebets]; // Create a copy of the original array
+    let filtered = [...gamebets];
 
     // Filter by search query
     if (searchQuery) {
@@ -67,21 +67,20 @@ export function TeamTransactionsCashin() {
       });
     }
 
-    // Sort by date
-    filtered.sort((a, b) => {
-      const dateA = new Date(a.date).getTime();
-      const dateB = new Date(b.date).getTime();
-      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
-    });
-
     setFilteredGamebets(filtered);
-  }, [searchQuery, startDate, sortOrder, gamebets]);
+  }, [searchQuery, startDate, gamebets]);
+
+  const sortedGamebets = [...filteredGamebets].sort((a, b) => {
+    const dateA = new Date(a.date).getTime();
+    const dateB = new Date(b.date).getTime();
+    return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+  });
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  if(!permissionsString.includes("team_cashin"))
+  if(!permissionsString.includes("team_cashout"))
   {
     return <div>Not allowed to manage this page</div>
   }
@@ -93,7 +92,7 @@ export function TeamTransactionsCashin() {
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl md:text-3xl font-bold">My Team Cash in History</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">My Team Cash out History</h2>
       </div>
 
       {/* Search and Filters */}
@@ -126,27 +125,28 @@ export function TeamTransactionsCashin() {
             <Table>
               <TableHeader>
                 <TableRow>
-                <TableHead className="text-center">ID</TableHead>
                   <TableHead className="text-center">Date</TableHead>
                   <TableHead className="text-center">User</TableHead>
                   <TableHead className="text-center">Client No</TableHead>
                   <TableHead className="text-center">Order No</TableHead>
-                  <TableHead className="text-center">Amount Paid</TableHead>
-                  <TableHead className="text-center">Credit</TableHead>
+                  <TableHead className="text-center">Amount to Cashout</TableHead>
+                  <TableHead className="text-center">Name</TableHead>
+                  <TableHead className="text-center">Bank</TableHead>
+                  <TableHead className="text-center">Account</TableHead>
                   <TableHead className="text-center">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredGamebets.map((product) => (
+                {sortedGamebets.map((product) => (
                   <TableRow key={product.id}>
-                    
-                    <TableCell className="text-center">{getTransCode(product.date)}{product.id}</TableCell>
                     <TableCell className="text-center">{product.date}</TableCell>
                     <TableCell className="text-center">{product.mobile}</TableCell>
                     <TableCell className="text-center">{product.trans_num}</TableCell>
                     <TableCell className="text-center">{product.invoice}</TableCell>
                     <TableCell className="text-center">{formatPeso(product.amount)}</TableCell>
-                    <TableCell className="text-center">{formatPeso(product.credit)}</TableCell>
+                    <TableCell className="text-center">{product.full_name}</TableCell>
+                    <TableCell className="text-center">{product.bank}</TableCell>
+                    <TableCell className="text-center">{product.account}</TableCell>
                     <TableCell className="text-center">{product.status}</TableCell>
                   </TableRow>
                 ))}

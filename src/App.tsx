@@ -30,6 +30,8 @@ import { TeamDashboard } from "./components/TeamDashboard";
 import { NonRegisteredPlayers } from "./components/NonRegisteredPlayers";
 import { Announcements } from "./components/Announcements";
 import { Logs } from "./components/Logs";
+import { TeamTransactionsCashin } from "./components/TeamTransactionsCashin";
+import { TeamTransactionsCashOut } from "./components/TeamTransactionsCashout";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -113,6 +115,8 @@ function App() {
 
                     <Route path="/teamdashboard" element={<TeamDashboard />} />
                     <Route path="/teamusers" element={<TeamUsers />} />
+                    <Route path="/teamcashin" element={<TeamTransactionsCashin />} />
+                    <Route path="/teamcashout" element={<TeamTransactionsCashOut />} />
                   </Routes>
                 </main>
               </div>
