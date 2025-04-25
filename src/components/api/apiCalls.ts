@@ -727,9 +727,10 @@ export const totalCashOut = async (start_date:string, end_date:string) => {
 
 ///TEAM DASHBOARD
 
-export const getRateChartDataTeam = async (id:string) => {
+export const getRateChartDataTeam = async (id:string,start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/getRateChartDataTeam`, { userID: id });
+    const response = await axios.post(`${API_URL}/admin/getRateChartDataTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    
     if (Array.isArray(response.data)) {
       return response.data;
     } else if (response.data.error) {
@@ -742,9 +743,10 @@ export const getRateChartDataTeam = async (id:string) => {
 };
 
 
-export const countBetsEarnedTeam = async (id:string) => {
+export const countBetsEarnedTeam = async (id:string,start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/countBetsEarnedTeam`, { userID: id });
+    const response = await axios.post(`${API_URL}/admin/countBetsEarnedTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    
     if (response.data) 
       {
       const userData = response.data;
@@ -765,9 +767,10 @@ export const countBetsEarnedTeam = async (id:string) => {
 };
 
 
-export const totalWinsTeam = async (id:string) => {
+export const totalWinsTeam = async (id:string,start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/totalWinsTeam`, { userID: id });
+    const response = await axios.post(`${API_URL}/admin/totalWinsTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    
     if (response.data) 
       {
       const userData = response.data;
@@ -788,9 +791,11 @@ export const totalWinsTeam = async (id:string) => {
 };
 
 
-export const totalBalancePlayersTeam = async (id:string) => {
+export const totalBalancePlayersTeam = async (id:string,start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/totalBalancePlayersTeam`, { userID: id });
+
+    const response = await axios.post(`${API_URL}/admin/totalBalancePlayersTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    
     if (response.data) 
       {
       const userData = response.data;
@@ -810,9 +815,11 @@ export const totalBalancePlayersTeam = async (id:string) => {
   }
 };
 
-export const totalCommissionsTeam = async (id:string) => {
+export const totalCommissionsTeam = async (id:string,start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/totalCommissionsTeam`, { userID: id });
+
+    const response = await axios.post(`${API_URL}/admin/totalCommissionsTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    
     if (response.data) 
       {
       const userData = response.data;
@@ -832,9 +839,11 @@ export const totalCommissionsTeam = async (id:string) => {
   }
 };
 
-export const totalPlayersTeam = async (id:string) => {
+export const totalPlayersTeam = async (id:string,start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/totalPlayersTeam`, { userID: id });
+
+    const response = await axios.post(`${API_URL}/admin/totalPlayersTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    
     if (response.data) 
       {
       const userData = response.data;
@@ -854,9 +863,11 @@ export const totalPlayersTeam = async (id:string) => {
   }
 };
 
-export const totalClientsTeam = async (id:string) => {
+export const totalClientsTeam = async (id:string,start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/totalClientsTeam`, { userID: id });
+
+    const response = await axios.post(`${API_URL}/admin/totalClientsTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    
     if (response.data) 
       {
       const userData = response.data;
@@ -876,9 +887,11 @@ export const totalClientsTeam = async (id:string) => {
   }
 };
 
-export const totalCashinTeam = async (id:string) => {
+export const totalCashinTeam = async (id:string,start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/totalCashinTeam`, { userID: id });
+
+    const response = await axios.post(`${API_URL}/admin/totalCashinTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    
     if (response.data) 
       {
       const userData = response.data;
@@ -898,9 +911,11 @@ export const totalCashinTeam = async (id:string) => {
   }
 };
 
-export const totalCashOutTeam = async (id:string) => {
+export const totalCashOutTeam = async (id:string,start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/totalCashOutTeam`, { userID: id });
+
+    const response = await axios.post(`${API_URL}/admin/totalCashOutTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    
     if (response.data) 
       {
       const userData = response.data;

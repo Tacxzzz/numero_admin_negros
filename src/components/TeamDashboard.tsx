@@ -33,6 +33,45 @@ export function TeamDashboard() {
 
 
   useEffect(() => {
+      const fetchRateChartData = async () => {
+        try {
+          const data = await getRateChartDataTeam(userID,startDate, endDate); // Call the function to fetch data
+          setRateChartData(data); 
+
+          const betsEarnedData= await countBetsEarnedTeam(userID,startDate,endDate);
+          setTotalRemitAmount(betsEarnedData.count);
+          
+          const data2= await totalWinsTeam(userID,startDate,endDate);
+          setTotalRedeemAmount(data2.count);
+
+          const data3= await totalBalancePlayersTeam(userID,startDate,endDate);
+          setTotalBalance(data3.count);
+
+          const data4= await totalCommissionsTeam(userID,startDate,endDate);
+          setTotalComm(data4.count);
+
+          const data5= await totalPlayersTeam(userID,startDate,endDate);
+          setTotalPlayersAmount(data5.count);
+
+          const data6= await totalClientsTeam(userID,startDate,endDate);
+          setTotalNonRegisteredPlayers(data6.count);
+
+          const data7= await totalCashinTeam(userID,startDate,endDate);
+          setTotalCashins(data7.count);
+
+          const data8= await totalCashOutTeam(userID,startDate,endDate);
+          setTotalCashouts(data8.count);
+          
+        } catch (error) {
+          console.error('Error fetching rate chart data:', error);
+        }
+      };
+  
+      fetchRateChartData(); // Fetch data when startDate or endDate changes
+    }, [startDate, endDate]);
+
+
+  useEffect(() => {
     if (user && !dbUpdated) {
       const handleUpdate = async () => {
         const dataUpdated= await loginAdmin(user,getAccessTokenSilently);
@@ -43,32 +82,55 @@ export function TeamDashboard() {
           setPermissionsString(JSON.parse(dataUpdated.permissions));
           setLoading(false);
 
-          const data = await getRateChartDataTeam(dataUpdated.userID);
+          const initialStartDate = new Date();
+          initialStartDate.setDate(initialStartDate.getDate() - 20); // Subtract 20 days from the current date
+
+          const startDate = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Asia/Manila',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }).format(initialStartDate).split('/').reverse().join('-'); // Format the date as YYYY-MM-DD
+          
+          const endDate = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Asia/Manila',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }).format(new Date()).split('/').reverse().join('-');
+
+          setStartDate(startDate);
+          setEndDate(endDate);
+
+          console.log('Start:', startDate);
+          console.log('End:', endDate);
+
+          const data = await getRateChartDataTeam(dataUpdated.userID,startDate,endDate);
           setRateChartData(data);
           console.log(data);
 
-          const betsEarnedData= await countBetsEarnedTeam(dataUpdated.userID);
+          const betsEarnedData= await countBetsEarnedTeam(dataUpdated.userID,startDate,endDate);
           setTotalRemitAmount(betsEarnedData.count);
 
-          const data2= await totalWinsTeam(dataUpdated.userID);
+          const data2= await totalWinsTeam(dataUpdated.userID,startDate,endDate);
           setTotalRedeemAmount(data2.count);
 
-          const data3= await totalBalancePlayersTeam(dataUpdated.userID);
+          const data3= await totalBalancePlayersTeam(dataUpdated.userID,startDate,endDate);
           setTotalBalance(data3.count);
 
-          const data4= await totalCommissionsTeam(dataUpdated.userID);
+          const data4= await totalCommissionsTeam(dataUpdated.userID,startDate,endDate);
           setTotalComm(data4.count);
           
-          const data5= await totalPlayersTeam(dataUpdated.userID);
+          const data5= await totalPlayersTeam(dataUpdated.userID,startDate,endDate);
           setTotalPlayersAmount(data5.count);
 
-          const data6= await totalClientsTeam(dataUpdated.userID);
+          const data6= await totalClientsTeam(dataUpdated.userID,startDate,endDate);
           setTotalNonRegisteredPlayers(data6.count);
 
-          const data7= await totalCashinTeam(dataUpdated.userID);
+          const data7= await totalCashinTeam(dataUpdated.userID,startDate,endDate);
           setTotalCashins(data7.count);
 
-          const data8= await totalCashOutTeam(dataUpdated.userID);
+          const data8= await totalCashOutTeam(dataUpdated.userID,startDate,endDate);
           setTotalCashouts(data8.count);
         }
         else
