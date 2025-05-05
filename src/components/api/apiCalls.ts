@@ -1194,3 +1194,19 @@ export const getLogs = async () => {
     return [];
   }
 };
+
+
+export const getLogsByUser = async (userID: string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getLogsByUser`, { userID});
+    
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};

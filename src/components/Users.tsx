@@ -225,6 +225,12 @@ export function Users() {
                       >
                         Referrals
                       </Button>
+                      <Button
+                        className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
+                        onClick={() => navigate('/logsuser', { state: { userID: product.id } })}
+                      >
+                        Logs
+                      </Button>
                     </div>
                   </TableCell>
                     {/* <TableCell className="text-center hidden sm:table-cell">{product.under_admin_mail}</TableCell>
@@ -269,6 +275,13 @@ export function Users() {
                         onClick={() => navigate(`/hierarchy?user_mobile=${product.mobile}&user_id=${product.id}`)}
                       >
                         Referrals
+                      </Button>
+
+                      <Button
+                        className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
+                        onClick={() => navigate('/logsuser', { state: { userID: product.id } })}
+                      >
+                        Logs
                       </Button>
                     </div>
                   </div>
