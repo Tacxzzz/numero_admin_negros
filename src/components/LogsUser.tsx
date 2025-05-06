@@ -76,10 +76,10 @@ export function LogsUser() {
     const fieldB = b[sortField];
 
     if (fieldA < fieldB) {
-      return sortDirection === "asc" ? -1 : 1;
+      return sortDirection === "desc" ? -1 : 1;
     }
     if (fieldA > fieldB) {
-      return sortDirection === "asc" ? 1 : -1;
+      return sortDirection === "desc" ? 1 : -1;
     }
     return 0;
   });

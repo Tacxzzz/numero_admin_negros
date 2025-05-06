@@ -72,10 +72,10 @@ export function Logs() {
     const fieldB = b[sortField];
 
     if (fieldA < fieldB) {
-      return sortDirection === "asc" ? -1 : 1;
+      return sortDirection === "desc" ? -1 : 1;
     }
     if (fieldA > fieldB) {
-      return sortDirection === "asc" ? 1 : -1;
+      return sortDirection === "desc" ? 1 : -1;
     }
     return 0;
   });
@@ -88,10 +88,10 @@ export function Logs() {
   // Handle sort toggle
   const handleSort = (field: keyof any) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      setSortDirection(sortDirection === "desc" ? "asc" : "desc");
     } else {
       setSortField(field);
-      setSortDirection("asc");
+      setSortDirection("desc");
     }
   };
 
