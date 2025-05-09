@@ -69,6 +69,79 @@ export const getGames = async () => {
   }
 };
 
+export const getGamesData = async (userID: string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getGamesData`, { userID});
+    
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getCombinationLimits = async (userID: string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getCombinationLimits`, { userID});
+    
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const addCombinationLimit = async (formData: FormData): Promise<boolean> => {
+  try 
+  {
+      const response = await axios.post(
+          import.meta.env.VITE_DATABASE_URL+'/admin/addCombinationLimit',
+          formData,
+          { headers: {
+            'Content-Type': 'multipart/form-data' 
+          } }
+      );
+
+      
+      return response.data.authenticated;
+  } 
+  catch (error) 
+  {
+      console.error('Error authenticating user:', error);
+      return false;
+  }
+};
+
+
+export const updateCombinationLimit = async (formData: FormData): Promise<boolean> => {
+  try 
+  {
+      const response = await axios.post(
+          import.meta.env.VITE_DATABASE_URL+'/admin/updateCombinationLimit',
+          formData,
+          { headers: {
+            'Content-Type': 'multipart/form-data' 
+          } }
+      );
+
+      
+      return response.data.authenticated;
+  } 
+  catch (error) 
+  {
+      console.error('Error authenticating user:', error);
+      return false;
+  }
+};
+
 export const getGamesTypes = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getGamesTypes`);

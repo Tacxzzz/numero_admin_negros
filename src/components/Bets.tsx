@@ -15,10 +15,11 @@ import { Input } from '@/components/ui/input';
 import { useAuth0 } from '@auth0/auth0-react';
 import { loginAdmin,getGames, updateGame } from './api/apiCalls';
 import { formatPeso } from './utils/utils';
+import { useNavigate } from 'react-router-dom';
 
 
 export function Bets() {
-
+  const navigate = useNavigate();
   const { user,getAccessTokenSilently , logout} = useAuth0();
   const [showGameDialog, setshowGameDialog] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -227,12 +228,20 @@ export function Bets() {
                 <TableCell className="text-center">{product.ceiling_perc} %</TableCell>
                 <TableCell className="text-center">{product.status}</TableCell>
                 <TableCell className="text-center">
+                <div className="flex gap-2 align-items-center justify-center mt-2">
                   <Button
                     className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
                     onClick={() => handleEditClick(product)}
                   >
                     Edit
                   </Button>
+                  <Button
+                    className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
+                    onClick={() => navigate('/combinationLimits', { state: { userID: product.id } })}
+                  >
+                    Set Limits
+                  </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
