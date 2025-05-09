@@ -273,7 +273,30 @@ export function Draws() {
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          {(() => {
+            // Calculate batch start and end
+            const batchSize = 10;
+            const currentBatch = Math.floor((currentPage - 1) / batchSize);
+            const batchStart = currentBatch * batchSize + 1;
+            const batchEnd = Math.min(batchStart + batchSize - 1, totalPages);
+
+            const pageButtons = [];
+            // Previous batch "..." button
+            if (batchStart > 1) {
+              pageButtons.push(
+                <Button
+                  key="prev-batch"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(batchStart - 1)}
+                >
+                  ...
+                </Button>
+              );
+            }
+            // Page number buttons
+            for (let page = batchStart; page <= batchEnd; page++) {
+              pageButtons.push(
             <Button
               key={page}
               variant={currentPage === page ? "default" : "outline"}
@@ -282,7 +305,23 @@ export function Draws() {
             >
               {page}
             </Button>
-          ))}
+          );
+        }
+        // Next batch "..." button
+        if (batchEnd < totalPages) {
+          pageButtons.push(
+            <Button
+              key="next-batch"
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(batchEnd + 1)}
+            >
+              ...
+            </Button>
+          );
+        }
+        return pageButtons;
+      })()}
           <Button
             variant="outline"
             size="icon"
