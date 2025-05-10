@@ -106,27 +106,35 @@ export function Users() {
     formData.append('under_admin', selectedGameBet.under_admin);
     formData.append('level', selectedGameBet.level);
     formData.append('quota', selectedGameBet.quota);
+    formData.append('nolimit_percent', selectedGameBet.nolimit_percent);
     formData.append('quota_time', selectedGameBet.quota_time);
     formData.append('quota_allow', selectedGameBet.quota_allow);
 
-
-    setLoading(true);
     const isAuthenticated = await updatePlayer(formData);
+
+    setUpdating(false);
+    setIsModalOpen(false);
+
     if (!isAuthenticated) {
       alert("An error occurred!");
-      setUpdating(false);
-      setIsModalOpen(false);
-      setLoading(false);
-    } else {
-      setUpdating(false);
-      setIsModalOpen(false);
-      setLoading(false);
-      alert("Player updated successfully.");
-      const gamesData = await getPlayers();
-      setGamebets(gamesData);
-      setFilteredGamebets(gamesData);
+      return;
     }
-  };
+
+    alert("Player updated successfully.");
+
+    setGamebets((prevGamebets) =>
+      prevGamebets.map((bet) =>
+        bet.id === selectedGameBet.id ? { ...bet, ...selectedGameBet } : bet
+      )
+    );
+
+    setFilteredGamebets((prevFilteredGamebets) =>
+      prevFilteredGamebets.map((bet) =>
+        bet.id === selectedGameBet.id ? { ...bet, ...selectedGameBet } : bet
+      )
+    );
+};
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -184,6 +192,7 @@ export function Users() {
                   <TableHead className="text-center hidden sm:table-cell"># of Referrals</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">Referral Limit</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">Quota</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell">% Commission if no limit</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">Quota Schedule</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">BYPASS QUOTA?</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">Action</TableHead>
@@ -206,6 +215,7 @@ export function Users() {
                     <TableCell className="text-center hidden sm:table-cell">{product.referral_count}</TableCell>
                     <TableCell className="text-center hidden sm:table-cell">{product.level}</TableCell>
                     <TableCell className="text-center hidden sm:table-cell">{formatPeso(product.quota)}</TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">{product.nolimit_percent} %</TableCell>
                     <TableCell className="text-center hidden sm:table-cell">{product.quota_time}</TableCell>
                     <TableCell className="text-center hidden sm:table-cell">{product.quota_allow}</TableCell>
 
@@ -348,7 +358,33 @@ export function Users() {
                   onChange={handleChange}
                   required
                   className="border p-1 mt-2 w-full"
-                  placeholder="Enter Ceiling Percentage"
+                  placeholder="Enter Quota Amount"
+                  style={{ appearance: 'textfield' }}
+                />
+                  <style>{`
+                            input[type=number]::-webkit-outer-spin-button,
+                            input[type=number]::-webkit-inner-spin-button {
+                            -webkit-appearance: none;
+                            margin: 0;
+                            }
+                            input[type=number] {
+                            -moz-appearance: textfield;
+                            }
+                            `}
+                  </style> 
+              </label>
+
+
+               <label className="block text-sm font-medium text-gray-700 mb-2">
+                % Commission if Quota is no limit
+                <Input
+                  type="number"
+                  name="nolimit_percent"
+                  value={selectedGameBet?.nolimit_percent || ""}
+                  onChange={handleChange}
+                  required
+                  className="border p-1 mt-2 w-full"
+                  placeholder="Enter % Commission if Quota is no limit"
                   style={{ appearance: 'textfield' }}
                 />
                   <style>{`
