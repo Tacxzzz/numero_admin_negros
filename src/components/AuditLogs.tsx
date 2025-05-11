@@ -162,9 +162,27 @@ export function AuditLogs() {
                   <TableHead className="text-center">
                     <div
                       className="flex items-center justify-center cursor-pointer"
-                      onClick={() => handleSort("created_time")}
+                      onClick={() => handleSort("created_at")}
                     >
-                      Logs
+                      Created At
+                      <ArrowUpDown className="ml-1 h-4 w-4" />
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-center">
+                    <div
+                      className="flex items-center justify-center cursor-pointer"
+                      onClick={() => handleSort("action_type")}
+                    >
+                      Action Type
+                      <ArrowUpDown className="ml-1 h-4 w-4" />
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-center">
+                    <div
+                      className="flex items-center justify-center cursor-pointer"
+                      onClick={() => handleSort("executed_query")}
+                    >
+                      Executed Query
                       <ArrowUpDown className="ml-1 h-4 w-4" />
                     </div>
                   </TableHead>
@@ -177,8 +195,9 @@ export function AuditLogs() {
                     key={product.id}
                     
                   >
-                    
-                    <TableCell className="text-center">{product.activity}</TableCell>
+                     <TableCell className="text-center">{product.created_at}</TableCell>
+                     <TableCell className="text-center">{product.action_type}</TableCell>
+                    <TableCell className="text-center">{product.executed_query}</TableCell>
                   </TableRow>
                 ))}
                 {paginatedBets.length === 0 && (
