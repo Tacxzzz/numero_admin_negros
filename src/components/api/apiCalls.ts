@@ -1283,3 +1283,19 @@ export const getLogsByUser = async (userID: string) => {
     return [];
   }
 };
+
+
+export const getAuditLogs = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getAuditLogs`);
+    
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
