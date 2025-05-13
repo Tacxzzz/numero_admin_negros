@@ -35,6 +35,7 @@ import { TeamTransactionsCashOut } from "./components/TeamTransactionsCashout";
 import { LogsUser } from "./components/LogsUser";
 import { CombinationLimit } from "./components/CombinationLimit";
 import { AuditLogs } from "./components/AuditLogs";
+import { Backups } from "./components/Backups";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -103,6 +104,7 @@ function App() {
                     <Route path="/cashouthistory" element={<TransactionsCashOut />} />
                     <Route path="/logs" element={<Logs />} />
                     <Route path="/logsuser" element={<LogsUser />} />
+                    <Route path="/backups" element={<Backups />} />
                     <Route path="/auditlogs" element={<AuditLogs />} />
                     <Route path="/winnings" element={<Winnings />} />
                     <Route path="/playersbets" element={<PlayersBets />} />

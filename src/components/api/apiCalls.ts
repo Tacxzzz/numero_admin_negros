@@ -1299,3 +1299,28 @@ export const getAuditLogs = async () => {
     return [];
   }
 };
+
+export const getBackups = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getBackups`);
+    
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+
+export const deleteBackup = async (userID: string) => {
+  try {
+    await axios.post(`${API_URL}/admin/deleteBackup`, { userID});
+    
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+  }
+};

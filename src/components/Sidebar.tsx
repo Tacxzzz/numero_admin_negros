@@ -65,6 +65,7 @@ export function Sidebar({ onClose }: SidebarProps) {
     { icon: Users, label: "Clients Management", path: "/clients", permission: "clients" },
     { icon: BarChart, label: "Logs", path: "/logs", permission: "logs" },
     { icon: BarChart, label: "General Audit Logs", path: "/auditlogs", permission: "admin_management" },
+    { icon: Grid, label: "Backups", path: "/backups", permission: "admin_management" },
     { icon: UserCheck2, label: "Admin Management", path: "/adminmanagement", permission: "admin_management" },
     { icon: Calendar, label: "Announcements", path: "/announcements", permission: "admin_management" },
     
