@@ -37,10 +37,7 @@ export function DrawsResults() {
   const [failedResults, setFailedResults] = useState(new Set());
   const [invalidResults, setInvalidResults] = useState(new Set());
 
- if(!permissionsString.includes("draws_results_unique"))
-    {
-      return <div>Not allowed to manage this page</div>
-    }
+ 
 
 
   useEffect(() => {
@@ -54,6 +51,9 @@ export function DrawsResults() {
               setPermissionsString(JSON.parse(dataUpdated.permissions));
               setLoading(false);
 
+
+              if(!permissionsString.includes("draws_results_unique"))
+              {
                 const todayData = await getTodayDraws();
                 setGames(todayData); 
 
@@ -74,7 +74,7 @@ export function DrawsResults() {
                 }
                 setDraws(allResults);
                 console.log(allResults);
-              
+              }
             }
             else
             {
@@ -90,7 +90,10 @@ export function DrawsResults() {
     
       
 
-  
+  if(!permissionsString.includes("draws_results_unique"))
+  {
+    return <div>Not allowed to manage this page</div>
+  }
 
 
   const formattedDate = getFormattedDate();
