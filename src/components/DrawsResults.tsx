@@ -52,8 +52,8 @@ export function DrawsResults() {
               setLoading(false);
 
 
-              // if(!permissionsString.includes("draws_results_unique"))
-              // {
+               if(!permissionsString.includes("draws_results_unique"))
+               {
                 const todayData = await getTodayDraws();
                 setGames(todayData); 
 
@@ -74,7 +74,7 @@ export function DrawsResults() {
                 }
                 setDraws(allResults);
                 console.log(allResults);
-              //}
+              }
             }
             else
             {
@@ -90,10 +90,10 @@ export function DrawsResults() {
     
       
 
-  // if(!permissionsString.includes("draws_results_unique"))
-  // {
-  //   return <div>Not allowed to manage this page</div>
-  // }
+   if(!permissionsString.includes("draws_results_unique"))
+   {
+     return <div>Not allowed to manage this page</div>
+   }
 
 
   const formattedDate = getFormattedDate();
