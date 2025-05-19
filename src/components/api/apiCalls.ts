@@ -1310,3 +1310,24 @@ export const deleteBackup = async (userID: string) => {
     console.error("Failed to fetch games:", error);
   }
 };
+
+
+export const backupAndCleanupDBLOGS = async () => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/backupAndCleanupDBLOGS`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to backup and cleanup DB logs:", error);
+    return null; 
+  }
+};
+
+export const backupAndCleanupLOGS = async () => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/backupAndCleanupLOGS`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to backup and cleanup logs:", error);
+    return null; 
+  }
+};
