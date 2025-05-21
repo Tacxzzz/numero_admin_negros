@@ -12,7 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { getDraws, getTodayDraws, getWebData, setResultsDraw } from "./api/apiCalls";
+import { backupAndCleanupDBLOGS, backupAndCleanupLOGS, getDraws, getTodayDraws, getWebData, setResultsDraw } from "./api/apiCalls";
 import { useAuth0 } from '@auth0/auth0-react';
 import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType } from './api/apiCalls';
 import { formatPeso, getFormattedDate, getTransCode } from './utils/utils';
@@ -35,9 +35,9 @@ export function DrawsResults() {
   const triggeredMap = useRef(new Set()); // store triggered states
   const [savedResults, setSavedResults] = useState(new Set());
   const [failedResults, setFailedResults] = useState(new Set());
+  const [invalidResults, setInvalidResults] = useState(new Set());
 
-
-
+ 
 
 
   useEffect(() => {
@@ -51,8 +51,9 @@ export function DrawsResults() {
               setPermissionsString(JSON.parse(dataUpdated.permissions));
               setLoading(false);
 
-              if(permissionsString.includes("draws_results_unique"))
-                {
+
+               if(!permissionsString.includes("draws_results_unique"))
+               {
                 const todayData = await getTodayDraws();
                 setGames(todayData); 
 
@@ -73,8 +74,7 @@ export function DrawsResults() {
                 }
                 setDraws(allResults);
                 console.log(allResults);
-              
-                }
+              }
             }
             else
             {
@@ -90,7 +90,10 @@ export function DrawsResults() {
     
       
 
-  
+   if(!permissionsString.includes("draws_results_unique"))
+   {
+     return <div>Not allowed to manage this page</div>
+   }
 
 
   const formattedDate = getFormattedDate();
@@ -140,7 +143,23 @@ export function DrawsResults() {
   
   
   
-  
+  const handleBackup = async () => {
+    const result = await backupAndCleanupDBLOGS();
+    if (result === "yes") {
+      alert("Backup successful!");
+    } else {
+      alert("Backup failed.");
+    }
+  };
+
+  const handleBackupAuditLogs = async () => {
+    const result = await backupAndCleanupLOGS();
+    if (result === "yes") {
+      alert("Backup successful!");
+    } else {
+      alert("Backup failed.");
+    }
+  };
   
   
 
@@ -153,16 +172,23 @@ export function DrawsResults() {
       return <div>...</div>;
     }
   
-    if(!permissionsString.includes("draws_results_unique"))
-    {
-      return <div>Not allowed to manage this page</div>
-    }
+    
 
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl md:text-3xl font-bold">WEB SCRAPE</h2>
-      </div>
+    <h2 className="text-2xl md:text-3xl font-bold">WEB SCRAPE</h2>
+
+    <div className="flex gap-2">
+      <Button onClick={handleBackup}>
+        Backup Logs
+      </Button>
+      <Button onClick={handleBackupAuditLogs}>
+        Backup System Audit
+      </Button>
+    </div>
+  </div>
+
 
 
       {/* Table */}
@@ -199,19 +225,49 @@ export function DrawsResults() {
                           <span>✅</span>
                         ) : failedResults.has(`${game.id}-${res.time}`) && res.numbers ? (
                           <span>DONE</span>
+                        ) : invalidResults.has(`${game.id}-${res.time}`) && res.numbers ? (
+                          <span style={{color:"red"}}>INVALID</span>
                         ) : (
                           <CountdownTimer
                             key={key}
                             date={formattedDate}
-                            addMinutes={1}
-                            time={"05:30:00 pm"}
+                            addMinutes={15}
+                            time={res.time} 
                             onTimeUp={async () => {
                               console.log("⏱ Countdown finished for", game.name, res.time);
                             
                               const updatedGame = await refetchResults(game.id);
                               const updatedResult = updatedGame?.result?.find((r) => r.time === res.time);
-                            
+                              
                               if (updatedResult && updatedResult.numbers && updatedResult.numbers.trim() !== "") {
+                                
+                                const parts = updatedResult.numbers.split("-").map(n => n.trim());
+    
+                                let isValid = true;
+
+                                // Game-specific validation
+                                if (parseInt(game.id) === 1) {
+                                  isValid = parts.length === 2;
+
+                                } else if (parseInt(game.id) === 2) {
+                                  isValid = parts.length === 3;
+
+                                } else if (parseInt(game.id) === 4) {
+                                  isValid = parts.length === 4;
+
+                                }else if (parseInt(game.id) > 4) {
+                                  isValid = parts.length === 6;
+
+                                } else {
+                                  // Default: allow anything
+                                  isValid = true;
+                                }
+
+                                if (!isValid) {
+                                  setInvalidResults((prev) => new Set(prev).add(`${game.id}-${res.time}`));
+                                  return;
+                                }
+                                
                                 const formData = new FormData();
                                 formData.append("results", updatedResult.numbers);
                                 formData.append("game_id", game.id);

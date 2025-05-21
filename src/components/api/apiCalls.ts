@@ -1128,29 +1128,15 @@ export const getWebData = async (id: string) => {
     const response = await axios.post(`${API_URL}/admin/getWebData`, { gameID: id });
     console.log('Raw Response:', response.data);
 
-    let rawData = response.data;
-
-    // Remove unwanted null data
-    if (rawData.endsWith('null')) {
-      rawData = rawData.slice(0, -4); // Remove 'null' at the end
-    }
-
-    // Parse the response data
-    let parsedData;
-    try {
-      parsedData = JSON.parse(rawData);
-      console.log('Parsed Data:', parsedData);
-      return parsedData;
-    } catch (error) {
-      console.error('Error parsing cleaned data:', error);
-      return [];
-    }
+    // This is already parsed JSON (Axios does it automatically)
+    return response.data;
 
   } catch (error) {
     console.error('Error fetching data:', error);
     return [];
   }
 };
+
 
 
 
@@ -1322,5 +1308,26 @@ export const deleteBackup = async (userID: string) => {
     
   } catch (error) {
     console.error("Failed to fetch games:", error);
+  }
+};
+
+
+export const backupAndCleanupDBLOGS = async () => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/backupAndCleanupDBLOGS`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to backup and cleanup DB logs:", error);
+    return null; 
+  }
+};
+
+export const backupAndCleanupLOGS = async () => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/backupAndCleanupLOGS`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to backup and cleanup logs:", error);
+    return null; 
   }
 };
