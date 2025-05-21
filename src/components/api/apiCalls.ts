@@ -2,7 +2,8 @@ import axios from "axios";
 import CryptoJS from "crypto-js";
 
 const API_URL = import.meta.env.VITE_DATABASE_URL;
-
+const rawToken = import.meta.env.VITE_API_KEY;
+const API_KEY = btoa(rawToken);
 
 
 
@@ -36,7 +37,12 @@ export const loginAdmin = async (user: any , getAccessTokenSilently: any) => {
 
 export const fetchUserData = async (id: string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/getUserData`, { userID: id });
+    const response = await axios.post(`${API_URL}/admin/getUserData`, { userID: id },
+      {
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (response.data && response.data.length > 0) {
       const userData = response.data[0];
@@ -56,7 +62,11 @@ export const fetchUserData = async (id: string) => {
 
 export const getGames = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getGames`);
+    const response = await axios.get(`${API_URL}/admin/getGames`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -71,7 +81,11 @@ export const getGames = async () => {
 
 export const getGamesData = async (userID: string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/getGamesData`, { userID});
+    const response = await axios.post(`${API_URL}/admin/getGamesData`, { userID},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (Array.isArray(response.data)) {
       return response.data;
@@ -86,7 +100,11 @@ export const getGamesData = async (userID: string) => {
 
 export const getCombinationLimits = async (userID: string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/getCombinationLimits`, { userID});
+    const response = await axios.post(`${API_URL}/admin/getCombinationLimits`, { userID},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (Array.isArray(response.data)) {
       return response.data;
@@ -106,7 +124,8 @@ export const addCombinationLimit = async (formData: FormData): Promise<boolean> 
           import.meta.env.VITE_DATABASE_URL+'/admin/addCombinationLimit',
           formData,
           { headers: {
-            'Content-Type': 'multipart/form-data' 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${API_KEY}`, 
           } }
       );
 
@@ -128,7 +147,8 @@ export const updateCombinationLimit = async (formData: FormData): Promise<boolea
           import.meta.env.VITE_DATABASE_URL+'/admin/updateCombinationLimit',
           formData,
           { headers: {
-            'Content-Type': 'multipart/form-data' 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${API_KEY}`,  
           } }
       );
 
@@ -144,7 +164,11 @@ export const updateCombinationLimit = async (formData: FormData): Promise<boolea
 
 export const getGamesTypes = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getGamesTypes`);
+    const response = await axios.get(`${API_URL}/admin/getGamesTypes`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -160,7 +184,11 @@ export const getGamesTypes = async () => {
 
 export const getDraws = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getDraws`);
+    const response = await axios.get(`${API_URL}/admin/getDraws`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -177,7 +205,11 @@ export const getDraws = async () => {
 export const getTeamTransactionsCashin = async (id:string) => {
   try {
 
-    const response = await axios.post(`${API_URL}/admin/getTeamTransactionsCashin`, { userID: id });
+    const response = await axios.post(`${API_URL}/admin/getTeamTransactionsCashin`, { userID: id },{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     if (Array.isArray(response.data)) {
       return response.data;
     } else if (response.data.error) {
@@ -192,7 +224,11 @@ export const getTeamTransactionsCashin = async (id:string) => {
 export const getTeamTransactionsCashout = async (id:string) => {
   try {
 
-    const response = await axios.post(`${API_URL}/admin/getTeamTransactionsCashout`, { userID: id });
+    const response = await axios.post(`${API_URL}/admin/getTeamTransactionsCashout`, { userID: id },{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     if (Array.isArray(response.data)) {
       return response.data;
     } else if (response.data.error) {
@@ -206,7 +242,11 @@ export const getTeamTransactionsCashout = async (id:string) => {
 
 export const getTransactionsCashin = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getTransactionsCashin`);
+    const response = await axios.get(`${API_URL}/admin/getTransactionsCashin`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -222,7 +262,11 @@ export const getTransactionsCashin = async () => {
 
 export const getTransactionsCashout = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getTransactionsCashout`);
+    const response = await axios.get(`${API_URL}/admin/getTransactionsCashout`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -243,7 +287,8 @@ export const updateGame = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/updateGame',
           formData,
           { headers: {
-            'Content-Type': 'multipart/form-data' 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${API_KEY}`, 
           } }
       );
 
@@ -267,7 +312,8 @@ export const updateGameType = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/updateGameType',
           formData,
           { headers: {
-            'Content-Type': 'multipart/form-data' 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${API_KEY}`,  
           } }
       );
 
@@ -286,7 +332,11 @@ export const updateGameType = async (formData: FormData): Promise<boolean> => {
 
 export const getBetsHistory = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getBetsHistory`);
+    const response = await axios.get(`${API_URL}/admin/getBetsHistory`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -300,7 +350,11 @@ export const getBetsHistory = async () => {
 };
 export const getClientWinners = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getClientWinners`);
+    const response = await axios.get(`${API_URL}/admin/getClientWinners`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -315,7 +369,11 @@ export const getClientWinners = async () => {
 
 export const getBetsHistoryWinners = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getBetsHistoryWinners`);
+    const response = await axios.get(`${API_URL}/admin/getBetsHistoryWinners`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -331,7 +389,11 @@ export const getBetsHistoryWinners = async () => {
 
 export const getPlayersAdmin = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getPlayersAdmin`);
+    const response = await axios.get(`${API_URL}/admin/getPlayersAdmin`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -346,7 +408,11 @@ export const getPlayersAdmin = async () => {
 
 export const getPlayersAdminChoice = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getPlayersAdminChoice`);
+    const response = await axios.get(`${API_URL}/admin/getPlayersAdminChoice`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -360,7 +426,11 @@ export const getPlayersAdminChoice = async () => {
 };
 export const getPlayers = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getPlayers`);
+    const response = await axios.get(`${API_URL}/admin/getPlayers`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -375,7 +445,11 @@ export const getPlayers = async () => {
 
 export const getPlayersTeam = async (id: string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/getPlayersTeam`, { userID: id });
+    const response = await axios.post(`${API_URL}/admin/getPlayersTeam`, { userID: id },{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -390,7 +464,11 @@ export const getPlayersTeam = async (id: string) => {
 
 export const getPlayersAgents = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getPlayersAgents`);
+    const response = await axios.get(`${API_URL}/admin/getPlayersAgents`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -406,7 +484,11 @@ export const getPlayersAgents = async () => {
 
 export const getClients = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getClients`);
+    const response = await axios.get(`${API_URL}/admin/getClients`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -426,7 +508,8 @@ export const updateClient = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/updateClient',
           formData,
           { headers: {
-            'Content-Type': 'multipart/form-data' 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${API_KEY}`, 
           } }
       );
 
@@ -448,7 +531,8 @@ export const updateAdmin = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/updateAdmin',
           formData,
           { headers: {
-            'Content-Type': 'multipart/form-data' 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${API_KEY}`,  
           } }
       );
 
@@ -469,7 +553,8 @@ export const revokeAccess = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/revokeAccess',
           formData,
           { headers: {
-            'Content-Type': 'multipart/form-data' 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${API_KEY}`, 
           } }
       );
 
@@ -491,7 +576,8 @@ export const allowAccess = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/allowAccess',
           formData,
           { headers: {
-            'Content-Type': 'multipart/form-data' 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${API_KEY}`, 
           } }
       );
 
@@ -513,7 +599,8 @@ export const updatePlayer = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/updatePlayer',
           formData,
           { headers: {
-            'Content-Type': 'multipart/form-data' 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${API_KEY}`, 
           } }
       );
 
@@ -534,7 +621,8 @@ export const updatePlayerTeam = async (formData: FormData): Promise<boolean> => 
           import.meta.env.VITE_DATABASE_URL+'/admin/updatePlayerTeam',
           formData,
           { headers: {
-            'Content-Type': 'multipart/form-data' 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${API_KEY}`, 
           } }
       );
 
@@ -551,7 +639,11 @@ export const updatePlayerTeam = async (formData: FormData): Promise<boolean> => 
 
 export const getLevel1Referrals = async (id: string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/getLevel1Referrals`, { userID: id });
+    const response = await axios.post(`${API_URL}/admin/getLevel1Referrals`, { userID: id },{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     if (Array.isArray(response.data)) {
       return response.data;
     } else if (response.data.error) {
@@ -568,7 +660,11 @@ export const getLevel1Referrals = async (id: string) => {
 
 export const getLevel1ReferralsCount = async (id: string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/getLevel1ReferralsCount`, { userID: id });
+    const response = await axios.post(`${API_URL}/admin/getLevel1ReferralsCount`, { userID: id },{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     if (response.data) 
     {
       const userData = response.data;
@@ -590,7 +686,11 @@ export const getLevel1ReferralsCount = async (id: string) => {
 
 export const getLevel2ReferralsCount = async (id: string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/getLevel2ReferralsCount`, { userID: id });
+    const response = await axios.post(`${API_URL}/admin/getLevel2ReferralsCount`, { userID: id },{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     if (response.data) 
       {
       const userData = response.data;
@@ -613,7 +713,11 @@ export const getLevel2ReferralsCount = async (id: string) => {
 
 export const getRateChartData = async (start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/getRateChartData`, { start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/getRateChartData`, { start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     if (Array.isArray(response.data)) {
       return response.data;
     } else if (response.data.error) {
@@ -629,7 +733,11 @@ export const getRateChartData = async (start_date:string, end_date:string) => {
 
 export const countBetsEarned = async (start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/countBetsEarned`, { start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/countBetsEarned`, { start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (response.data) 
       {
@@ -653,7 +761,11 @@ export const countBetsEarned = async (start_date:string, end_date:string) => {
 
 export const totalWins = async (start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/totalWins`, { start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/totalWins`, { start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (response.data) 
       {
@@ -677,7 +789,11 @@ export const totalWins = async (start_date:string, end_date:string) => {
 
 export const totalBalancePlayers = async (start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/totalBalancePlayers`, { start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/totalBalancePlayers`, { start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (response.data) 
       {
@@ -700,7 +816,11 @@ export const totalBalancePlayers = async (start_date:string, end_date:string) =>
 
 export const totalCommissions = async (start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/totalCommissions`, { start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/totalCommissions`, { start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (response.data) 
       {
@@ -723,7 +843,11 @@ export const totalCommissions = async (start_date:string, end_date:string) => {
 
 export const totalPlayers = async (start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/totalPlayers`, { start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/totalPlayers`, { start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (response.data) 
       {
@@ -746,7 +870,11 @@ export const totalPlayers = async (start_date:string, end_date:string) => {
 
 export const totalClients = async (start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/totalClients`, { start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/totalClients`, { start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (response.data) 
       {
@@ -770,7 +898,11 @@ export const totalClients = async (start_date:string, end_date:string) => {
 
 export const totalCashin = async (start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/totalCashin`, { start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/totalCashin`, { start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (response.data) 
       {
@@ -794,7 +926,11 @@ export const totalCashin = async (start_date:string, end_date:string) => {
 
 export const totalCashOut = async (start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/totalCashOut`, { start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/totalCashOut`, { start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (response.data) 
       {
@@ -832,7 +968,11 @@ export const totalCashOut = async (start_date:string, end_date:string) => {
 
 export const getRateChartDataTeam = async (id:string,start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/getRateChartDataTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/getRateChartDataTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (Array.isArray(response.data)) {
       return response.data;
@@ -848,7 +988,11 @@ export const getRateChartDataTeam = async (id:string,start_date:string, end_date
 
 export const countBetsEarnedTeam = async (id:string,start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/countBetsEarnedTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/countBetsEarnedTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (response.data) 
       {
@@ -872,7 +1016,11 @@ export const countBetsEarnedTeam = async (id:string,start_date:string, end_date:
 
 export const totalWinsTeam = async (id:string,start_date:string, end_date:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/totalWinsTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/totalWinsTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (response.data) 
       {
@@ -897,7 +1045,11 @@ export const totalWinsTeam = async (id:string,start_date:string, end_date:string
 export const totalBalancePlayersTeam = async (id:string,start_date:string, end_date:string) => {
   try {
 
-    const response = await axios.post(`${API_URL}/admin/totalBalancePlayersTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/totalBalancePlayersTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (response.data) 
       {
@@ -921,7 +1073,11 @@ export const totalBalancePlayersTeam = async (id:string,start_date:string, end_d
 export const totalCommissionsTeam = async (id:string,start_date:string, end_date:string) => {
   try {
 
-    const response = await axios.post(`${API_URL}/admin/totalCommissionsTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/totalCommissionsTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (response.data) 
       {
@@ -945,7 +1101,11 @@ export const totalCommissionsTeam = async (id:string,start_date:string, end_date
 export const totalPlayersTeam = async (id:string,start_date:string, end_date:string) => {
   try {
 
-    const response = await axios.post(`${API_URL}/admin/totalPlayersTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/totalPlayersTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (response.data) 
       {
@@ -969,7 +1129,11 @@ export const totalPlayersTeam = async (id:string,start_date:string, end_date:str
 export const totalClientsTeam = async (id:string,start_date:string, end_date:string) => {
   try {
 
-    const response = await axios.post(`${API_URL}/admin/totalClientsTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/totalClientsTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (response.data) 
       {
@@ -993,7 +1157,11 @@ export const totalClientsTeam = async (id:string,start_date:string, end_date:str
 export const totalCashinTeam = async (id:string,start_date:string, end_date:string) => {
   try {
 
-    const response = await axios.post(`${API_URL}/admin/totalCashinTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/totalCashinTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (response.data) 
       {
@@ -1017,7 +1185,11 @@ export const totalCashinTeam = async (id:string,start_date:string, end_date:stri
 export const totalCashOutTeam = async (id:string,start_date:string, end_date:string) => {
   try {
 
-    const response = await axios.post(`${API_URL}/admin/totalCashOutTeam`, { userID: id ,start_date: start_date, end_date: end_date});
+    const response = await axios.post(`${API_URL}/admin/totalCashOutTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (response.data) 
       {
@@ -1047,7 +1219,11 @@ export const totalCashOutTeam = async (id:string,start_date:string, end_date:str
 
 export const getAnnouncements = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getAnnouncements`);
+    const response = await axios.get(`${API_URL}/admin/getAnnouncements`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -1067,7 +1243,8 @@ export const addAnnouncement = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/addAnnouncement',
           formData,
           { headers: {
-            'Content-Type': 'multipart/form-data' 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${API_KEY}`, 
           } }
       );
 
@@ -1089,7 +1266,8 @@ export const updateAnnouncement = async (formData: FormData): Promise<boolean> =
           import.meta.env.VITE_DATABASE_URL+'/admin/updateAnnouncement',
           formData,
           { headers: {
-            'Content-Type': 'multipart/form-data' 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${API_KEY}`,  
           } }
       );
 
@@ -1107,7 +1285,11 @@ export const updateAnnouncement = async (formData: FormData): Promise<boolean> =
 
 export const getTodayDraws = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getTodayDraws`);
+    const response = await axios.get(`${API_URL}/admin/getTodayDraws`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -1125,7 +1307,11 @@ export const getTodayDraws = async () => {
 
 export const getWebData = async (id: string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/getWebData`, { gameID: id });
+    const response = await axios.post(`${API_URL}/admin/getWebData`, { gameID: id },{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     console.log('Raw Response:', response.data);
 
     // This is already parsed JSON (Axios does it automatically)
@@ -1147,7 +1333,8 @@ export const setResultsDraw = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/setResultsDraw',
           formData,
           { headers: {
-            'Content-Type': 'multipart/form-data' 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${API_KEY}`, 
           } }
       );
 
@@ -1212,6 +1399,10 @@ export const cashOutCashko = async (
         transID,
         clientNo,
         orderNo,
+      },{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
       });
 
       if (res.data && res.data.authenticated) {
@@ -1241,7 +1432,11 @@ const generateSign = (clientCode: string, clientNo: string, latest_requestTimest
 
 export const getLogs = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getLogs`);
+    const response = await axios.get(`${API_URL}/admin/getLogs`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -1257,7 +1452,11 @@ export const getLogs = async () => {
 
 export const getLogsByUser = async (userID: string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/getLogsByUser`, { userID});
+    const response = await axios.post(`${API_URL}/admin/getLogsByUser`, { userID},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (Array.isArray(response.data)) {
       return response.data;
@@ -1273,7 +1472,11 @@ export const getLogsByUser = async (userID: string) => {
 
 export const getAuditLogs = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getAuditLogs`);
+    const response = await axios.get(`${API_URL}/admin/getAuditLogs`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (Array.isArray(response.data)) {
       return response.data;
@@ -1288,7 +1491,11 @@ export const getAuditLogs = async () => {
 
 export const getBackups = async () => {
   try {
-    const response = await axios.get(`${API_URL}/admin/getBackups`);
+    const response = await axios.get(`${API_URL}/admin/getBackups`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
     if (Array.isArray(response.data)) {
       return response.data;
@@ -1304,7 +1511,11 @@ export const getBackups = async () => {
 
 export const deleteBackup = async (userID: string) => {
   try {
-    await axios.post(`${API_URL}/admin/deleteBackup`, { userID});
+    await axios.post(`${API_URL}/admin/deleteBackup`, { userID},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     
   } catch (error) {
     console.error("Failed to fetch games:", error);
@@ -1314,7 +1525,11 @@ export const deleteBackup = async (userID: string) => {
 
 export const backupAndCleanupDBLOGS = async () => {
   try {
-    const response = await axios.post(`${API_URL}/admin/backupAndCleanupDBLOGS`);
+    const response = await axios.post(`${API_URL}/admin/backupAndCleanupDBLOGS`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     return response.data;
   } catch (error) {
     console.error("Failed to backup and cleanup DB logs:", error);
@@ -1324,7 +1539,11 @@ export const backupAndCleanupDBLOGS = async () => {
 
 export const backupAndCleanupLOGS = async () => {
   try {
-    const response = await axios.post(`${API_URL}/admin/backupAndCleanupLOGS`);
+    const response = await axios.post(`${API_URL}/admin/backupAndCleanupLOGS`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
     return response.data;
   } catch (error) {
     console.error("Failed to backup and cleanup logs:", error);
