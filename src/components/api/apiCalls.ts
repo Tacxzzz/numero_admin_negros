@@ -1550,3 +1550,25 @@ export const backupAndCleanupLOGS = async () => {
     return null; 
   }
 };
+
+
+export const createDraws = async (): Promise<boolean> => {
+  try 
+  {
+      const response = await axios.get(
+          import.meta.env.VITE_DATABASE_URL+'/admin/createDraws',
+          { headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${API_KEY}`, 
+          } }
+      );
+
+      
+      return response.data.authenticated;
+  } 
+  catch (error) 
+  {
+      console.error('Error authenticating user:', error);
+      return false;
+  }
+};
