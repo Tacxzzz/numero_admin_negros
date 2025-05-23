@@ -12,7 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { backupAndCleanupDBLOGS, backupAndCleanupLOGS, getDraws, getTodayDraws, getWebData, setResultsDraw } from "./api/apiCalls";
+import { backupAndCleanupDBLOGS, backupAndCleanupLOGS, createDraws, getDraws, getTodayDraws, getWebData, setResultsDraw } from "./api/apiCalls";
 import { useAuth0 } from '@auth0/auth0-react';
 import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType } from './api/apiCalls';
 import { formatPeso, getFormattedDate, getTransCode } from './utils/utils';
@@ -52,8 +52,8 @@ export function DrawsResults() {
               setLoading(false);
 
 
-               if(!permissionsString.includes("draws_results_unique"))
-               {
+                if(!permissionsString.includes("draws_results_unique"))
+                {
                 const todayData = await getTodayDraws();
                 setGames(todayData); 
 
@@ -160,6 +160,15 @@ export function DrawsResults() {
       alert("Backup failed.");
     }
   };
+
+  const createDrawsClicked = async () => {
+    const result = await createDraws();
+    if (result === true) {
+      alert("Created Draws Successfully!");
+    } else {
+      alert("Failed to create draws.");
+    }
+  };
   
   
 
@@ -180,6 +189,9 @@ export function DrawsResults() {
     <h2 className="text-2xl md:text-3xl font-bold">WEB SCRAPE</h2>
 
     <div className="flex gap-2">
+      <Button onClick={createDrawsClicked}>
+        Create Draws
+      </Button>
       <Button onClick={handleBackup}>
         Backup Logs
       </Button>
