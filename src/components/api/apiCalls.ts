@@ -1525,7 +1525,7 @@ export const deleteBackup = async (userID: string) => {
 
 export const backupAndCleanupDBLOGS = async () => {
   try {
-    const response = await axios.post(`${API_URL}/admin/backupAndCleanupDBLOGS`,{
+    const response = await axios.get(`${API_URL}/admin/backupAndCleanupDBLOGS`,{
         headers: {
           Authorization: `Bearer ${API_KEY}`,
         }
@@ -1539,7 +1539,7 @@ export const backupAndCleanupDBLOGS = async () => {
 
 export const backupAndCleanupLOGS = async () => {
   try {
-    const response = await axios.post(`${API_URL}/admin/backupAndCleanupLOGS`,{
+    const response = await axios.get(`${API_URL}/admin/backupAndCleanupLOGS`,{
         headers: {
           Authorization: `Bearer ${API_KEY}`,
         }
