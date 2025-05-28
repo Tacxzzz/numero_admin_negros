@@ -311,7 +311,6 @@ export function AdminManagement() {
     return <div>Not allowed to manage this page</div>
   }
 
-
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -444,24 +443,43 @@ export function AdminManagement() {
                         <div className="pt-4 border-t">
                           <h4 className="font-medium mb-4">Permissions</h4>
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {allPermissions.map((permission) => (
-                              <div key={permission.id} className="flex items-start space-x-2">
-                                <Checkbox 
-                                  id={`permission-${permission.id}`}
-                                  checked={selectedUser.permissions.includes(permission.id)}
-                                  onCheckedChange={() => handlePermissionChange(permission.id)}
-                                  className="mt-1"
-                                />
-                                <Label 
-                                  htmlFor={`permission-${permission.id}`}
-                                  className="text-sm font-medium leading-tight"
-                                >
-                                  {permission.label}
-                                </Label>
-                              </div>
-                            ))}
+                            {selectedUser ? (() => {
+                              let userPermissions: string[] = [];
+
+                              try {
+                                if (typeof selectedUser.permissions === 'string') {
+                                  userPermissions = JSON.parse(selectedUser.permissions);
+                                } else if (Array.isArray(selectedUser.permissions)) {
+                                  userPermissions = selectedUser.permissions;
+                                }
+                              } catch (e) {
+                                console.error("Failed to parse permissions JSON:", e);
+                              }
+
+                              console.log("Parsed permissions:", userPermissions);
+
+                              return allPermissions.map((permission) => (
+                                <div key={permission.id} className="flex items-start space-x-2">
+                                  <Checkbox
+                                    id={`permission-${permission.id}`}
+                                    checked={userPermissions.includes(permission.id)}
+                                    onCheckedChange={() => handlePermissionChange(permission.id)}
+                                    className="mt-1"
+                                  />
+                                  <Label
+                                    htmlFor={`permission-${permission.id}`}
+                                    className="text-sm font-medium leading-tight"
+                                  >
+                                    {permission.label}
+                                  </Label>
+                                </div>
+                              ));
+                            })() : (
+                              <p>Loading permissions...</p>
+                            )}
                           </div>
                         </div>
+
                         
                         <div className="flex justify-end space-x-2 pt-4">
                           {/* <Button variant="outline">Reset Password</Button> */}
