@@ -133,6 +133,7 @@ export function TransactionsCashOut() {
                   <TableHead className="text-center">Name</TableHead>
                   <TableHead className="text-center">Bank</TableHead>
                   <TableHead className="text-center">Account</TableHead>
+                  <TableHead className="text-center">Source</TableHead>
                   <TableHead className="text-center">Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -147,6 +148,7 @@ export function TransactionsCashOut() {
                     <TableCell className="text-center">{product.full_name}</TableCell>
                     <TableCell className="text-center">{product.bank}</TableCell>
                     <TableCell className="text-center">{product.account}</TableCell>
+                    <TableCell className="text-center">{product.source}</TableCell>
                     <TableCell className="text-center">{product.status}</TableCell>
                   </TableRow>
                 ))}
