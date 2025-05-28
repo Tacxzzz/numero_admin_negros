@@ -1374,7 +1374,7 @@ export const cashOutCashko = async (
     formData.append("bankUserName", full_name);
     formData.append("ifsc", "null");
     formData.append("bankName", bank);
-    formData.append("amount", (parseFloat(winnings) - 12).toString());
+    formData.append("amount", (parseFloat(winnings) - 8).toString());
     formData.append("clientNo", clientNo);
     formData.append("requestTimestamp", timestamp);
     formData.append("callbackurl", `${API_URL}/main/requestCashOutCashko`);
