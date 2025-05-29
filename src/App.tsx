@@ -36,6 +36,7 @@ import { LogsUser } from "./components/LogsUser";
 import { CombinationLimit } from "./components/CombinationLimit";
 import { AuditLogs } from "./components/AuditLogs";
 import { Backups } from "./components/Backups";
+import { CommissionHistory } from "./components/CommissionHistory";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -120,6 +121,7 @@ function App() {
                     <Route path="/adminmanagement" element={<AdminManagement />} />
                     <Route path="/announcements" element={<Announcements />} />
                     <Route path="/drawsresults" element={<DrawsResults />} />
+                    <Route path="/commissionhistory" element={<CommissionHistory />} />
 
                     <Route path="/teamdashboard" element={<TeamDashboard />} />
                     <Route path="/teamusers" element={<TeamUsers />} />

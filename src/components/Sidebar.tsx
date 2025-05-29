@@ -61,6 +61,7 @@ export function Sidebar({ onClose }: SidebarProps) {
     { icon: Dices, label: "Bets History", path: "/playersbets", permission: "bets" },
     { icon: Trophy, label: "Process Client Winners", path: "/clientwinners", permission: "winners" },
     { icon: Trophy, label: "Player Winners History", path: "/winners", permission: "winners" },
+    { icon: Coins, label: "Commission History", path: "/commissionhistory", permission: "commission_history" },
     { icon: Users, label: "Players Management", path: "/users", permission: "players" },
     { icon: Users, label: "Clients Management", path: "/clients", permission: "clients" },
     { icon: BarChart, label: "Logs", path: "/logs", permission: "logs" },
