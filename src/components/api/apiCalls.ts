@@ -1330,7 +1330,7 @@ export const setResultsDraw = async (formData: FormData): Promise<boolean> => {
   try 
   {
       const response = await axios.post(
-          import.meta.env.VITE_DATABASE_URL+'/admin/setResultsDraw',
+          import.meta.env.VITE_DATABASE_URL+'/main/setResultsDraw',
           formData,
           { headers: {
             'Content-Type': 'multipart/form-data',
