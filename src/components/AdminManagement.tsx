@@ -133,7 +133,7 @@ export function AdminManagement() {
     { id: "team_cashin", label: "ACCESS YOUR TEAM CASHIN HISTORY" },
     { id: "team_cashout", label: "ACCESS YOUR TEAM CASHOUT HISTORY" },
     { id: "logs", label: "ACCESS USER LOGS" },
-
+    { id: "commission_history", label: "ACCESS COMMISSION HISTORY" }
   ];
 
 
@@ -148,7 +148,8 @@ export function AdminManagement() {
       "cashin",
       "cashout",
       "bets",
-      "players"
+      "players",
+      "commission_history"
     ],
     "ADMIN LEVEL 2": [
       "dashboard",

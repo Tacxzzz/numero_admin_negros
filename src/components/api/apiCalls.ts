@@ -1572,3 +1572,22 @@ export const createDraws = async (): Promise<boolean> => {
       return false;
   }
 };
+
+export const getCommission = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/admin/getCommissions`,{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.error) {
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};

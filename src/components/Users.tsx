@@ -106,6 +106,9 @@ export function Users() {
     formData.append('under_admin', selectedGameBet.under_admin);
     formData.append('level', selectedGameBet.level);
     formData.append('quota', selectedGameBet.quota);
+    formData.append('bet_commission_percent', selectedGameBet.bet_commission_percent);
+    formData.append('level_one_percent', selectedGameBet.level_one_percent);
+    formData.append('level_two_percent', selectedGameBet.level_two_percent);
     formData.append('nolimit_percent', selectedGameBet.nolimit_percent);
     formData.append('quota_time', selectedGameBet.quota_time);
     formData.append('quota_allow', selectedGameBet.quota_allow);
@@ -189,6 +192,9 @@ export function Users() {
                   <TableHead className="text-center hidden sm:table-cell">Account Balance</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">Wins</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">Commissions</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell">Bet Commission Percentage</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell">Lvl 1 Percentage</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell">Lvl 2 Percentage</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">Referred By</TableHead>
                   <TableHead className="text-center hidden sm:table-cell"># of Referrals</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">Referral Limit</TableHead>
@@ -213,6 +219,9 @@ export function Users() {
                     <TableCell className="text-center hidden sm:table-cell">{formatPeso(product.balance)}</TableCell>
                     <TableCell className="text-center hidden sm:table-cell">{formatPeso(product.wins)}</TableCell>
                     <TableCell className="text-center hidden sm:table-cell">{formatPeso(product.commissions)}</TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">{product.bet_commission_percent} %</TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">{product.level_one_percent} %</TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">{product.level_two_percent} %</TableCell>
                     <TableCell className="text-center hidden sm:table-cell">{product.referrer_mobile}</TableCell>
                     <TableCell className="text-center hidden sm:table-cell">{product.referral_count}</TableCell>
                     <TableCell className="text-center hidden sm:table-cell">{product.level}</TableCell>
@@ -379,7 +388,81 @@ export function Users() {
                   </style> 
               </label>
 
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Bet Commission %
+                <Input
+                  type="number"
+                  name="bet_commission_percent"
+                  value={selectedGameBet?.bet_commission_percent|| ""}
+                  onChange={handleChange}
+                  required
+                  className="border p-1 mt-2 w-full"
+                  placeholder="Enter % of Bet Commission"
+                  style={{ appearance: 'textfield' }}
+                />
+                  <style>{`
+                            input[type=number]::-webkit-outer-spin-button,
+                            input[type=number]::-webkit-inner-spin-button {
+                            -webkit-appearance: none;
+                            margin: 0;
+                            }
+                            input[type=number] {
+                            -moz-appearance: textfield;
+                            }
+                            `}
+                  </style> 
+              </label>
 
+               <label className="block text-sm font-medium text-gray-700 mb-2">
+                Level 1 %
+                <Input
+                  type="number"
+                  name="level_one_percent"
+                  value={selectedGameBet?.level_one_percent || ""}
+                  onChange={handleChange}
+                  required
+                  className="border p-1 mt-2 w-full"
+                  placeholder="Enter % of Level 1 Commission"
+                  style={{ appearance: 'textfield' }}
+                />
+                  <style>{`
+                            input[type=number]::-webkit-outer-spin-button,
+                            input[type=number]::-webkit-inner-spin-button {
+                            -webkit-appearance: none;
+                            margin: 0;
+                            }
+                            input[type=number] {
+                            -moz-appearance: textfield;
+                            }
+                            `}
+                  </style> 
+              </label>
+
+               <label className="block text-sm font-medium text-gray-700 mb-2">
+                Level 2 %
+                <Input
+                  type="number"
+                  name="level_two_percent"
+                  value={selectedGameBet?.level_two_percent || ""}
+                  onChange={handleChange}
+                  required
+                  className="border p-1 mt-2 w-full"
+                  placeholder="Enter % of Level 2 Commission"
+                  style={{ appearance: 'textfield' }}
+                />
+                  <style>{`
+                            input[type=number]::-webkit-outer-spin-button,
+                            input[type=number]::-webkit-inner-spin-button {
+                            -webkit-appearance: none;
+                            margin: 0;
+                            }
+                            input[type=number] {
+                            -moz-appearance: textfield;
+                            }
+                            `}
+                  </style> 
+              </label>
+                  
                <label className="block text-sm font-medium text-gray-700 mb-2">
                 % Commission if Quota is no limit
                 <Input
