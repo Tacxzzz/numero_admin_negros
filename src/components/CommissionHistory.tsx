@@ -24,7 +24,7 @@ export function CommissionHistory() {
   const [gamebets, setGamebets] = useState<any[]>([]);
   const [filteredGamebets, setFilteredGamebets] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [permissionsString, setPermissionsString] = useState([]);
 
