@@ -112,6 +112,8 @@ export function Users() {
     formData.append('nolimit_percent', selectedGameBet.nolimit_percent);
     formData.append('quota_time', selectedGameBet.quota_time);
     formData.append('quota_allow', selectedGameBet.quota_allow);
+    formData.append('has_maintaining_balance', selectedGameBet.has_maintaining_balance);
+    formData.append('maintaining_balance', selectedGameBet.maintaining_balance);
     formData.append('bypass_device', selectedGameBet.bypass_device);
 
     const isAuthenticated = await updatePlayer(formData);
@@ -202,6 +204,8 @@ export function Users() {
                   <TableHead className="text-center hidden sm:table-cell">% Commission if no limit</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">Quota Schedule</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">BYPASS QUOTA?</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell">Has Maintaining Balance</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell">Maintaining Balance</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">BYPASS DEVICE ID CHECK?</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">Action</TableHead>
 
@@ -229,6 +233,8 @@ export function Users() {
                     <TableCell className="text-center hidden sm:table-cell">{product.nolimit_percent} %</TableCell>
                     <TableCell className="text-center hidden sm:table-cell">{product.quota_time}</TableCell>
                     <TableCell className="text-center hidden sm:table-cell">{product.quota_allow}</TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">{product.has_maintaining_balance}</TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">{formatPeso(product.maintaining_balance)}</TableCell>
                     <TableCell className="text-center hidden sm:table-cell">
                       {product.bypass_device && product.bypass_device.trim() !== "" ? product.bypass_device : "no"}
                     </TableCell>
@@ -551,6 +557,51 @@ export function Users() {
                     </select>
                   </div>
                 <br/>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Has Maintaining Balance</label>
+                    <select
+                      name="has_maintaining_balance"
+                      value={selectedGameBet?.has_maintaining_balance || "no"}
+                      onChange={handleChange}
+                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    >
+                      <option value="" disabled>
+                        Select 
+                      </option>
+                      <option value="no">
+                          No
+                        </option>
+                        <option value="yes">
+                          Yes
+                        </option>
+                    </select>
+                  </div>
+                <br/>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                Maintaining Balance
+                <Input
+                  type="number"
+                  name="maintaining_balance"
+                  value={selectedGameBet?.maintaining_balance || ""}
+                  onChange={handleChange}
+                  required
+                  className="border p-1 mt-2 w-full"
+                  placeholder="Enter Maintaining Balance if enabled"
+                  style={{ appearance: 'textfield' }}
+                />
+                  <style>{`
+                            input[type=number]::-webkit-outer-spin-button,
+                            input[type=number]::-webkit-inner-spin-button {
+                            -webkit-appearance: none;
+                            margin: 0;
+                            }
+                            input[type=number] {
+                            -moz-appearance: textfield;
+                            }
+                            `}
+                  </style> 
+                </label>
+                  <br/>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Set Under Admin Team</label>
                     <select
