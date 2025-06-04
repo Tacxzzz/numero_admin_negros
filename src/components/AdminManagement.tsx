@@ -133,7 +133,8 @@ export function AdminManagement() {
     { id: "team_cashin", label: "ACCESS YOUR TEAM CASHIN HISTORY" },
     { id: "team_cashout", label: "ACCESS YOUR TEAM CASHOUT HISTORY" },
     { id: "logs", label: "ACCESS USER LOGS" },
-    { id: "commission_history", label: "ACCESS COMMISSION HISTORY" }
+    { id: "commission_history", label: "ACCESS COMMISSION HISTORY" },
+    { id: "add_balance", label: "ADD BALANCE TO USER" }
   ];
 
 

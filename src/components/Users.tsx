@@ -16,7 +16,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { loginAdmin, getPlayers, updatePlayer, getPlayersAdminChoice } from './api/apiCalls';
+import { loginAdmin, getPlayers, updatePlayer, getPlayersAdminChoice, addBalance } from './api/apiCalls';
 import { formatPeso } from './utils/utils';
 
 export function Users() {
@@ -29,6 +29,7 @@ export function Users() {
   const [gamebets, setGamebets] = useState<any[]>([]);
   const [filteredGamebets, setFilteredGamebets] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddBalanceModalOpen, setIsAddBalanceModalOpen] = useState(false);
   const [selectedGameBet, setSelectedGameBet] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -91,6 +92,8 @@ export function Users() {
     return <div>Not allowed to manage this page</div>
   }
 
+  const addBalancePermission = permissionsString.includes("add_balance");
+
   const handleEditClick = (game) => {
     setSelectedGameBet(game);
     setIsModalOpen(true);
@@ -139,8 +142,47 @@ export function Users() {
         bet.id === selectedGameBet.id ? { ...bet, ...selectedGameBet } : bet
       )
     );
-};
+ };
 
+ const handleAddBalanceClick = (game) => {
+    setSelectedGameBet(game);
+    setIsAddBalanceModalOpen(true);
+ };
+
+ const handleAddbalance = async (e: React.FormEvent) => { 
+  e.preventDefault();
+    setUpdating(true);
+
+    const formData = new FormData();
+    formData.append('userID', selectedGameBet.id);
+    formData.append('amount', selectedGameBet.amount);
+
+    const isAuthenticated = await addBalance(formData);
+
+    setUpdating(false);
+    setIsAddBalanceModalOpen(false);
+
+    if (!isAuthenticated) {
+      alert("An error occurred!");
+      return;
+    }
+
+    alert("Added balance successfully.");
+
+    setGamebets((prevGamebets) =>
+      prevGamebets.map((bet) =>
+        bet.id === selectedGameBet.id ? { ...bet, ...selectedGameBet } : bet
+      )
+    );
+
+    setFilteredGamebets((prevFilteredGamebets) =>
+      prevFilteredGamebets.map((bet) =>
+        bet.id === selectedGameBet.id ? { ...bet, ...selectedGameBet } : bet
+      )
+    );
+
+    setDbUpdated(false);
+ };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -249,6 +291,12 @@ export function Users() {
                       >
                         Edit
                       </Button>
+                      { addBalancePermission && (<Button
+                        className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
+                        onClick={() => handleAddBalanceClick(product)}
+                      >
+                        Add Balance
+                      </Button> )}
                       <Button
                         className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
                         onClick={() => navigate(`/hierarchy?user_mobile=${product.mobile}&user_id=${product.id}`)}
@@ -300,6 +348,12 @@ export function Users() {
                       >
                         Edit
                       </Button>
+                      { addBalancePermission && (<Button
+                        className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
+                        onClick={() => handleAddBalanceClick(product)}
+                      >
+                        Add Balance
+                      </Button> )}
                       <Button
                         className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
                         onClick={() => navigate(`/hierarchy?user_mobile=${product.mobile}&user_id=${product.id}`)}
@@ -647,6 +701,67 @@ export function Users() {
             </DialogContent>
           </Dialog>
         )}
+
+        {/* Add Balance Dialog */}
+        {isAddBalanceModalOpen && (
+          <Dialog open={isAddBalanceModalOpen} onOpenChange={setIsAddBalanceModalOpen}>
+            <DialogContent className="bg-gray-50 border-[#34495e] max-h-[90vh] w-96 overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-xl text-blue-600">Add Balance to {selectedGameBet.mobile}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3">
+                <form onSubmit={handleAddbalance}>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                Current Balance : {selectedGameBet.balance}
+                <Input
+                  type="number"
+                  name="amount"
+                  value={selectedGameBet?.amount || ""}
+                  onChange={handleChange}
+                  required
+                  className="border p-1 mt-2 w-full"
+                  placeholder="Enter balance to add"
+                  style={{ appearance: 'textfield' }}
+                />
+                  <style>{`
+                            input[type=number]::-webkit-outer-spin-button,
+                            input[type=number]::-webkit-inner-spin-button {
+                            -webkit-appearance: none;
+                            margin: 0;
+                            }
+                            input[type=number] {
+                            -moz-appearance: textfield;
+                            }
+                            `}
+                  </style> 
+              </label>
+                  <DialogFooter className="flex flex-col gap-2 sm:flex-row">
+                    {!updating ? (
+                      <Button
+                        variant="outline"
+                        className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
+                        type="submit"
+                      >
+                        Add Balance
+                      </Button>
+                    ) : (
+                      <>Updating....</>
+                    )}
+                    <Button
+                      variant="outline"
+                      className="w-full sm:w-auto border-red-500 text-red-600 hover:bg-red-900/20"
+                      onClick={() => setIsAddBalanceModalOpen(false)}
+                      type="button"
+                    >
+                      Cancel
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+
       </div>
     </div>
   );
