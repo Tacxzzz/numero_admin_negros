@@ -591,6 +591,27 @@ export const allowAccess = async (formData: FormData): Promise<boolean> => {
   }
 };
 
+export const addBalance = async (formData: FormData): Promise<boolean> => {
+  try 
+  {
+      const response = await axios.post(
+          import.meta.env.VITE_DATABASE_URL+'/admin/addBalance',
+          formData,
+          { headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${API_KEY}`, 
+          } }
+      );
+
+      
+      return response.data.authenticated;
+  } 
+  catch (error) 
+  {
+      console.error('Error authenticating user:', error);
+      return false;
+  }
+};
 
 export const updatePlayer = async (formData: FormData): Promise<boolean> => {
   try 
