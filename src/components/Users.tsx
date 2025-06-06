@@ -118,6 +118,7 @@ export function Users() {
     formData.append('has_maintaining_balance', selectedGameBet.has_maintaining_balance);
     formData.append('maintaining_balance', selectedGameBet.maintaining_balance);
     formData.append('bypass_device', selectedGameBet.bypass_device);
+    formData.append('employer', selectedGameBet.employer);
 
     const isAuthenticated = await updatePlayer(formData);
 
@@ -248,6 +249,7 @@ export function Users() {
                   <TableHead className="text-center hidden sm:table-cell">BYPASS QUOTA?</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">Has Maintaining Balance</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">Maintaining Balance</TableHead>
+                  <TableHead className="text-center hidden sm:table-cell">Is Employer</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">BYPASS DEVICE ID CHECK?</TableHead>
                   <TableHead className="text-center hidden sm:table-cell">Action</TableHead>
 
@@ -277,6 +279,7 @@ export function Users() {
                     <TableCell className="text-center hidden sm:table-cell">{product.quota_allow}</TableCell>
                     <TableCell className="text-center hidden sm:table-cell">{product.has_maintaining_balance}</TableCell>
                     <TableCell className="text-center hidden sm:table-cell">{formatPeso(product.maintaining_balance)}</TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">{product.employer !== "" ? product.employer : "no"}</TableCell>
                     <TableCell className="text-center hidden sm:table-cell">
                       {product.bypass_device && product.bypass_device.trim() !== "" ? product.bypass_device : "no"}
                     </TableCell>
@@ -337,8 +340,19 @@ export function Users() {
                     <div><strong>Account Balance:</strong> {formatPeso(product.balance)}</div>
                     <div><strong>Wins:</strong> {formatPeso(product.wins)}</div>
                     <div><strong>Commissions:</strong> {formatPeso(product.commissions)}</div>
+                    <div><strong>Bet Commission Percentage:</strong> {product.bet_commission_percent}%</div>
+                    <div><strong>Level 1 Percentage:</strong> {product.level_one_percent}%</div>
+                    <div><strong>Level 2 Percentage:</strong> {product.level_two_percent}%</div>
                     <div><strong>Referred By:</strong> {product.referrer_mobile}</div>
                     <div><strong># of Referrals:</strong> {product.referral_count}</div>
+                    <div><strong>Referral Limit:</strong> {product.level}</div>
+                    <div><strong>Qouta:</strong> {product.qouta}</div>
+                    <div><strong>% Commission if no Limit:</strong> {product.nolimit_percent}%</div>
+                    <div><strong>Qouta Schedule:</strong> {product.quota_time}</div>
+                    <div><strong>Bypass Qouta:</strong> {product.quota_allow}</div>
+                    <div><strong>Has Maintaining Balance:</strong> {product.has_maintaining_balance}</div>
+                    <div><strong>Maintaining Balance:</strong> {formatPeso(product.maintaining_balance)}</div>
+                    <div><strong>Is Employer:</strong> {product.employer !== "" ? product.employer : "no"}</div>
                     <div><strong>if With a Admin Team:</strong> {product.under_admin_mail}</div>
                     <div><strong>Status:</strong> <span className={product.status === "pending" ? "text-green-600" : "text-orange-500"}> {product.status === "pending" ? "Active" : "Inactive"} </span></div>
                     <div className="flex gap-2">
@@ -582,7 +596,7 @@ export function Users() {
                       <option value="" disabled>
                         Select 
                       </option>
-                      <option value="level2">
+                      <option value="no">
                           No
                         </option>
                         <option value="yes">
@@ -655,6 +669,26 @@ export function Users() {
                             `}
                   </style> 
                 </label>
+                  <br/>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Is Employer</label>
+                    <select
+                      name="employer"
+                      value={selectedGameBet?.employer || "no"}
+                      onChange={handleChange}
+                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    >
+                      <option value="" disabled>
+                        Select 
+                      </option>
+                      <option value="no">
+                          No
+                        </option>
+                        <option value="yes">
+                          Yes
+                        </option>
+                    </select>
+                  </div>
                   <br/>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Set Under Admin Team</label>
