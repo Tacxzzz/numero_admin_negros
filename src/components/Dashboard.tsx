@@ -1,13 +1,121 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RecentOrders } from "./RecentOrders";
 import { SalesChart } from "./SalesChart";
-import { HandIcon , HandMetalIcon, ShoppingCart, Users, Boxes, Wallet, CoinsIcon, Wallet2, BookAIcon, BookCheck, BookHeart, Banknote } from "lucide-react";
+import { HandIcon , HandMetalIcon, ShoppingCart, Users, Boxes, Wallet, CoinsIcon, Wallet2, BookAIcon, BookCheck, BookHeart, Banknote, TrendingUp, DollarSign, Award } from "lucide-react";
 import { useAuth0 } from '@auth0/auth0-react';
 import { countBetsEarned, getRateChartData, loginAdmin, totalBalancePlayers, totalCashin, totalCashOut, totalClients, totalCommissions, totalPlayers, totalWins } from './api/apiCalls';
 import { useEffect, useState } from "react";
 import { formatPeso } from "./utils/utils";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { ExportButton } from "../components/export-button";
+import { FinancialMetricsGrid } from "../components/financial-metrics-grid";
+import { DetailedBreakdownSection } from "../components/detailed-breakdown-section";
+
+
+const dashboardData = [
+  { metric: "TOTAL CASH IN", value: "$125,430.00", category: "cash" },
+  { metric: "TOTAL CASH OUTS - PAID", value: "$78,290.00", category: "cash" },
+  { metric: "NET CASH", value: "$47,140.00", category: "cash" },
+  { metric: "TOTAL NUMBER OF PLAYERS", value: "1,245", category: "players" },
+  { metric: "TOTAL NO. OF PLAYERS (ACTIVE)", value: "876", category: "players" },
+  { metric: "TOTAL NO. OF PLAYERS (INACTIVE)", value: "369", category: "players" },
+  { metric: "TOTAL BETS EARNED", value: "$215,780.00", category: "bets" },
+  { metric: "TOTAL COMMISSIONS", value: "$32,367.00", category: "commissions" },
+  { metric: "TOTAL WINS", value: "$168,640.00", category: "bets" },
+  { metric: "TOTAL FREE BETS", value: "$5,430.00", category: "bets" },
+  { metric: "TOTAL BETS FROM CONVERSIONS", value: "$42,890.00", category: "bets" },
+  { metric: "NET INCOME FROM BETS", value: "$84,937.00", category: "bets" }
+];
+
+const metrics = [
+  {
+    id: "total-cash-in",
+    title: "TOTAL CASH IN",
+    value: "₱125,430.00",
+    icon: <DollarSign size={18} />,
+    category: "cash"
+  },
+  {
+    id: "total-cash-outs-paid",
+    title: "TOTAL CASH OUTS - PAID",
+    value: "₱78,290.00",
+    icon: <DollarSign size={18} />,
+    category: "cash"
+  },
+  {
+    id: "net-cash",
+    title: "NET CASH",
+    value: "₱47,140.00",
+    description: "= TOTAL CASH IN - TOTAL CASH OUTS PAID",
+    icon: <DollarSign size={18} />,
+    category: "cash"
+  },
+  {
+    id: "total-players",
+    title: "TOTAL NUMBER OF PLAYERS",
+    value: "1,245",
+    icon: <Users size={18} />,
+    category: "players"
+  },
+  {
+    id: "active-players",
+    title: "TOTAL NO. OF PLAYERS (ACTIVE)",
+    value: "876",
+    icon: <Users size={18} />,
+    category: "players"
+  },
+  {
+    id: "inactive-players",
+    title: "TOTAL NO. OF PLAYERS (INACTIVE)",
+    value: "369",
+    icon: <Users size={18} />,
+    category: "players"
+  },
+  {
+    id: "total-bets-earned",
+    title: "TOTAL BETS EARNED",
+    value: "₱215,780.00",
+    icon: <TrendingUp size={18} />,
+    category: "bets"
+  },
+  {
+    id: "total-commissions",
+    title: "TOTAL COMMISSIONS",
+    value: "₱32,367.00",
+    icon: <DollarSign size={18} />,
+    category: "commissions"
+  },
+  {
+    id: "total-wins",
+    title: "TOTAL WINS",
+    value: "₱168,640.00",
+    icon: <Award size={18} />,
+    category: "bets"
+  },
+  {
+    id: "total-free-bets",
+    title: "TOTAL FREE BETS",
+    value: "₱5,430.00",
+    icon: <TrendingUp size={18} />,
+    category: "bets"
+  },
+  {
+    id: "total-bets-conversions",
+    title: "TOTAL BETS FROM CONVERSIONS",
+    value: "₱42,890.00",
+    icon: <TrendingUp size={18} />,
+    category: "bets"
+  },
+  {
+    id: "net-income-bets",
+    title: "NET INCOME FROM BETS",
+    value: "₱84,937.00",
+    description: "= TOTAL BETS EARNED - COMMISSIONS + TOTAL WINS + TOTAL FREE BETS",
+    icon: <DollarSign size={18} />,
+    category: "bets"
+  }
+];
 
 
 export function Dashboard() {
@@ -208,45 +316,48 @@ export function Dashboard() {
 
   return (
     <div className="p-4 md:p-6 space-y-6">
-<div className="lg:mb-4 flex flex-wrap justify-between items-center gap-4">
-  <h2 className="text-2xl md:text-3xl font-bold text-left">Dashboard</h2>
-  <div className="flex flex-wrap justify-end items-center gap-4">
-    <div className="w-full sm:w-auto">
-      <label htmlFor="startDate" className="block text-sm font-medium">
-        Start Date
-      </label>
-      <input
-        type="date"
-        id="startDate"
-        value={startDate}
-        onChange={(e) => setStartDate(e.target.value)}
-        className="w-full sm:w-auto border rounded px-2 py-1"
-      />
-    </div>
-    <div className="w-full sm:w-auto">
-      <label htmlFor="endDate" className="block text-sm font-medium">
-        End Date
-      </label>
-      <input
-        type="date"
-        id="endDate"
-        value={endDate}
-        onChange={(e) => setEndDate(e.target.value)}
-        className="w-full sm:w-auto border rounded px-2 py-1"
-      />
-    </div>
-    <div className="w-full sm:w-auto">
-      <Button
-        onClick={resetDateFilters}
-        className="w-full sm:w-auto mt-4 px-4 py-2 bg-gray-500 text-white rounded"
-      >
-        Reset
-      </Button>
-    </div>
-  </div>
-</div>
+      <div className="lg:mb-4 flex flex-wrap justify-between items-center gap-4">
+        <h2 className="text-2xl md:text-3xl font-bold text-left">Dashboard</h2>
+        <div className="flex flex-wrap justify-end items-center gap-4">
+          <div className="w-full sm:w-auto">
+            <label htmlFor="startDate" className="block text-sm font-medium">
+              Start Date
+            </label>
+            <input
+              type="date"
+              id="startDate"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="w-full sm:w-auto border rounded px-2 py-1"
+            />
+          </div>
+          <div className="w-full sm:w-auto">
+            <label htmlFor="endDate" className="block text-sm font-medium">
+              End Date
+            </label>
+            <input
+              type="date"
+              id="endDate"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="w-full sm:w-auto border rounded px-2 py-1"
+            />
+          </div>
+          <div className="w-full sm:w-auto">
+            <Button
+              onClick={resetDateFilters}
+              className="w-full sm:w-auto mt-4 px-4 py-2 bg-gray-500 text-white rounded"
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+      </div>
 
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <FinancialMetricsGrid />
+
+      {/* <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        
         {stats.map((stat) => (
           <Card key={stat.title}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -256,14 +367,16 @@ export function Dashboard() {
               <stat.icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+              <div className="text-2xl font-bold">{stat.value}</div> */}
               {/* <p className="text-xs text-muted-foreground">
                 {stat.change} from last month
               </p> */}
-            </CardContent>
+            {/* </CardContent>
           </Card>
         ))}
-      </div>
+
+
+      </div> */}
 
       <Card>
         <CardHeader>

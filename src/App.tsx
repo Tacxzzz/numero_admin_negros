@@ -37,6 +37,7 @@ import { CombinationLimit } from "./components/CombinationLimit";
 import { AuditLogs } from "./components/AuditLogs";
 import { Backups } from "./components/Backups";
 import { CommissionHistory } from "./components/CommissionHistory";
+import { MetricDetailView } from "./components/metric-detail-view";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -127,6 +128,7 @@ function App() {
                     <Route path="/teamusers" element={<TeamUsers />} />
                     <Route path="/teamcashin" element={<TeamTransactionsCashin />} />
                     <Route path="/teamcashout" element={<TeamTransactionsCashOut />} />
+                    <Route path="/metric/:metricId" element={<MetricDetailView />} />
                   </Routes>
                 </main>
               </div>
