@@ -40,7 +40,20 @@ interface TabOption {
   icon: React.ReactNode;
 }
 
-export function FinancialMetricsGrid() {
+interface FinancialMetricsGridProps {
+  StartDate: string;
+  EndDate: string;
+  TotalCashin: number;
+  TotalCashout: number;
+  TotalPlayers: number;
+  TotalPlayersActive: number;
+  TotalPlayersInactive: number;
+  TotalBetsEarned: number;
+  TotalCommissions: number;
+  TotalWins: number;
+}
+
+export function FinancialMetricsGrid({StartDate, EndDate, TotalCashin, TotalCashout, TotalPlayers, TotalPlayersActive, TotalPlayersInactive, TotalBetsEarned, TotalCommissions, TotalWins }: FinancialMetricsGridProps) {
   const [activeTab, setActiveTab] = useState("all");
   const navigate = useNavigate();
 
@@ -53,26 +66,40 @@ export function FinancialMetricsGrid() {
     { value: "commissions", label: "Commissions", icon: <BarChart2 size={16} /> },
   ];
 
+  const TotalNetCash = TotalCashin - TotalCashout;
+
   // Define all metrics with their categories
   const metrics = [
     {
       id: "total-cash-in",
       title: "TOTAL CASH IN",
-      value: "$125,430.00",
+      value: TotalCashin.toLocaleString("en-PH", {
+        style: "currency",
+        currency: "PHP",
+        minimumFractionDigits: 2
+      }),
       icon: <DollarSign size={18} />,
       category: "cash"
     },
     {
       id: "total-cash-outs-paid",
       title: "TOTAL CASH OUTS - PAID",
-      value: "$78,290.00",
+      value: TotalCashout.toLocaleString("en-PH", {
+        style: "currency",
+        currency: "PHP",
+        minimumFractionDigits: 2
+      }),
       icon: <DollarSign size={18} />,
       category: "cash"
     },
     {
       id: "net-cash",
       title: "NET CASH",
-      value: "$47,140.00",
+      value: TotalNetCash.toLocaleString("en-PH", {
+        style: "currency",
+        currency: "PHP",
+        minimumFractionDigits: 2
+      }),
       description: "= TOTAL CASH IN - TOTAL CASH OUTS PAID",
       icon: <DollarSign size={18} />,
       category: "cash"
@@ -80,67 +107,79 @@ export function FinancialMetricsGrid() {
     {
       id: "total-players",
       title: "TOTAL NUMBER OF PLAYERS",
-      value: "1,245",
+      value: TotalPlayers.toLocaleString(),
       icon: <Users size={18} />,
       category: "players"
     },
     {
       id: "active-players",
       title: "TOTAL NO. OF PLAYERS (ACTIVE)",
-      value: "876",
+      value: TotalPlayersActive.toLocaleString(),
       icon: <Users size={18} />,
       category: "players"
     },
     {
       id: "inactive-players",
       title: "TOTAL NO. OF PLAYERS (INACTIVE)",
-      value: "369",
+      value: TotalPlayersInactive.toLocaleString(),
       icon: <Users size={18} />,
       category: "players"
     },
     {
       id: "total-bets-earned",
       title: "TOTAL BETS EARNED",
-      value: "$215,780.00",
+      value: TotalBetsEarned.toLocaleString("en-PH", {
+        style: "currency",
+        currency: "PHP",
+        minimumFractionDigits: 2
+      }),
       icon: <TrendingUp size={18} />,
       category: "bets"
     },
     {
       id: "total-commissions",
       title: "TOTAL COMMISSIONS",
-      value: "$32,367.00",
+      value: TotalCommissions.toLocaleString("en-PH", {
+        style: "currency",
+        currency: "PHP",
+        minimumFractionDigits: 2
+      }),
       icon: <DollarSign size={18} />,
       category: "commissions"
     },
     {
       id: "total-wins",
       title: "TOTAL WINS",
-      value: "$168,640.00",
+      value: TotalWins.toLocaleString("en-PH", {
+        style: "currency",
+        currency: "PHP",
+        minimumFractionDigits: 2
+      }),
       icon: <Award size={18} />,
       category: "bets"
     },
-    {
-      id: "total-free-bets",
-      title: "TOTAL FREE BETS",
-      value: "$5,430.00",
-      icon: <TrendingUp size={18} />,
-      category: "bets"
-    },
-    {
-      id: "total-bets-conversions",
-      title: "TOTAL BETS FROM CONVERSIONS",
-      value: "$42,890.00",
-      icon: <TrendingUp size={18} />,
-      category: "bets"
-    },
-    {
-      id: "net-income-bets",
-      title: "NET INCOME FROM BETS",
-      value: "$84,937.00",
-      description: "= TOTAL BETS EARNED - COMMISSIONS + TOTAL WINS + TOTAL FREE BETS",
-      icon: <DollarSign size={18} />,
-      category: "bets"
-    }
+    // {
+    //   id: "total-free-bets",
+    //   title: "TOTAL FREE BETS",
+    //   value: "$5,430.00",
+    //   icon: <TrendingUp size={18} />,
+    //   category: "bets"
+    // },
+    // {
+    //   id: "total-bets-conversions",
+    //   title: "TOTAL BETS FROM CONVERSIONS",
+    //   value: "$42,890.00",
+    //   icon: <TrendingUp size={18} />,
+    //   category: "bets"
+    // },
+    // {
+    //   id: "net-income-bets",
+    //   title: "NET INCOME FROM BETS",
+    //   value: "$84,937.00",
+    //   description: "= TOTAL BETS EARNED - COMMISSIONS + TOTAL WINS + TOTAL FREE BETS",
+    //   icon: <DollarSign size={18} />,
+    //   category: "bets"
+    // }
   ];
 
   // Filter metrics based on active tab
@@ -148,8 +187,11 @@ export function FinancialMetricsGrid() {
     ? metrics 
     : metrics.filter(metric => metric.category === activeTab);
 
-  const handleCardClick = (metricId: string) => {
-    navigate(`/metric/${metricId}`);
+  const handleCardClick = (metricId: string, startDate: string, endDate: string) => {
+    if (metricId !== "net-cash")
+    {
+      navigate(`/metric/${metricId}?startDate=${startDate}&endDate=${endDate}&status=${metricId === 'active-players' ? 'active' : metricId === 'inactive-players' ? 'inactive' : 'all'}`);
+    }
   };
 
   return (
@@ -179,7 +221,7 @@ export function FinancialMetricsGrid() {
             description={metric.description}
             icon={metric.icon}
             category={metric.category}
-            onClick={() => handleCardClick(metric.id)}
+            onClick={() => handleCardClick(metric.id, StartDate, EndDate)}
           />
         ))}
       </div>

@@ -34,6 +34,23 @@ export function Sidebar({ onClose }: SidebarProps) {
   const location = useLocation(); 
   const [permissionsString, setPermissionsString] = useState([]);
 
+  const initialStartDate = new Date();
+          initialStartDate.setDate(initialStartDate.getDate() - 20); // Subtract 20 days from the current date
+
+          const startDateDefault = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Asia/Manila',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }).format(initialStartDate).split('/').reverse().join('-'); // Format the date as YYYY-MM-DD
+          
+          const endDateDefault = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Asia/Manila',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }).format(new Date()).split('/').reverse().join('-');
+
 
   useEffect(() => {
       if (user && !dbUpdated) {
@@ -56,13 +73,13 @@ export function Sidebar({ onClose }: SidebarProps) {
     { icon: Crosshair, label: "Game Types", path: "/gametypes", permission: "games_types" },
     { icon: CalendarCheck2, label: "Draws", path: "/draws", permission: "draws" },
     { icon: Grid, label: "Draw Results", path: "/drawsresults", permission: "draws_results" },
-    { icon: Banknote, label: "Cash in history", path: "/cashinhistory", permission: "cashin" },
-    { icon: DollarSign, label: "Cash out history", path: "/cashouthistory", permission: "cashout" },
-    { icon: Dices, label: "Bets History", path: "/playersbets", permission: "bets" },
+    { icon: Banknote, label: "Cash in history", path: `/metric/total-cash-in?startDate=${startDateDefault}&endDate=${endDateDefault}&status=all`, permission: "cashin" },
+    { icon: DollarSign, label: "Cash out history", path: `/metric/total-cash-outs-paid?startDate=${startDateDefault}&endDate=${endDateDefault}&status=all`, permission: "cashout" },
+    { icon: Dices, label: "Bets History", path: `/metric/total-bets-earned?startDate=${startDateDefault}&endDate=${endDateDefault}&status=all`, permission: "bets" },
     { icon: Trophy, label: "Process Client Winners", path: "/clientwinners", permission: "winners" },
-    { icon: Trophy, label: "Player Winners History", path: "/winners", permission: "winners" },
-    { icon: Coins, label: "Commission History", path: "/commissionhistory", permission: "commission_history" },
-    { icon: Users, label: "Players Management", path: "/users", permission: "players" },
+    { icon: Trophy, label: "Player Winners History", path: `/metric/total-wins?startDate=${startDateDefault}&endDate=${endDateDefault}&status=all`, permission: "winners" },
+    { icon: Coins, label: "Commission History", path: `/metric/total-commissions?startDate=${startDateDefault}&endDate=${endDateDefault}&status=all`, permission: "commission_history" },
+    { icon: Users, label: "Players Management", path: `/metric/total-players?startDate=${startDateDefault}&endDate=${endDateDefault}&status=all`, permission: "players" },
     { icon: Users, label: "Clients Management", path: "/clients", permission: "clients" },
     { icon: BarChart, label: "Logs", path: "/logs", permission: "logs" },
     { icon: BarChart, label: "General Audit Logs", path: "/auditlogs", permission: "admin_management" },

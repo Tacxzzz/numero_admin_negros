@@ -1,126 +1,34 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { RecentOrders } from "./RecentOrders";
-import { SalesChart } from "./SalesChart";
-import { HandIcon , HandMetalIcon, ShoppingCart, Users, Boxes, Wallet, CoinsIcon, Wallet2, BookAIcon, BookCheck, BookHeart, Banknote, TrendingUp, DollarSign, Award } from "lucide-react";
+import {Users, CoinsIcon, BookCheck, BookHeart, Banknote, TrendingUp, DollarSign, Award } from "lucide-react";
 import { useAuth0 } from '@auth0/auth0-react';
-import { countBetsEarned, getRateChartData, loginAdmin, totalBalancePlayers, totalCashin, totalCashOut, totalClients, totalCommissions, totalPlayers, totalWins } from './api/apiCalls';
-import { useEffect, useState } from "react";
+import { countBetsEarned, getRateChartData, loginAdmin, totalBalancePlayers, totalCashin, totalCashOut, totalClients, totalCommissions, totalPlayers, totalPlayersActive, totalPlayersInactive, totalWins } from './api/apiCalls';
+import { useEffect, useRef, useState } from "react";
 import { formatPeso } from "./utils/utils";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { ExportButton } from "../components/export-button";
 import { FinancialMetricsGrid } from "../components/financial-metrics-grid";
-import { DetailedBreakdownSection } from "../components/detailed-breakdown-section";
-
-
-const dashboardData = [
-  { metric: "TOTAL CASH IN", value: "$125,430.00", category: "cash" },
-  { metric: "TOTAL CASH OUTS - PAID", value: "$78,290.00", category: "cash" },
-  { metric: "NET CASH", value: "$47,140.00", category: "cash" },
-  { metric: "TOTAL NUMBER OF PLAYERS", value: "1,245", category: "players" },
-  { metric: "TOTAL NO. OF PLAYERS (ACTIVE)", value: "876", category: "players" },
-  { metric: "TOTAL NO. OF PLAYERS (INACTIVE)", value: "369", category: "players" },
-  { metric: "TOTAL BETS EARNED", value: "$215,780.00", category: "bets" },
-  { metric: "TOTAL COMMISSIONS", value: "$32,367.00", category: "commissions" },
-  { metric: "TOTAL WINS", value: "$168,640.00", category: "bets" },
-  { metric: "TOTAL FREE BETS", value: "$5,430.00", category: "bets" },
-  { metric: "TOTAL BETS FROM CONVERSIONS", value: "$42,890.00", category: "bets" },
-  { metric: "NET INCOME FROM BETS", value: "$84,937.00", category: "bets" }
-];
-
-const metrics = [
-  {
-    id: "total-cash-in",
-    title: "TOTAL CASH IN",
-    value: "₱125,430.00",
-    icon: <DollarSign size={18} />,
-    category: "cash"
-  },
-  {
-    id: "total-cash-outs-paid",
-    title: "TOTAL CASH OUTS - PAID",
-    value: "₱78,290.00",
-    icon: <DollarSign size={18} />,
-    category: "cash"
-  },
-  {
-    id: "net-cash",
-    title: "NET CASH",
-    value: "₱47,140.00",
-    description: "= TOTAL CASH IN - TOTAL CASH OUTS PAID",
-    icon: <DollarSign size={18} />,
-    category: "cash"
-  },
-  {
-    id: "total-players",
-    title: "TOTAL NUMBER OF PLAYERS",
-    value: "1,245",
-    icon: <Users size={18} />,
-    category: "players"
-  },
-  {
-    id: "active-players",
-    title: "TOTAL NO. OF PLAYERS (ACTIVE)",
-    value: "876",
-    icon: <Users size={18} />,
-    category: "players"
-  },
-  {
-    id: "inactive-players",
-    title: "TOTAL NO. OF PLAYERS (INACTIVE)",
-    value: "369",
-    icon: <Users size={18} />,
-    category: "players"
-  },
-  {
-    id: "total-bets-earned",
-    title: "TOTAL BETS EARNED",
-    value: "₱215,780.00",
-    icon: <TrendingUp size={18} />,
-    category: "bets"
-  },
-  {
-    id: "total-commissions",
-    title: "TOTAL COMMISSIONS",
-    value: "₱32,367.00",
-    icon: <DollarSign size={18} />,
-    category: "commissions"
-  },
-  {
-    id: "total-wins",
-    title: "TOTAL WINS",
-    value: "₱168,640.00",
-    icon: <Award size={18} />,
-    category: "bets"
-  },
-  {
-    id: "total-free-bets",
-    title: "TOTAL FREE BETS",
-    value: "₱5,430.00",
-    icon: <TrendingUp size={18} />,
-    category: "bets"
-  },
-  {
-    id: "total-bets-conversions",
-    title: "TOTAL BETS FROM CONVERSIONS",
-    value: "₱42,890.00",
-    icon: <TrendingUp size={18} />,
-    category: "bets"
-  },
-  {
-    id: "net-income-bets",
-    title: "NET INCOME FROM BETS",
-    value: "₱84,937.00",
-    description: "= TOTAL BETS EARNED - COMMISSIONS + TOTAL WINS + TOTAL FREE BETS",
-    icon: <DollarSign size={18} />,
-    category: "bets"
-  }
-];
 
 
 export function Dashboard() {
 
   const { user,getAccessTokenSilently , logout} = useAuth0();
+  const initialStartDate = new Date();
+          initialStartDate.setDate(initialStartDate.getDate() - 20); // Subtract 20 days from the current date
+
+          const startDateDefault = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Asia/Manila',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }).format(initialStartDate).split('/').reverse().join('-'); // Format the date as YYYY-MM-DD
+          
+          const endDateDefault = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Asia/Manila',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }).format(new Date()).split('/').reverse().join('-');
+
     const [loading, setLoading] = useState(true);
     const [userID, setUserID] = useState("none");
     const [dbUpdated, setDbUpdated] = useState(false);
@@ -131,13 +39,17 @@ export function Dashboard() {
     const [totalBalance, setTotalBalance] = useState(0);
     const [totalComm, setTotalComm] = useState(0);
     const [totalPlayersAmount, setTotalPlayersAmount] = useState(0);
+    const [totalPlayersActiveCount, setTotalPlayersActive] = useState(0);
+    const [totalPlayersInactiveCount, setTotalPlayersInactive] = useState(0);
     const [totalNonRegisteredPlayers, setTotalNonRegisteredPlayers] = useState(0);
     const [totalCashins, setTotalCashins] = useState(0);
     const [totalCashouts, setTotalCashouts] = useState(0);
-    const [startDate, setStartDate] = useState<string>("");
-    const [endDate, setEndDate] = useState<string>("");
+    const [startDate, setStartDate] = useState<string>(startDateDefault);
+    const [endDate, setEndDate] = useState<string>(endDateDefault);
     const [rateChartData, setRateChartData] = useState<any[]>([]);
     const [permissionsString, setPermissionsString] = useState([]);
+
+    const hasInitializedRef = useRef(false);
 
   useEffect(() => {
     const fetchRateChartData = async () => {
@@ -168,6 +80,12 @@ export function Dashboard() {
 
           const data8= await totalCashOut(startDate,endDate);
           setTotalCashouts(data8.count);
+
+          const data9= await totalPlayersActive(startDate,endDate);
+          setTotalPlayersActive(data9.count);
+
+          const data10= await totalPlayersInactive(startDate,endDate);
+          setTotalPlayersInactive(data10.count);
       } catch (error) {
         console.error('Error fetching rate chart data:', error);
       }
@@ -187,59 +105,6 @@ export function Dashboard() {
           setUserID(dataUpdated.userID);
           setPermissionsString(JSON.parse(dataUpdated.permissions));
           setLoading(false);
-          
-
-          const initialStartDate = new Date();
-          initialStartDate.setDate(initialStartDate.getDate() - 20); // Subtract 20 days from the current date
-
-          const startDate = new Intl.DateTimeFormat('en-GB', {
-            timeZone: 'Asia/Manila',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-          }).format(initialStartDate).split('/').reverse().join('-'); // Format the date as YYYY-MM-DD
-          
-          const endDate = new Intl.DateTimeFormat('en-GB', {
-            timeZone: 'Asia/Manila',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-          }).format(new Date()).split('/').reverse().join('-');
-
-          setStartDate(startDate);
-          setEndDate(endDate);
-
-          console.log('Start:', startDate);
-          console.log('End:', endDate);
-
-
-          const data = await getRateChartData(startDate,endDate);
-          setRateChartData(data);
-          console.log(data);
-
-          const betsEarnedData= await countBetsEarned(startDate,endDate);
-          setTotalRemitAmount(betsEarnedData.count);
-
-          const data2= await totalWins(startDate,endDate);
-          setTotalRedeemAmount(data2.count);
-
-          const data3= await totalBalancePlayers(startDate,endDate);
-          setTotalBalance(data3.count);
-
-          const data4= await totalCommissions(startDate,endDate);
-          setTotalComm(data4.count);
-          
-          const data5= await totalPlayers(startDate,endDate);
-          setTotalPlayersAmount(data5.count);
-
-          const data6= await totalClients(startDate,endDate);
-          setTotalNonRegisteredPlayers(data6.count);
-
-          const data7= await totalCashin(startDate,endDate);
-          setTotalCashins(data7.count);
-
-          const data8= await totalCashOut(startDate,endDate);
-          setTotalCashouts(data8.count);
         }
         else
         {
@@ -256,52 +121,6 @@ export function Dashboard() {
   if (loading ) {
     return <div>...</div>;
   }
-
-
-  const stats = [
-    {
-      title: "Total Bets Earned",
-      value: formatPeso(totalRemitAmount),
-      icon: CoinsIcon,
-    },
-    {
-      title: "Total Wins",
-      value: formatPeso(totalRedeemAmount),
-      icon: CoinsIcon,
-    },
-    {
-      title: "Total Credits From Players",
-      value: formatPeso(totalBalance),
-      icon: BookCheck,
-    },
-    {
-      title: "Total Commision",
-      value: formatPeso(totalComm),
-      icon: BookHeart,
-    },
-    {
-      title: "Players",
-      value: totalPlayersAmount,
-      icon: Users,
-    },
-    {
-      title: "Non-Registered Players",
-      value: totalNonRegisteredPlayers,
-      icon: Users,
-    },
-    {
-      title: "Cash In",
-      value: formatPeso(totalCashins),
-      icon: Banknote,
-    },
-    {
-      title: "Cash Out",
-      value: formatPeso(totalCashouts),
-      icon: Banknote,
-    },
-  ];
-
-  
 
   const resetDateFilters = () => {
     setStartDate("");
@@ -354,29 +173,8 @@ export function Dashboard() {
         </div>
       </div>
 
-      <FinancialMetricsGrid />
-
-      {/* <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div> */}
-              {/* <p className="text-xs text-muted-foreground">
-                {stat.change} from last month
-              </p> */}
-            {/* </CardContent>
-          </Card>
-        ))}
-
-
-      </div> */}
+      <FinancialMetricsGrid StartDate={startDate} EndDate={endDate} TotalCashin={totalCashins} TotalCashout={totalCashouts} TotalPlayers={totalPlayersAmount} TotalPlayersActive={totalPlayersActiveCount} 
+      TotalPlayersInactive={totalPlayersInactiveCount} TotalBetsEarned={totalRemitAmount} TotalCommissions={totalComm} TotalWins={totalRedeemAmount}/>
 
       <Card>
         <CardHeader>
