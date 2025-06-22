@@ -88,9 +88,12 @@ export function Sidebar({ onClose }: SidebarProps) {
     { icon: Calendar, label: "Announcements", path: "/announcements", permission: "admin_management" },
     
     { icon: LayoutDashboard, label: "My TEAM Dashboard", path: "/teamdashboard", permission: "team_dashboard" },
-    { icon: Users, label: "My TEAM", path: "/teamusers", permission: "team_players" },
-    { icon: Banknote, label: "My TEAM Cashin", path: "/teamcashin", permission: "team_cashin" },
-    { icon: DollarSign, label: "My TEAM Cashout", path: "/teamcashout", permission: "team_cashout" },
+    { icon: Users, label: "My TEAM", path: `/teammetric/total-players?startDate=${startDateDefault}&endDate=${endDateDefault}&status=all`, permission: "team_players" },
+    { icon: Dices, label: "My TEAM Bets", path: `/teammetric/total-bets-earned?startDate=${startDateDefault}&endDate=${endDateDefault}&status=all`, permission: "team_dashboard" },
+    { icon: Trophy, label: "My TEAM Winners", path: `/teammetric/total-wins?startDate=${startDateDefault}&endDate=${endDateDefault}&status=all`, permission: "team_dashboard" },
+    { icon: Coins, label: "My TEAM Commissions", path: `/teammetric/total-commissions?startDate=${startDateDefault}&endDate=${endDateDefault}&status=all`, permission: "team_dashboard" },
+    { icon: Banknote, label: "My TEAM Cashin", path: `/teammetric/total-cash-in?startDate=${startDateDefault}&endDate=${endDateDefault}&status=all`, permission: "team_cashin" },
+    { icon: DollarSign, label: "My TEAM Cashout", path: `/teammetric/total-cash-outs-paid?startDate=${startDateDefault}&endDate=${endDateDefault}&status=all`, permission: "team_cashout" },
   ];
   
 

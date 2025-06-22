@@ -3,11 +3,12 @@ import { RecentOrders } from "./RecentOrders";
 import { SalesChart } from "./SalesChart";
 import { HandIcon , HandMetalIcon, ShoppingCart, Users, Boxes, Wallet, CoinsIcon, Wallet2, BookAIcon, BookCheck, BookHeart, Banknote } from "lucide-react";
 import { useAuth0 } from '@auth0/auth0-react';
-import { countBetsEarned, countBetsEarnedTeam, getRateChartData, getRateChartDataTeam, loginAdmin, totalBalancePlayers, totalBalancePlayersTeam, totalCashin, totalCashinTeam, totalCashOut, totalCashOutTeam, totalClients, totalClientsTeam, totalCommissions, totalCommissionsTeam, totalPlayers, totalPlayersTeam, totalWins, totalWinsTeam } from './api/apiCalls';
+import { countBetsEarned, countBetsEarnedTeam, getRateChartData, getRateChartDataTeam, loginAdmin, totalBalancePlayers, totalBalancePlayersTeam, totalCashin, totalCashinTeam, totalCashOut, totalCashOutTeam, totalClients, totalClientsTeam, totalCommissions, totalCommissionsTeam, totalPlayers, totalPlayersActiveTeam, totalPlayersTeam, totalWins, totalWinsTeam } from './api/apiCalls';
 import { useEffect, useState } from "react";
 import { formatPeso } from "./utils/utils";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { TeamFinancialMetricsGrid } from "./team-financial-metrics-grid";
 
 
 export function TeamDashboard() {
@@ -23,6 +24,7 @@ export function TeamDashboard() {
     const [totalBalance, setTotalBalance] = useState(0);
     const [totalComm, setTotalComm] = useState(0);
     const [totalPlayersAmount, setTotalPlayersAmount] = useState(0);
+     const [totalPlayersActiveCount, setTotalPlayersActiveCount] = useState(0);
     const [totalNonRegisteredPlayers, setTotalNonRegisteredPlayers] = useState(0);
     const [totalCashins, setTotalCashins] = useState(0);
     const [totalCashouts, setTotalCashouts] = useState(0);
@@ -35,6 +37,7 @@ export function TeamDashboard() {
   useEffect(() => {
       const fetchRateChartData = async () => {
         try {
+          console.log(userID);
           const data = await getRateChartDataTeam(userID,startDate, endDate); // Call the function to fetch data
           setRateChartData(data); 
 
@@ -61,6 +64,9 @@ export function TeamDashboard() {
 
           const data8= await totalCashOutTeam(userID,startDate,endDate);
           setTotalCashouts(data8.count);
+
+          const data9= await totalPlayersActiveTeam(userID, startDate,endDate);
+          setTotalPlayersActiveCount(data9.count);
           
         } catch (error) {
           console.error('Error fetching rate chart data:', error);
@@ -101,37 +107,6 @@ export function TeamDashboard() {
 
           setStartDate(startDate);
           setEndDate(endDate);
-
-          console.log('Start:', startDate);
-          console.log('End:', endDate);
-
-          const data = await getRateChartDataTeam(dataUpdated.userID,startDate,endDate);
-          setRateChartData(data);
-          console.log(data);
-
-          const betsEarnedData= await countBetsEarnedTeam(dataUpdated.userID,startDate,endDate);
-          setTotalRemitAmount(betsEarnedData.count);
-
-          const data2= await totalWinsTeam(dataUpdated.userID,startDate,endDate);
-          setTotalRedeemAmount(data2.count);
-
-          const data3= await totalBalancePlayersTeam(dataUpdated.userID,startDate,endDate);
-          setTotalBalance(data3.count);
-
-          const data4= await totalCommissionsTeam(dataUpdated.userID,startDate,endDate);
-          setTotalComm(data4.count);
-          
-          const data5= await totalPlayersTeam(dataUpdated.userID,startDate,endDate);
-          setTotalPlayersAmount(data5.count);
-
-          const data6= await totalClientsTeam(dataUpdated.userID,startDate,endDate);
-          setTotalNonRegisteredPlayers(data6.count);
-
-          const data7= await totalCashinTeam(dataUpdated.userID,startDate,endDate);
-          setTotalCashins(data7.count);
-
-          const data8= await totalCashOutTeam(dataUpdated.userID,startDate,endDate);
-          setTotalCashouts(data8.count);
         }
         else
         {
@@ -207,86 +182,70 @@ export function TeamDashboard() {
   
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
-<div className="lg:mb-4 flex flex-wrap justify-between items-center gap-4">
-  <h2 className="text-2xl md:text-3xl font-bold text-left">My Team Dashboard</h2>
-  <div className="flex flex-wrap justify-end items-center gap-4">
-    <div className="w-full sm:w-auto">
-      <label htmlFor="startDate" className="block text-sm font-medium">
-        Start Date
-      </label>
-      <input
-        type="date"
-        id="startDate"
-        value={startDate}
-        onChange={(e) => setStartDate(e.target.value)}
-        className="w-full sm:w-auto border rounded px-2 py-1"
-      />
-    </div>
-    <div className="w-full sm:w-auto">
-      <label htmlFor="endDate" className="block text-sm font-medium">
-        End Date
-      </label>
-      <input
-        type="date"
-        id="endDate"
-        value={endDate}
-        onChange={(e) => setEndDate(e.target.value)}
-        className="w-full sm:w-auto border rounded px-2 py-1"
-      />
-    </div>
-    <div className="w-full sm:w-auto">
-      <Button
-        onClick={resetDateFilters}
-        className="w-full sm:w-auto mt-4 px-4 py-2 bg-gray-500 text-white rounded"
-      >
-        Reset
-      </Button>
-    </div>
-  </div>
-</div>
-
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              {/* <p className="text-xs text-muted-foreground">
-                {stat.change} from last month
-              </p> */}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Revenue Recognition</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={rateChartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="Cash_In" stroke="#8884d8" name="Cash In" />
-                <Line type="monotone" dataKey="Cash_Out" stroke="#ff7300" name="Cash Out" />
-              </LineChart>
-            </ResponsiveContainer>
+      <div className="p-4 md:p-6 space-y-6">
+        <div className="lg:mb-4 flex flex-wrap justify-between items-center gap-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-left">Dashboard</h2>
+          <div className="flex flex-wrap justify-end items-center gap-4">
+            <div className="w-full sm:w-auto">
+              <label htmlFor="startDate" className="block text-sm font-medium">
+                Start Date
+              </label>
+              <input
+                type="date"
+                id="startDate"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full sm:w-auto border rounded px-2 py-1"
+              />
+            </div>
+            <div className="w-full sm:w-auto">
+              <label htmlFor="endDate" className="block text-sm font-medium">
+                End Date
+              </label>
+              <input
+                type="date"
+                id="endDate"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full sm:w-auto border rounded px-2 py-1"
+              />
+            </div>
+            <div className="w-full sm:w-auto">
+              <Button
+                onClick={resetDateFilters}
+                className="w-full sm:w-auto mt-4 px-4 py-2 bg-gray-500 text-white rounded"
+              >
+                Reset
+              </Button>
+            </div>
           </div>
-        </CardContent>
-      </Card>
-
-      
-    </div>
-  );
+        </div>
+  
+        <TeamFinancialMetricsGrid StartDate={startDate} EndDate={endDate} TotalCashin={totalCashins} TotalCashout={totalCashouts} TotalPlayers={totalPlayersAmount} TotalPlayersActive={totalPlayersActiveCount} 
+        TotalPlayersInactive={0} TotalBetsEarned={totalRemitAmount} TotalCommissions={totalComm} TotalWins={totalRedeemAmount}/>
+  
+        <Card>
+          <CardHeader>
+            <CardTitle>Revenue Recognition</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={rateChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="Cash_In" stroke="#8884d8" name="Cash In" />
+                  <Line type="monotone" dataKey="Cash_Out" stroke="#ff7300" name="Cash Out" />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+  
+        
+      </div>
+    );
 }
