@@ -12,7 +12,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { addBalance, cashinHourlyData, cashoutHourlyData, countBetsEarned, countClientBetsEarned, countSelfBetsEarned, getBetsData, getBetsWins4D, getBetsWinsPerGame, getBetsWinsPerGameType, getBetsWinsPerTimeSlot, getCashinData, getCashoutData, getCommissionsData, getPlayersAdminChoice, getPlayersData, getTotalBetsData, getTotalCashinData, getTotalConversionData, getWinnersData, loginAdmin, totalCashoutFromCommissions, totalCashoutFromWinnings, totalCommissions, totalPlayers, totalPlayersActive, totalPlayersInactive, totalWins, updatePlayer } from "./api/apiCalls";
+import { addBalance, cashinHourlyData, cashinHourlyDataTeam, cashoutHourlyData, cashoutHourlyDataTeam, countBetsEarned, countBetsEarnedTeam, countClientBetsEarned, countClientBetsEarnedTeam, countSelfBetsEarned, countSelfBetsEarnedTeam, getBetsData, getBetsDataTeam, getBetsWins4D, getBetsWins4DTeam, getBetsWinsPerGame, getBetsWinsPerGameTeam, getBetsWinsPerGameType, getBetsWinsPerGameTypeTeam, getBetsWinsPerTimeSlot, getBetsWinsPerTimeSlotTeam, getCashinData, getCashinDataTeam, getCashoutData, getCashoutDataTeam, getCommissionsData, getCommissionsDataTeam, getPlayersAdminChoice, getPlayersData, getPlayersDataTeam, getTotalBetsDataTeam, getTotalCashinDataTeam, getTotalConversionDataTeam, getWinnersData, getWinnersDataTeam, loginAdmin, totalCashoutFromCommissions, totalCashoutFromCommissionsTeam, totalCashoutFromWinnings, totalCashoutFromWinningsTeam, totalCommissions, totalCommissionsTeam, totalPlayers, totalPlayersActive, totalPlayersActiveTeam, totalPlayersInactive, totalPlayersInactiveTeam, totalPlayersTeam, totalWins, totalWinsTeam, updatePlayer, updatePlayerTeam } from "./api/apiCalls";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
@@ -151,21 +151,8 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
       const formData = new FormData();
       formData.append('userID', selectedGameBet.id);
       formData.append('status', selectedGameBet.status);
-      formData.append('under_admin', selectedGameBet.under_admin);
-      formData.append('level', selectedGameBet.level);
-      formData.append('quota', selectedGameBet.quota);
-      formData.append('bet_commission_percent', selectedGameBet.bet_commission_percent);
-      formData.append('level_one_percent', selectedGameBet.level_one_percent);
-      formData.append('level_two_percent', selectedGameBet.level_two_percent);
-      formData.append('nolimit_percent', selectedGameBet.nolimit_percent);
-      formData.append('quota_time', selectedGameBet.quota_time);
-      formData.append('quota_allow', selectedGameBet.quota_allow);
-      formData.append('has_maintaining_balance', selectedGameBet.has_maintaining_balance);
-      formData.append('maintaining_balance', selectedGameBet.maintaining_balance);
-      formData.append('bypass_device', selectedGameBet.bypass_device);
-      formData.append('employer', selectedGameBet.employer);
   
-      const isAuthenticated = await updatePlayer(formData);
+      const isAuthenticated = await updatePlayerTeam(formData);
   
       setUpdating(false);
       setIsModalOpen(false);
@@ -344,12 +331,6 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                           >
                             Edit
                           </Button>
-                          { addBalancePermission && (<Button
-                            className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
-                            onClick={() => handleAddBalanceClick(row)}
-                          >
-                            Add Balance
-                          </Button> )}
                           <Button
                             className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
                             onClick={() => navigate(`/hierarchy?user_mobile=${String(row['mobile'])}&user_id=${String(row['id'])}`)}
@@ -471,298 +452,6 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                             </option>
                             <option value="pending">Active</option>
                             <option value="blocked">Blocked</option>
-                          </select>
-                        </div>
-                        <br/>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Referral Limit</label>
-                          <select
-                            name="level"
-                            value={selectedGameBet?.level || ""}
-                            onChange={handleChange}
-                            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          >
-                            <option value="" disabled>
-                              Select Schedule
-                            </option>
-                            <option value="level2">
-                                Till Level 2
-                              </option>
-                              <option value="nolimit">
-                                No Limit
-                              </option>
-                          </select>
-                        </div>
-                        <br/>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Amount Quota
-                      <Input
-                        type="number"
-                        name="quota"
-                        value={selectedGameBet?.quota || ""}
-                        onChange={handleChange}
-                        required
-                        className="border p-1 mt-2 w-full"
-                        placeholder="Enter Quota Amount"
-                        style={{ appearance: 'textfield' }}
-                      />
-                        <style>{`
-                                  input[type=number]::-webkit-outer-spin-button,
-                                  input[type=number]::-webkit-inner-spin-button {
-                                  -webkit-appearance: none;
-                                  margin: 0;
-                                  }
-                                  input[type=number] {
-                                  -moz-appearance: textfield;
-                                  }
-                                  `}
-                        </style> 
-                    </label>
-      
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Bet Commission %
-                      <Input
-                        type="number"
-                        name="bet_commission_percent"
-                        value={selectedGameBet?.bet_commission_percent|| ""}
-                        onChange={handleChange}
-                        required
-                        className="border p-1 mt-2 w-full"
-                        placeholder="Enter % of Bet Commission"
-                        style={{ appearance: 'textfield' }}
-                      />
-                        <style>{`
-                                  input[type=number]::-webkit-outer-spin-button,
-                                  input[type=number]::-webkit-inner-spin-button {
-                                  -webkit-appearance: none;
-                                  margin: 0;
-                                  }
-                                  input[type=number] {
-                                  -moz-appearance: textfield;
-                                  }
-                                  `}
-                        </style> 
-                    </label>
-      
-                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Level 1 %
-                      <Input
-                        type="number"
-                        name="level_one_percent"
-                        value={selectedGameBet?.level_one_percent || ""}
-                        onChange={handleChange}
-                        required
-                        className="border p-1 mt-2 w-full"
-                        placeholder="Enter % of Level 1 Commission"
-                        style={{ appearance: 'textfield' }}
-                      />
-                        <style>{`
-                                  input[type=number]::-webkit-outer-spin-button,
-                                  input[type=number]::-webkit-inner-spin-button {
-                                  -webkit-appearance: none;
-                                  margin: 0;
-                                  }
-                                  input[type=number] {
-                                  -moz-appearance: textfield;
-                                  }
-                                  `}
-                        </style> 
-                    </label>
-      
-                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Level 2 %
-                      <Input
-                        type="number"
-                        name="level_two_percent"
-                        value={selectedGameBet?.level_two_percent || ""}
-                        onChange={handleChange}
-                        required
-                        className="border p-1 mt-2 w-full"
-                        placeholder="Enter % of Level 2 Commission"
-                        style={{ appearance: 'textfield' }}
-                      />
-                        <style>{`
-                                  input[type=number]::-webkit-outer-spin-button,
-                                  input[type=number]::-webkit-inner-spin-button {
-                                  -webkit-appearance: none;
-                                  margin: 0;
-                                  }
-                                  input[type=number] {
-                                  -moz-appearance: textfield;
-                                  }
-                                  `}
-                        </style> 
-                    </label>
-                        
-                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      % Commission if Quota is no limit
-                      <Input
-                        type="number"
-                        name="nolimit_percent"
-                        value={selectedGameBet?.nolimit_percent || ""}
-                        onChange={handleChange}
-                        required
-                        className="border p-1 mt-2 w-full"
-                        placeholder="Enter % Commission if Quota is no limit"
-                        style={{ appearance: 'textfield' }}
-                      />
-                        <style>{`
-                                  input[type=number]::-webkit-outer-spin-button,
-                                  input[type=number]::-webkit-inner-spin-button {
-                                  -webkit-appearance: none;
-                                  margin: 0;
-                                  }
-                                  input[type=number] {
-                                  -moz-appearance: textfield;
-                                  }
-                                  `}
-                        </style> 
-                    </label>
-                        <br/>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Quota Schedule</label>
-                          <select
-                            name="quota_time"
-                            value={selectedGameBet?.quota_time || "weekly"}
-                            onChange={handleChange}
-                            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          >
-                            <option value="" disabled>
-                              Select Schedule
-                            </option>
-                            <option value="weekly">
-                                Weekly
-                              </option>
-                              <option value="daily">
-                                Daily
-                              </option>
-                              <option value="monthly">
-                                Monthly
-                              </option>
-                          </select>
-                        </div>
-                        <br/>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Let User BYPASS QUOTA?</label>
-                          <select
-                            name="quota_allow"
-                            value={selectedGameBet?.quota_allow || "no"}
-                            onChange={handleChange}
-                            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          >
-                            <option value="" disabled>
-                              Select 
-                            </option>
-                            <option value="no">
-                                No
-                              </option>
-                              <option value="yes">
-                                Yes
-                              </option>
-                          </select>
-                        </div>
-                        <br/>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Let User BYPASS DEVICE ID CHECK?</label>
-                          <select
-                            name="bypass_device"
-                            value={selectedGameBet?.bypass_device || "no"}
-                            onChange={handleChange}
-                            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          >
-                            <option value="" disabled>
-                              Select 
-                            </option>
-                            <option value="no">
-                                No
-                              </option>
-                              <option value="yes">
-                                Yes
-                              </option>
-                          </select>
-                        </div>
-                      <br/>
-                      <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Has Maintaining Balance</label>
-                          <select
-                            name="has_maintaining_balance"
-                            value={selectedGameBet?.has_maintaining_balance || "no"}
-                            onChange={handleChange}
-                            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          >
-                            <option value="" disabled>
-                              Select 
-                            </option>
-                            <option value="no">
-                                No
-                              </option>
-                              <option value="yes">
-                                Yes
-                              </option>
-                          </select>
-                        </div>
-                      <br/>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Maintaining Balance
-                      <Input
-                        type="number"
-                        name="maintaining_balance"
-                        value={selectedGameBet?.maintaining_balance || ""}
-                        onChange={handleChange}
-                        required
-                        className="border p-1 mt-2 w-full"
-                        placeholder="Enter Maintaining Balance if enabled"
-                        style={{ appearance: 'textfield' }}
-                      />
-                        <style>{`
-                                  input[type=number]::-webkit-outer-spin-button,
-                                  input[type=number]::-webkit-inner-spin-button {
-                                  -webkit-appearance: none;
-                                  margin: 0;
-                                  }
-                                  input[type=number] {
-                                  -moz-appearance: textfield;
-                                  }
-                                  `}
-                        </style> 
-                      </label>
-                        <br/>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Is Employer</label>
-                          <select
-                            name="employer"
-                            value={selectedGameBet?.employer || "no"}
-                            onChange={handleChange}
-                            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          >
-                            <option value="" disabled>
-                              Select 
-                            </option>
-                            <option value="no">
-                                No
-                              </option>
-                              <option value="yes">
-                                Yes
-                              </option>
-                          </select>
-                        </div>
-                        <br/>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Set Under Admin Team</label>
-                          <select
-                            name="under_admin"
-                            value={selectedGameBet?.under_admin || ""}
-                            onChange={handleChange}
-                            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          >
-                            <option value="" disabled>
-                              Select a Admin Team
-                            </option>
-                            {adminChoice.map((admin: any) => (
-                              <option key={admin.id} value={admin.id}>
-                                {admin.admin_mail}
-                              </option>
-                            ))}
                           </select>
                         </div>
                         <br />
@@ -1022,7 +711,7 @@ const normalizeHourlyData = (apiData: HourData[]): HourData[] => {
   return fullHours;
 };
 
-export function MetricDetailView() {
+export function TeamMetricDetailView() {
    const initialStartDate = new Date();
           initialStartDate.setDate(initialStartDate.getDate() - 20); // Subtract 20 days from the current date
 
@@ -1045,6 +734,7 @@ export function MetricDetailView() {
   const [transactionData, setTransactionData] = useState<any[]>([]);
   const [hourlyData, setHourlyData] = useState<HourData[]>([]);
   const { user, getAccessTokenSilently, logout } = useAuth0();
+  const [userID, setUserID] = useState("none");
   const [loading, setLoading] = useState(true);
   const [dbUpdated, setDbUpdated] = useState(false);
   const [permissionsString, setPermissionsString] = useState([]);
@@ -1101,21 +791,8 @@ export function MetricDetailView() {
             { key: 'balance', label: 'Account Balance' },
             { key: 'wins', label: 'Wins' },
             { key: 'commissions', label: 'Commissions' },
-            { key: 'bet_commission_percent', label: 'Bet Commission Percentage' },
-            { key: 'level_one_percent', label: 'Lvl 1 Percentage' },
-            { key: 'level_two_percent', label: 'Lvl 2 Percentage' },
             { key: 'referrer_mobile', label: 'Referred by' },
             { key: 'referral_count', label: '# of Referrals' },
-            { key: 'level', label: 'Referral Limit' },
-            { key: 'quota', label: 'Quota' },
-            { key: 'nolimit_percent', label: '# of Commission if no Limit' },
-            { key: 'quota_time', label: 'Quota Schedule' },
-            { key: 'quota_allow', label: 'Bypass Quota?' },
-            { key: 'has_maintaining_balance', label: 'Has Maintaining Balance' },
-            { key: 'maintaining_balance', label: 'Maintaining Balance' },
-            { key: 'employer', label: 'Is Employer' },
-            { key: 'bypass_device', label: 'Bypass Device ID Check' },
-            { key: 'under_admin_mail', label: 'Admin Team' },
             { key: 'status', label: 'Player Status' },
             { key: 'action', label: 'Action' }
           ];
@@ -1256,6 +933,7 @@ export function MetricDetailView() {
           const dataUpdated = await loginAdmin(user, getAccessTokenSilently);
           if (dataUpdated.dbUpdate) {
             setDbUpdated(dataUpdated.dbUpdate);
+            setUserID(dataUpdated.userID);
             setPermissionsString(JSON.parse(dataUpdated.permissions));
             setLoading(false);
             const adminData = await getPlayersAdminChoice();
@@ -1279,18 +957,19 @@ export function MetricDetailView() {
             endDate: endDate,
             status: playerStatus
           });
+          const dataUpdated = await loginAdmin(user, getAccessTokenSilently);
           if (metricId === "total-cash-outs-paid") {
-              const dataHourly = await cashoutHourlyData(startDate, endDate);
+              const dataHourly = await cashoutHourlyDataTeam(startDate, endDate, dataUpdated.userID);
               const completeData = normalizeHourlyData(dataHourly);
               setHourlyData(completeData);
 
-              const totalCashoutCommission = await totalCashoutFromCommissions(startDate, endDate);
+              const totalCashoutCommission = await totalCashoutFromCommissionsTeam(startDate, endDate, dataUpdated.userID);
               setCashoutFromCommission(totalCashoutCommission.count);
 
-              const totalCashoutWinnings = await totalCashoutFromWinnings(startDate, endDate);
+              const totalCashoutWinnings = await totalCashoutFromWinningsTeam(startDate, endDate, dataUpdated.userID);
               setCashoutFromWinnings(totalCashoutWinnings.count);
 
-              const data = await getCashoutData(startDate, endDate);
+              const data = await getCashoutDataTeam(startDate, endDate, dataUpdated.userID);
               const cleanedData = data.map(row => {
                 const cleanedRow: Record<string, any> = {};
                 Object.keys(row).forEach(key => {
@@ -1300,49 +979,49 @@ export function MetricDetailView() {
               });
               setTransactionData(cleanedData);
             } else if (metricId === "total-bets-earned" || metricId === "total-free-bets" || metricId === "total-bets-conversions") {
-              const totalBetsEarnedCount= await countBetsEarned(startDate,endDate);
+              const totalBetsEarnedCount= await countBetsEarnedTeam(dataUpdated.userID,startDate,endDate);
               setTotalBetsEarned(totalBetsEarnedCount.count);
 
-              const totalSelfBetsEarnedCount= await countSelfBetsEarned(startDate,endDate);
+              const totalSelfBetsEarnedCount= await countSelfBetsEarnedTeam(startDate,endDate,dataUpdated.userID);
               setSelfTotalBetsEarned(totalSelfBetsEarnedCount.count);
 
-              const totalClientBetsEarnedCount= await countClientBetsEarned(startDate,endDate);
+              const totalClientBetsEarnedCount= await countClientBetsEarnedTeam(startDate,endDate,dataUpdated.userID);
               setTotalClientBetsEarned(totalClientBetsEarnedCount.count);
 
               const newData = [];
               const newGameTypeData = {};
 
-              const betWin2PM = await getBetsWinsPerTimeSlot(startDate, endDate, '02:00:00 pm');
+              const betWin2PM = await getBetsWinsPerTimeSlotTeam(startDate, endDate, '02:00:00 pm',dataUpdated.userID);
               newData.push({ time: "2:00 PM", games: betWin2PM });
 
-              const betWin5PM = await getBetsWinsPerTimeSlot(startDate, endDate, '05:00:00 pm');
+              const betWin5PM = await getBetsWinsPerTimeSlotTeam(startDate, endDate, '05:00:00 pm',dataUpdated.userID);
               newData.push({ time: "5:00 PM", games: betWin5PM });
 
-              const betWin9PM = await getBetsWinsPerTimeSlot(startDate, endDate, '09:00:00 pm');
+              const betWin9PM = await getBetsWinsPerTimeSlotTeam(startDate, endDate, '09:00:00 pm',dataUpdated.userID);
               newData.push({ time: "9:00 PM", games: betWin9PM });
 
-              const betWin2D = await getBetsWinsPerGameType(startDate, endDate, '2D');
+              const betWin2D = await getBetsWinsPerGameTypeTeam(startDate, endDate, '2D',dataUpdated.userID);
               newGameTypeData["2D"] = [...betWin2D];
 
-              const betWin3D = await getBetsWinsPerGameType(startDate, endDate, '3D');
+              const betWin3D = await getBetsWinsPerGameTypeTeam(startDate, endDate, '3D',dataUpdated.userID);
               newGameTypeData["3D"] = [...betWin3D];
 
-              const betWin4D = await getBetsWins4D(startDate, endDate);
+              const betWin4D = await getBetsWins4DTeam(startDate, endDate,dataUpdated.userID);
               newGameTypeData["4D"] = [
                 { game: 'TOTAL BETS', bets: betWin4D[0].bets, wins: '' },
                 { game: 'TOTAL WINS', bets: betWin4D[0].wins, wins: '' }
               ];
 
-              const betWinPick3 = await getBetsWinsPerGame(startDate, endDate, 'Pick 3: ');
+              const betWinPick3 = await getBetsWinsPerGameTeam(startDate, endDate, 'Pick 3: ',dataUpdated.userID);
               newGameTypeData["PICK 3"] = [...betWinPick3];
 
-              const betWinFirst2 = await getBetsWinsPerGame(startDate, endDate, 'First 2: ');
+              const betWinFirst2 = await getBetsWinsPerGameTeam(startDate, endDate, 'First 2: ',dataUpdated.userID);
               newGameTypeData["FIRST TWO"] = [...betWinFirst2];
 
               setTimeSlotBetData(newData);
               setGameTypeBetData(newGameTypeData);
 
-              const data = await getBetsData(startDate, endDate);
+              const data = await getBetsDataTeam(startDate, endDate,dataUpdated.userID);
               const cleanedData = data.map(row => {
                 const cleanedRow: Record<string, any> = {};
                 Object.keys(row).forEach(key => {
@@ -1352,11 +1031,11 @@ export function MetricDetailView() {
               });
               setTransactionData(cleanedData);
             } else if (metricId === "total-cash-in") {
-              const dataHourly = await cashinHourlyData(startDate, endDate);
+              const dataHourly = await cashinHourlyDataTeam(startDate, endDate, dataUpdated.userID);
               const completeData = normalizeHourlyData(dataHourly);
               setHourlyData(completeData);
 
-              const data = await getCashinData(startDate, endDate);
+              const data = await getCashinDataTeam(startDate, endDate, dataUpdated.userID);
               const cleanedData = data.map(row => {
                 const cleanedRow: Record<string, any> = {};
                 Object.keys(row).forEach(key => {
@@ -1366,10 +1045,10 @@ export function MetricDetailView() {
               });
               setTransactionData(cleanedData);
             } else if ( metricId === "total-commissions") {
-              const totalComm = await totalCommissions(startDate,endDate);
+              const totalComm = await totalCommissionsTeam(dataUpdated.userID,startDate,endDate);
               setTotalCommissionsCount(totalComm.count);
 
-              const data = await getCommissionsData(startDate, endDate);
+              const data = await getCommissionsDataTeam(startDate, endDate, dataUpdated.userID);
               const cleanedData = data.map(row => {
                 const cleanedRow: Record<string, any> = {};
                 Object.keys(row).forEach(key => {
@@ -1379,10 +1058,10 @@ export function MetricDetailView() {
               });
               setTransactionData(cleanedData);
             } else if (metricId === "total-wins") {
-              const totalWinnings = await totalWins(startDate,endDate);
+              const totalWinnings = await totalWinsTeam(dataUpdated.userID,startDate,endDate);
               setTotalWinsCount(totalWinnings.count);
 
-              const data = await getWinnersData(startDate, endDate);
+              const data = await getWinnersDataTeam(startDate, endDate, dataUpdated.userID);
               const cleanedData = data.map(row => {
                 const cleanedRow: Record<string, any> = {};
                 Object.keys(row).forEach(key => {
@@ -1393,58 +1072,58 @@ export function MetricDetailView() {
               setTransactionData(cleanedData);
             } else {
               if (activeTab === "players")
-                            {
-                              if (playerStatus === "all") {
-                              const data5= await totalPlayers(startDate,endDate);
-                              setTotalPlayersAmount(data5.count);
-                              } else if (playerStatus === "active") {
-                                  const data5= await totalPlayersActive(startDate,endDate);
-                                  setTotalPlayersAmount(data5.count);
-                              } else {
-                                  const data5= await totalPlayersInactive(startDate,endDate);
-                                  setTotalPlayersAmount(data5.count);
-                              }
-              
-                              const data = await getPlayersData(startDate, endDate, playerStatus === 'active' ? 'pending' : playerStatus === 'inactive' ? 'verification' : playerStatus);
-                              const cleanedData = data.map(row => {
-                                  const cleanedRow: Record<string, any> = {};
-                                  Object.keys(row).forEach(key => {
-                                  cleanedRow[key] = row[key] ?? '';
-                                  });
-                                  return cleanedRow;
-                              });
-                              setTransactionData(cleanedData);
-                            } else if (activeTab === "cashin") {
-                              const data = await getTotalCashinData(startDate, endDate);
-                              const cleanedData = data.map(row => {
-                                  const cleanedRow: Record<string, any> = {};
-                                  Object.keys(row).forEach(key => {
-                                  cleanedRow[key] = row[key] ?? '';
-                                  });
-                                  return cleanedRow;
-                              });
-                              setTransactionData(cleanedData);
-                            } else if (activeTab === 'conversion') {
-                              const data = await getTotalConversionData(startDate, endDate);
-                              const cleanedData = data.map(row => {
-                                  const cleanedRow: Record<string, any> = {};
-                                  Object.keys(row).forEach(key => {
-                                  cleanedRow[key] = row[key] ?? '';
-                                  });
-                                  return cleanedRow;
-                              });
-                              setTransactionData(cleanedData);
-                            } else {
-                              const data = await getTotalBetsData(startDate, endDate);
-                              const cleanedData = data.map(row => {
-                                  const cleanedRow: Record<string, any> = {};
-                                  Object.keys(row).forEach(key => {
-                                  cleanedRow[key] = row[key] ?? '';
-                                  });
-                                  return cleanedRow;
-                              });
-                              setTransactionData(cleanedData);
-                            }
+              {
+                if (playerStatus === "all") {
+                const data5= await totalPlayersTeam( dataUpdated.userID,startDate,endDate);
+                setTotalPlayersAmount(data5.count);
+                } else if (playerStatus === "active") {
+                    const data5= await totalPlayersActiveTeam(dataUpdated.userID,startDate,endDate);
+                    setTotalPlayersAmount(data5.count);
+                } else {
+                    const data5= await totalPlayersInactiveTeam(startDate,endDate, dataUpdated.userID);
+                    setTotalPlayersAmount(data5.count);
+                }
+
+                const data = await getPlayersDataTeam(startDate, endDate, playerStatus === 'active' ? 'pending' : playerStatus === 'inactive' ? 'verification' : playerStatus, dataUpdated.userID);
+                const cleanedData = data.map(row => {
+                    const cleanedRow: Record<string, any> = {};
+                    Object.keys(row).forEach(key => {
+                    cleanedRow[key] = row[key] ?? '';
+                    });
+                    return cleanedRow;
+                });
+                setTransactionData(cleanedData);
+              } else if (activeTab === "cashin") {
+                const data = await getTotalCashinDataTeam(startDate, endDate, dataUpdated.userID);
+                const cleanedData = data.map(row => {
+                    const cleanedRow: Record<string, any> = {};
+                    Object.keys(row).forEach(key => {
+                    cleanedRow[key] = row[key] ?? '';
+                    });
+                    return cleanedRow;
+                });
+                setTransactionData(cleanedData);
+              } else if (activeTab === 'conversion') {
+                const data = await getTotalConversionDataTeam(startDate, endDate, dataUpdated.userID);
+                const cleanedData = data.map(row => {
+                    const cleanedRow: Record<string, any> = {};
+                    Object.keys(row).forEach(key => {
+                    cleanedRow[key] = row[key] ?? '';
+                    });
+                    return cleanedRow;
+                });
+                setTransactionData(cleanedData);
+              } else {
+                const data = await getTotalBetsDataTeam(startDate, endDate, dataUpdated.userID);
+                const cleanedData = data.map(row => {
+                    const cleanedRow: Record<string, any> = {};
+                    Object.keys(row).forEach(key => {
+                    cleanedRow[key] = row[key] ?? '';
+                    });
+                    return cleanedRow;
+                });
+                setTransactionData(cleanedData);
+              }
             }
         };
         handleUpdate();
@@ -1637,137 +1316,138 @@ export function MetricDetailView() {
       </div>
 
       {tabs.map((tab) => (
-                  <button
-                      key={tab}
-                      onClick={() => setActiveTab(tab)}
-                      className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm 
-                      border border-gray-300 rounded-md ml-2 mb-6
-                      ${activeTab === tab ? 'bg-cyan-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
-                      }`}
-                  >
-                      {tab}
-                  </button>
-                  ))}
+            <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm 
+                border border-gray-300 rounded-md ml-2 mb-6
+                ${activeTab === tab ? 'bg-cyan-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
+                }`}
+            >
+                {tab}
+            </button>
+            ))}
+
+      {/* Transaction Details Table */}
+      {activeTab === "players" ? (
+        <div>
+        <div className="flex justify-between items-center mb-2">
+          {/* <div className="bg-cyan-100 p-2 text-center text-sm flex-grow">
+            Note: Each column with sort and filter. Enable file download.
+          </div> */}
+          <ExportButton 
+            data={formattedPlayersExportData} 
+            filename={`transactions_${metricId}`} 
+            className="ml-2"
+          />
+          <div>
+            <select
+              name="status"
+              value={playerStatus}
+              onChange={(e) => setPlayerStatus(e.target.value)}
+              className="block w-full px-0 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            >
+              <option value="" disabled>
+                Select Status
+              </option>
+              <option value="all">
+                All
+              </option>
+              <option value="active">
+                Active
+              </option>
+              <option value="inactive">
+                Inactive
+              </option>
+            </select>
+          </div>
+        </div>
+        
+        <SortableTable 
+          data={transactionData}
+          setData={setTransactionData}
+          startDate={startDate}
+          endDate={endDate}
+          playerStatus={playerStatus}
+          columns={playersColumn}
+          addBalancePermission={addBalancePermission}
+          adminChoice={adminChoice}
+        />
+      </div>
+      ) : activeTab === "cashin" ? (
+        <div>
+        <div className="flex justify-between items-center mb-2">
+          {/* <div className="bg-cyan-100 p-2 text-center text-sm flex-grow">
+            Note: Each column with sort and filter. Enable file download.
+          </div> */}
+          <ExportButton 
+            data={formattedCashinExportData} 
+            filename={`transactions_${metricId}`} 
+            className="ml-2"
+          />
+        </div>
+        
+        <SortableTable 
+          data={transactionData}
+          setData={setTransactionData}
+          startDate={startDate}
+          endDate={endDate}
+          playerStatus={playerStatus}
+          columns={totalCashinColumn}
+          addBalancePermission={addBalancePermission}
+          adminChoice={adminChoice}
+        />
+      </div>
+      ) : activeTab === "conversion" ? (
+        <div>
+        <div className="flex justify-between items-center mb-2">
+          {/* <div className="bg-cyan-100 p-2 text-center text-sm flex-grow">
+            Note: Each column with sort and filter. Enable file download.
+          </div> */}
+          <ExportButton 
+            data={formattedTotalConversionExportData} 
+            filename={`transactions_${metricId}`} 
+            className="ml-2"
+          />
+        </div>
+        
+        <SortableTable 
+          data={transactionData}
+          setData={setTransactionData}
+          startDate={startDate}
+          endDate={endDate}
+          playerStatus={playerStatus}
+          columns={totalConversionColumn}
+          addBalancePermission={addBalancePermission}
+          adminChoice={adminChoice}
+        />
+      </div>
+      ) : (
+        <div>
+        <div className="flex justify-between items-center mb-2">
+          {/* <div className="bg-cyan-100 p-2 text-center text-sm flex-grow">
+            Note: Each column with sort and filter. Enable file download.
+          </div> */}
+          <ExportButton 
+            data={formattedTotalBetsExportData} 
+            filename={`transactions_${metricId}`} 
+            className="ml-2"
+          />
+        </div>
+        
+        <SortableTable 
+          data={transactionData}
+          setData={setTransactionData}
+          startDate={startDate}
+          endDate={endDate}
+          playerStatus={playerStatus}
+          columns={totalBetsColumn}
+          addBalancePermission={addBalancePermission}
+          adminChoice={adminChoice}
+        />
+      </div>
+      )}
       
-            {/* Transaction Details Table */}
-            {activeTab === "players" ? (
-              <div>
-              <div className="flex justify-between items-center mb-2">
-                {/* <div className="bg-cyan-100 p-2 text-center text-sm flex-grow">
-                  Note: Each column with sort and filter. Enable file download.
-                </div> */}
-                <ExportButton 
-                  data={formattedPlayersExportData} 
-                  filename={`transactions_${metricId}`} 
-                  className="ml-2"
-                />
-                <div>
-                  <select
-                    name="status"
-                    value={playerStatus}
-                    onChange={(e) => setPlayerStatus(e.target.value)}
-                    className="block w-full px-0 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  >
-                    <option value="" disabled>
-                      Select Status
-                    </option>
-                    <option value="all">
-                      All
-                    </option>
-                    <option value="active">
-                      Active
-                    </option>
-                    <option value="inactive">
-                      Inactive
-                    </option>
-                  </select>
-                </div>
-              </div>
-              
-              <SortableTable 
-                data={transactionData}
-                setData={setTransactionData}
-                startDate={startDate}
-                endDate={endDate}
-                playerStatus={playerStatus}
-                columns={playersColumn}
-                addBalancePermission={addBalancePermission}
-                adminChoice={adminChoice}
-              />
-            </div>
-            ) : activeTab === "cashin" ? (
-              <div>
-              <div className="flex justify-between items-center mb-2">
-                {/* <div className="bg-cyan-100 p-2 text-center text-sm flex-grow">
-                  Note: Each column with sort and filter. Enable file download.
-                </div> */}
-                <ExportButton 
-                  data={formattedCashinExportData} 
-                  filename={`transactions_${metricId}`} 
-                  className="ml-2"
-                />
-              </div>
-              
-              <SortableTable 
-                data={transactionData}
-                setData={setTransactionData}
-                startDate={startDate}
-                endDate={endDate}
-                playerStatus={playerStatus}
-                columns={totalCashinColumn}
-                addBalancePermission={addBalancePermission}
-                adminChoice={adminChoice}
-              />
-            </div>
-            ) : activeTab === "conversion" ? (
-              <div>
-              <div className="flex justify-between items-center mb-2">
-                {/* <div className="bg-cyan-100 p-2 text-center text-sm flex-grow">
-                  Note: Each column with sort and filter. Enable file download.
-                </div> */}
-                <ExportButton 
-                  data={formattedTotalConversionExportData} 
-                  filename={`transactions_${metricId}`} 
-                  className="ml-2"
-                />
-              </div>
-              
-              <SortableTable 
-                data={transactionData}
-                setData={setTransactionData}
-                startDate={startDate}
-                endDate={endDate}
-                playerStatus={playerStatus}
-                columns={totalConversionColumn}
-                addBalancePermission={addBalancePermission}
-                adminChoice={adminChoice}
-              />
-            </div>
-            ) : (
-              <div>
-              <div className="flex justify-between items-center mb-2">
-                {/* <div className="bg-cyan-100 p-2 text-center text-sm flex-grow">
-                  Note: Each column with sort and filter. Enable file download.
-                </div> */}
-                <ExportButton 
-                  data={formattedTotalBetsExportData} 
-                  filename={`transactions_${metricId}`} 
-                  className="ml-2"
-                />
-              </div>
-              
-              <SortableTable 
-                data={transactionData}
-                setData={setTransactionData}
-                startDate={startDate}
-                endDate={endDate}
-                playerStatus={playerStatus}
-                columns={totalBetsColumn}
-                addBalancePermission={addBalancePermission}
-                adminChoice={adminChoice}
-              />
-            </div>
-            )}
     </>
   );
 
@@ -1952,10 +1632,10 @@ export function MetricDetailView() {
             variant="outline" 
             size="sm" 
             className="flex items-center gap-2"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/teamdashboard')}
           >
             <ArrowLeft size={16} />
-            Back to Dashboard
+            Back to Team Dashboard
           </Button>
           
           <div className="w-full md:w-auto flex flex-col sm:flex-row gap-2 items-center">

@@ -38,6 +38,7 @@ import { AuditLogs } from "./components/AuditLogs";
 import { Backups } from "./components/Backups";
 import { CommissionHistory } from "./components/CommissionHistory";
 import { MetricDetailView } from "./components/metric-detail-view";
+import { TeamMetricDetailView } from "./components/team-metric-detail-view";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -129,6 +130,7 @@ function App() {
                     <Route path="/teamcashin" element={<TeamTransactionsCashin />} />
                     <Route path="/teamcashout" element={<TeamTransactionsCashOut />} />
                     <Route path="/metric/:metricId" element={<MetricDetailView />} />
+                    <Route path="/teammetric/:metricId" element={<TeamMetricDetailView />}/>
                   </Routes>
                 </main>
               </div>

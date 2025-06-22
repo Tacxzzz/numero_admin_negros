@@ -1238,7 +1238,6 @@ export const totalPlayersTeam = async (id:string,start_date:string, end_date:str
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
       return {
         count: userData.count,
       };
@@ -2044,6 +2043,599 @@ export const getWinnersData = async (start_date:string, end_date:string) => {
         }
       });
     
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const totalPlayersActiveTeam = async (id:string,start_date:string, end_date:string) => {
+  try {
+
+    const response = await axios.post(`${API_URL}/admin/totalPlayersActiveTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
+export const cashinHourlyDataTeam = async (start_date:string, end_date:string, id: string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/cashinHourlyDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    console.log(response);
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getCashinDataTeam = async (start_date:string, end_date:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getCashinDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const cashoutHourlyDataTeam = async (start_date:string, end_date:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/cashoutHourlyDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const totalCashoutFromCommissionsTeam = async (start_date:string, end_date:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/totalCashoutFromCommissionsTeam`, { start_date: start_date, end_date: end_date, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
+export const totalCashoutFromWinningsTeam = async (start_date:string, end_date:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/totalCashoutFromWinningsTeam`, { start_date: start_date, end_date: end_date, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
+export const getCashoutDataTeam = async (start_date:string, end_date:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getCashoutDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const totalPlayersInactiveTeam = async (start_date:string, end_date:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/totalPlayersInactiveTeam`, { start_date: start_date, end_date: end_date, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      console.log(response);
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
+export const getPlayersDataTeam = async (start_date:string, end_date:string, status:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getPlayersDataTeam`, { start_date: start_date, end_date: end_date, status: status, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const countSelfBetsEarnedTeam = async (start_date:string, end_date:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/countSelfBetsEarnedTeam`, { start_date: start_date, end_date: end_date, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      console.log(response);
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
+export const countClientBetsEarnedTeam = async (start_date:string, end_date:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/countClientBetsEarned`, { start_date: start_date, end_date: end_date, userID:id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      console.log(response);
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
+export const getBetsWinsPerTimeSlotTeam = async (start_date:string, end_date:string, time_slot:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getBetsWinsPerTimeSlotTeam`, { start_date: start_date, end_date: end_date, time_slot: time_slot, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getBetsWinsPerGameTypeTeam = async (start_date:string, end_date:string, game_name:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getBetsWinsPerGameTypeTeam`, { start_date: start_date, end_date: end_date, game_name: game_name, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getBetsWins4DTeam = async (start_date:string, end_date:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getBetsWins4DTeam`, { start_date: start_date, end_date: end_date, userID:id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getBetsWinsPerGameTeam = async (start_date:string, end_date:string, game_name:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getBetsWinsPerGameTeam`, { start_date: start_date, end_date: end_date, game_name: game_name, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getBetsDataTeam = async (start_date:string, end_date:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getBetsDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getCommissionsDataTeam = async (start_date:string, end_date:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getCommissionsDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getWinnersDataTeam = async (start_date:string, end_date:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getWinnersDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getTotalCashinDataTeam = async (start_date:string, end_date:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getTotalCashinDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getTotalConversionDataTeam = async (start_date:string, end_date:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getTotalConversionDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    console.log(response);
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getTotalBetsDataTeam = async (start_date:string, end_date:string, id:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getTotalBetsDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    console.log(response);
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getTotalCashinData = async (start_date:string, end_date:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getTotalCashinData`, { start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getTotalConversionData = async (start_date:string, end_date:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getTotalConversionData`, { start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    console.log(response);
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getTotalBetsData = async (start_date:string, end_date:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getTotalBetsData`, { start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    console.log(response);
     if (response.data) 
       {
       const userData = response.data;

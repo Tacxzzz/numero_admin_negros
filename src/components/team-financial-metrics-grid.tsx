@@ -53,7 +53,7 @@ interface FinancialMetricsGridProps {
   TotalWins: number;
 }
 
-export function FinancialMetricsGrid({StartDate, EndDate, TotalCashin, TotalCashout, TotalPlayers, TotalPlayersActive, TotalPlayersInactive, TotalBetsEarned, TotalCommissions, TotalWins }: FinancialMetricsGridProps) {
+export function TeamFinancialMetricsGrid({StartDate, EndDate, TotalCashin, TotalCashout, TotalPlayers, TotalPlayersActive, TotalPlayersInactive, TotalBetsEarned, TotalCommissions, TotalWins }: FinancialMetricsGridProps) {
   const [activeTab, setActiveTab] = useState("all");
   const navigate = useNavigate();
 
@@ -190,7 +190,7 @@ export function FinancialMetricsGrid({StartDate, EndDate, TotalCashin, TotalCash
   const handleCardClick = (metricId: string, startDate: string, endDate: string) => {
     if (metricId !== "net-cash")
     {
-      navigate(`/metric/${metricId}?startDate=${startDate}&endDate=${endDate}&status=${metricId === 'active-players' ? 'active' : metricId === 'inactive-players' ? 'inactive' : 'all'}`);
+      navigate(`/teammetric/${metricId}?startDate=${startDate}&endDate=${endDate}&status=${metricId === 'active-players' ? 'active' : metricId === 'inactive-players' ? 'inactive' : 'all'}`);
     }
   };
 
