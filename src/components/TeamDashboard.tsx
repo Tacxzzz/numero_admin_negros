@@ -175,7 +175,7 @@ export function TeamDashboard() {
     setEndDate("");
   };
 
-  if(!permissionsString.includes("dashboard"))
+  if(!permissionsString.includes("team_dashboard"))
   {
     return <div>Not allowed to manage this page</div>
   }
