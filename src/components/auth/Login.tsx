@@ -9,7 +9,7 @@ import { AlertCircle } from "lucide-react";
 import DtakaIcon from "@/assets/DtakaLogoBeta.svg";
 import { FcGoogle } from "react-icons/fc";
 import { useAuth0 } from '@auth0/auth0-react';
-
+import PisoPlayAdminLogo from "@/assets/PisoPlayAdminLogo.png";
 
 
 const Login: React.FC = () =>{
@@ -19,12 +19,12 @@ const Login: React.FC = () =>{
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-3">
-          {/* <img
-            src={DtakaIcon}
+          <img
+            src={PisoPlayAdminLogo}
             alt="Logo"
-            className="w-auto h-10 transform group-hover:scale-110 transition-transform duration-200"
-          /> */}
-          <CardTitle className="text-2xl font-bold text-center">Piso Play Admin</CardTitle>
+            className="w-auto h-30 transform group-hover:scale-110 transition-transform duration-200"
+          />
+          {/* <CardTitle className="text-2xl font-bold text-center">Piso Play Admin</CardTitle> */}
           <CardDescription className="text-center">
             Enter your admin account
           </CardDescription>

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DtakaLogoBeta from "@/assets/DtakaLogoBeta.svg";
+import PisoPlayAdminLogo from "@/assets/PisoPlayAdminLogo.png";
 import { useAuth0 } from '@auth0/auth0-react';
 import { MdMoney } from "react-icons/md";
 import { useEffect, useState } from "react";
@@ -105,12 +106,12 @@ export function Sidebar({ onClose }: SidebarProps) {
   return (
     <div className="flex h-full w-64 flex-col bg-white">
       <div className="flex items-center justify-between p-6">
-        {/* <img
-              src={DtakaLogoBeta}
+        <img
+              src={PisoPlayAdminLogo}
               alt="Logo"
-              className="w-auto h-10 transform group-hover:scale-110 transition-transform duration-200"
-        /> */}
-        <h1 className="text-2xl font-bold">PisoPlay Admin</h1>
+              className="w-auto h-21 transform group-hover:scale-110 transition-transform duration-200"
+        />
+        {/* <h1 className="text-2xl font-bold">PisoPlay Admin</h1> */}
         {onClose && (
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-6 w-6" />
