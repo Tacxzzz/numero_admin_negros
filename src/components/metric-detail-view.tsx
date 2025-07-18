@@ -153,6 +153,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
       formData.append('status', selectedGameBet.status);
       formData.append('under_admin', selectedGameBet.under_admin);
       formData.append('level', selectedGameBet.level);
+      formData.append('agent', selectedGameBet.agent);
       formData.append('quota', selectedGameBet.quota);
       formData.append('bet_commission_percent', selectedGameBet.bet_commission_percent);
       formData.append('level_one_percent', selectedGameBet.level_one_percent);
@@ -490,6 +491,26 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                               </option>
                               <option value="nolimit">
                                 No Limit
+                              </option>
+                          </select>
+                        </div>
+                        <br/>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Is Agent</label>
+                          <select
+                            name="agent"
+                            value={selectedGameBet?.agent || "no"}
+                            onChange={handleChange}
+                            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          >
+                            <option value="" disabled>
+                              Select 
+                            </option>
+                            <option value="no">
+                                No
+                              </option>
+                              <option value="yes">
+                                Yes
                               </option>
                           </select>
                         </div>
@@ -1104,6 +1125,7 @@ export function MetricDetailView() {
             { key: 'bet_commission_percent', label: 'Bet Commission Percentage' },
             { key: 'level_one_percent', label: 'Lvl 1 Percentage' },
             { key: 'level_two_percent', label: 'Lvl 2 Percentage' },
+            { key: 'agent', label: 'Agent' },
             { key: 'referrer_mobile', label: 'Referred by' },
             { key: 'referral_count', label: '# of Referrals' },
             { key: 'level', label: 'Referral Limit' },
