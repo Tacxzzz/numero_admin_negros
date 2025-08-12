@@ -102,9 +102,10 @@ export function NonRegisteredPlayers() {
         selectedGameBet.bank,
         selectedGameBet.account);
 
+      console.log(data);
       if (data.error) 
       {
-        alert("Payout api not responding..");
+        alert(data.message);
       } 
       else 
       {
