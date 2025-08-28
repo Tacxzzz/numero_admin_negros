@@ -51,9 +51,10 @@ interface FinancialMetricsGridProps {
   TotalBetsEarned: number;
   TotalCommissions: number;
   TotalWins: number;
+  TotalBetsFreeCredits: number;
 }
 
-export function FinancialMetricsGrid({StartDate, EndDate, TotalCashin, TotalCashout, TotalPlayers, TotalPlayersActive, TotalPlayersInactive, TotalBetsEarned, TotalCommissions, TotalWins }: FinancialMetricsGridProps) {
+export function FinancialMetricsGrid({StartDate, EndDate, TotalCashin, TotalCashout, TotalPlayers, TotalPlayersActive, TotalPlayersInactive, TotalBetsEarned, TotalCommissions, TotalWins, TotalBetsFreeCredits }: FinancialMetricsGridProps) {
   const [activeTab, setActiveTab] = useState("all");
   const navigate = useNavigate();
 
@@ -133,6 +134,18 @@ export function FinancialMetricsGrid({StartDate, EndDate, TotalCashin, TotalCash
         currency: "PHP",
         minimumFractionDigits: 2
       }),
+      description: "= BETS EARNED FROM CASH IN AND COMMISSION",
+      icon: <TrendingUp size={18} />,
+      category: "bets"
+    },
+    {
+      id: "total-free-bets-earned",
+      title: "TOTAL BETS USING FREE CREDITS",
+      value: TotalBetsFreeCredits.toLocaleString("en-PH", {
+        style: "currency",
+        currency: "PHP",
+        minimumFractionDigits: 2
+      }),
       icon: <TrendingUp size={18} />,
       category: "bets"
     },
@@ -188,7 +201,7 @@ export function FinancialMetricsGrid({StartDate, EndDate, TotalCashin, TotalCash
     : metrics.filter(metric => metric.category === activeTab);
 
   const handleCardClick = (metricId: string, startDate: string, endDate: string) => {
-    if (metricId !== "net-cash")
+    if (metricId !== "net-cash" && metricId !== "total-free-bets-earned")
     {
       navigate(`/metric/${metricId}?startDate=${startDate}&endDate=${endDate}&status=${metricId === 'active-players' ? 'active' : metricId === 'inactive-players' ? 'inactive' : 'all'}`);
     }

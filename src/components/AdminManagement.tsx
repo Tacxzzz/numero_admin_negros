@@ -134,7 +134,11 @@ export function AdminManagement() {
     { id: "team_cashout", label: "ACCESS YOUR TEAM CASHOUT HISTORY" },
     { id: "logs", label: "ACCESS USER LOGS" },
     { id: "commission_history", label: "ACCESS COMMISSION HISTORY" },
-    { id: "add_balance", label: "ADD BALANCE TO USER" }
+    { id: "add_balance", label: "ADD BALANCE TO USER" },
+    { id: "team_dashboard_cashin", label: "TEAM DASHBOARD CASHIN" },
+    { id: "team_dashboard_cashout", label: "TEAM DASHBOARD CASHOUT" },
+    { id: "team_net_cash", label: "TEAM DASHBOARD NET CASH" },
+    { id: "team_revenue_recognition", label: "TEAM DASHBOARD REVENUE RECOGNITION" },
   ];
 
 

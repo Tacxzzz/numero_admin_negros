@@ -12,7 +12,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { addBalance, cashinHourlyData, cashinHourlyDataTeam, cashoutHourlyData, cashoutHourlyDataTeam, countBetsEarned, countBetsEarnedTeam, countClientBetsEarned, countClientBetsEarnedTeam, countSelfBetsEarned, countSelfBetsEarnedTeam, getBetsData, getBetsDataTeam, getBetsWins4D, getBetsWins4DTeam, getBetsWinsPerGame, getBetsWinsPerGameTeam, getBetsWinsPerGameType, getBetsWinsPerGameTypeTeam, getBetsWinsPerTimeSlot, getBetsWinsPerTimeSlotTeam, getCashinData, getCashinDataTeam, getCashoutData, getCashoutDataTeam, getCommissionsData, getCommissionsDataTeam, getPlayersAdminChoice, getPlayersData, getPlayersDataTeam, getTotalBetsDataTeam, getTotalCashinDataTeam, getTotalConversionDataTeam, getWinnersData, getWinnersDataTeam, loginAdmin, totalCashoutFromCommissions, totalCashoutFromCommissionsTeam, totalCashoutFromWinnings, totalCashoutFromWinningsTeam, totalCommissions, totalCommissionsTeam, totalPlayers, totalPlayersActive, totalPlayersActiveTeam, totalPlayersInactive, totalPlayersInactiveTeam, totalPlayersTeam, totalWins, totalWinsTeam, updatePlayer, updatePlayerTeam } from "./api/apiCalls";
+import { addBalance, cashinHourlyData, cashinHourlyDataTeam, cashoutHourlyData, cashoutHourlyDataTeam, countBetsEarned, countBetsEarnedFreeCreditsTeam, countBetsEarnedTeam, countClientBetsEarned, countClientBetsEarnedTeam, countSelfBetsEarned, countSelfBetsEarnedTeam, getBetsData, getBetsDataTeam, getBetsWins4D, getBetsWins4DTeam, getBetsWinsPerGame, getBetsWinsPerGameTeam, getBetsWinsPerGameType, getBetsWinsPerGameTypeTeam, getBetsWinsPerTimeSlot, getBetsWinsPerTimeSlotTeam, getCashinData, getCashinDataTeam, getCashoutData, getCashoutDataTeam, getCommissionsData, getCommissionsDataTeam, getPlayersAdminChoice, getPlayersData, getPlayersDataTeam, getTotalBetsDataTeam, getTotalCashinDataTeam, getTotalConversionDataTeam, getWinnersData, getWinnersDataTeam, loginAdmin, totalCashoutFromCommissions, totalCashoutFromCommissionsTeam, totalCashoutFromWinnings, totalCashoutFromWinningsTeam, totalCommissions, totalCommissionsTeam, totalPlayers, totalPlayersActive, totalPlayersActiveTeam, totalPlayersInactive, totalPlayersInactiveTeam, totalPlayersTeam, totalWins, totalWinsTeam, updatePlayer, updatePlayerTeam } from "./api/apiCalls";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
@@ -746,6 +746,7 @@ export function TeamMetricDetailView() {
   const [playerStatus, setPlayerStatus] = useState(() => searchParams.get('status') ?? "all");
   const [adminChoice, setAdminChoice] = useState<any[]>([]);
   const [totalBetsEarned, setTotalBetsEarned] = useState(0);
+  const [totalBetsFreeCredits, setTotalBetsFreeCredits] = useState(0);
   const [totalSelfBetsEarned, setSelfTotalBetsEarned] = useState(0);
   const [totalClientBetsEarned, setTotalClientBetsEarned] = useState(0);
   const [totalCommissionsCount, setTotalCommissionsCount] = useState(0);
@@ -982,6 +983,9 @@ export function TeamMetricDetailView() {
               const totalBetsEarnedCount= await countBetsEarnedTeam(dataUpdated.userID,startDate,endDate);
               setTotalBetsEarned(totalBetsEarnedCount.count);
 
+              const betsEarnedFreeCredits= await countBetsEarnedFreeCreditsTeam(dataUpdated.userID,startDate,endDate);
+              setTotalBetsFreeCredits(betsEarnedFreeCredits.count);
+
               const totalSelfBetsEarnedCount= await countSelfBetsEarnedTeam(startDate,endDate,dataUpdated.userID);
               setSelfTotalBetsEarned(totalSelfBetsEarnedCount.count);
 
@@ -1049,6 +1053,7 @@ export function TeamMetricDetailView() {
               setTotalCommissionsCount(totalComm.count);
 
               const data = await getCommissionsDataTeam(startDate, endDate, dataUpdated.userID);
+              console.log(data)
               const cleanedData = data.map(row => {
                 const cleanedRow: Record<string, any> = {};
                 Object.keys(row).forEach(key => {
@@ -1133,6 +1138,8 @@ export function TeamMetricDetailView() {
     }, [startDate, endDate, playerStatus, metricId, activeTab]);
 
   const addBalancePermission = permissionsString.includes("add_balance");
+  const cashinPermission = permissionsString.includes("team_cashin");
+  const cashoutPermission = permissionsString.includes("team_cashout");
 
   // Render cash in view
   const renderCashInView = () => (
@@ -1315,7 +1322,11 @@ export function TeamMetricDetailView() {
         </Card>
       </div>
 
-      {tabs.map((tab) => (
+      {tabs
+      .filter(tab => {
+      if (tab === "cashin" && !cashinPermission) return false; // 👈 hide cashin if no permission
+      return true;
+      }).map((tab) => (
             <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -1482,6 +1493,15 @@ export function TeamMetricDetailView() {
             </div>
           </CardContent>
         </Card>
+
+        <Card>
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold w-1/2">TOTAL BETS FROM FREE CREDITS</span>
+                      <span className="font-bold w-1/2 text-right">₱{totalBetsFreeCredits.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    </div>
+                  </CardContent>
+                </Card>
 
         {/* <Card>
           <CardContent className="p-4">

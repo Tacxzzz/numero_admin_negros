@@ -779,6 +779,33 @@ export const countBetsEarned = async (start_date:string, end_date:string) => {
   }
 };
 
+export const countBetsEarnedFreeCredits = async (start_date:string, end_date:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/countBetsEarnedFreeCredits`, { start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      console.log(response);
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
 export const countSelfBetsEarned = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countSelfBetsEarned`, { start_date: start_date, end_date: end_date},{
@@ -1117,6 +1144,33 @@ export const getRateChartDataTeam = async (id:string,start_date:string, end_date
 export const countBetsEarnedTeam = async (id:string,start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countBetsEarnedTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    
+    if (response.data) 
+      {
+      const userData = response.data;
+      console.log(response);
+      return {
+        count: userData.count,
+      };
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return { count: '-' };
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return { count: '-' };
+  }
+};
+
+export const countBetsEarnedFreeCreditsTeam = async (id:string,start_date:string, end_date:string) => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/countBetsEarnedFreeCreditsTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
         headers: {
           Authorization: `Bearer ${API_KEY}`,
         }
@@ -2290,7 +2344,7 @@ export const countSelfBetsEarnedTeam = async (start_date:string, end_date:string
 
 export const countClientBetsEarnedTeam = async (start_date:string, end_date:string, id:string) => {
   try {
-    const response = await axios.post(`${API_URL}/admin/countClientBetsEarned`, { start_date: start_date, end_date: end_date, userID:id},{
+    const response = await axios.post(`${API_URL}/admin/countClientBetsEarnedTeam`, { start_date: start_date, end_date: end_date, userID:id},{
         headers: {
           Authorization: `Bearer ${API_KEY}`,
         }

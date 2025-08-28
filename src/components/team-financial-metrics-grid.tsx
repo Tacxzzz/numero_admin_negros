@@ -13,10 +13,11 @@ interface MetricCardProps {
   icon: React.ReactNode;
   className?: string;
   category: string;
+  visible: boolean;
   onClick: () => void;
 }
 
-const MetricCard = ({ id, title, value, description, icon, className, onClick }: MetricCardProps) => (
+const MetricCard = ({ id, title, value, description, icon, className, visible, onClick }: MetricCardProps) => (
   <Card 
     className={cn("cursor-pointer transition-all hover:shadow-md", className)}
     onClick={onClick}
@@ -51,9 +52,13 @@ interface FinancialMetricsGridProps {
   TotalBetsEarned: number;
   TotalCommissions: number;
   TotalWins: number;
+  CashinPermission: boolean;
+  CashoutPermission: boolean;
+  NetCashPermission: boolean;
+  TotalFreeBets: number;
 }
 
-export function TeamFinancialMetricsGrid({StartDate, EndDate, TotalCashin, TotalCashout, TotalPlayers, TotalPlayersActive, TotalPlayersInactive, TotalBetsEarned, TotalCommissions, TotalWins }: FinancialMetricsGridProps) {
+export function TeamFinancialMetricsGrid({StartDate, EndDate, TotalCashin, TotalCashout, TotalPlayers, TotalPlayersActive, TotalPlayersInactive, TotalBetsEarned, TotalCommissions, TotalWins, CashinPermission, CashoutPermission, NetCashPermission, TotalFreeBets }: FinancialMetricsGridProps) {
   const [activeTab, setActiveTab] = useState("all");
   const navigate = useNavigate();
 
@@ -79,7 +84,8 @@ export function TeamFinancialMetricsGrid({StartDate, EndDate, TotalCashin, Total
         minimumFractionDigits: 2
       }),
       icon: <DollarSign size={18} />,
-      category: "cash"
+      category: "cash",
+      visible: CashinPermission
     },
     {
       id: "total-cash-outs-paid",
@@ -90,7 +96,8 @@ export function TeamFinancialMetricsGrid({StartDate, EndDate, TotalCashin, Total
         minimumFractionDigits: 2
       }),
       icon: <DollarSign size={18} />,
-      category: "cash"
+      category: "cash",
+      visible: CashoutPermission
     },
     {
       id: "net-cash",
@@ -102,21 +109,24 @@ export function TeamFinancialMetricsGrid({StartDate, EndDate, TotalCashin, Total
       }),
       description: "= TOTAL CASH IN - TOTAL CASH OUTS PAID",
       icon: <DollarSign size={18} />,
-      category: "cash"
+      category: "cash",
+      visible: NetCashPermission
     },
     {
       id: "total-players",
       title: "TOTAL NUMBER OF PLAYERS",
       value: TotalPlayers.toLocaleString(),
       icon: <Users size={18} />,
-      category: "players"
+      category: "players",
+      visible: true
     },
     {
       id: "active-players",
       title: "TOTAL NO. OF PLAYERS (ACTIVE)",
       value: TotalPlayersActive.toLocaleString(),
       icon: <Users size={18} />,
-      category: "players"
+      category: "players",
+      visible: true
     },
     // {
     //   id: "inactive-players",
@@ -133,8 +143,22 @@ export function TeamFinancialMetricsGrid({StartDate, EndDate, TotalCashin, Total
         currency: "PHP",
         minimumFractionDigits: 2
       }),
+      description: "= BETS EARNED FROM CASH IN AND COMMISSION",
       icon: <TrendingUp size={18} />,
-      category: "bets"
+      category: "bets",
+      visible: true
+    },
+    {
+      id: "total-free-bets",
+      title: "TOTAL BETS USING FREE CREDITS",
+      value: TotalFreeBets.toLocaleString("en-PH", {
+        style: "currency",
+        currency: "PHP",
+        minimumFractionDigits: 2
+      }),
+      icon: <TrendingUp size={18} />,
+      category: "bets",
+      visible: true
     },
     {
       id: "total-commissions",
@@ -145,7 +169,8 @@ export function TeamFinancialMetricsGrid({StartDate, EndDate, TotalCashin, Total
         minimumFractionDigits: 2
       }),
       icon: <DollarSign size={18} />,
-      category: "commissions"
+      category: "commissions",
+      visible: true
     },
     {
       id: "total-wins",
@@ -156,7 +181,8 @@ export function TeamFinancialMetricsGrid({StartDate, EndDate, TotalCashin, Total
         minimumFractionDigits: 2
       }),
       icon: <Award size={18} />,
-      category: "bets"
+      category: "bets",
+      visible: true
     },
     // {
     //   id: "total-free-bets",
@@ -183,9 +209,12 @@ export function TeamFinancialMetricsGrid({StartDate, EndDate, TotalCashin, Total
   ];
 
   // Filter metrics based on active tab
-  const filteredMetrics = activeTab === "all" 
-    ? metrics 
-    : metrics.filter(metric => metric.category === activeTab);
+  const filteredMetrics =
+  activeTab === "all"
+    ? metrics.filter(metric => metric.visible) // 👈 only show visible
+    : metrics.filter(
+        metric => metric.category === activeTab && metric.visible // 👈 filter + visibility
+      );
 
   const handleCardClick = (metricId: string, startDate: string, endDate: string) => {
     if (metricId !== "net-cash")
@@ -221,6 +250,7 @@ export function TeamFinancialMetricsGrid({StartDate, EndDate, TotalCashin, Total
             description={metric.description}
             icon={metric.icon}
             category={metric.category}
+            visible
             onClick={() => handleCardClick(metric.id, StartDate, EndDate)}
           />
         ))}
