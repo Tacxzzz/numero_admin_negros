@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {Users, CoinsIcon, BookCheck, BookHeart, Banknote, TrendingUp, DollarSign, Award } from "lucide-react";
 import { useAuth0 } from '@auth0/auth0-react';
-import { countBetsEarned, getRateChartData, loginAdmin, totalBalancePlayers, totalCashin, totalCashOut, totalClients, totalCommissions, totalPlayers, totalPlayersActive, totalPlayersInactive, totalWins } from './api/apiCalls';
+import { countBetsEarned, countBetsEarnedFreeCredits, getRateChartData, loginAdmin, totalBalancePlayers, totalCashin, totalCashOut, totalClients, totalCommissions, totalPlayers, totalPlayersActive, totalPlayersInactive, totalWins } from './api/apiCalls';
 import { useEffect, useRef, useState } from "react";
 import { formatPeso } from "./utils/utils";
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,7 @@ export function Dashboard() {
     const [dbUpdated, setDbUpdated] = useState(false);
     const [transactions, setTransactions] = useState<any[]>([]);
     const [totalRemitAmount, setTotalRemitAmount] = useState(0);
+    const [totalBetsFreeCredits, setTotalBetsFreeCredits] = useState(0);
     const [totalRedeemAmount, setTotalRedeemAmount] = useState(0);
     const [users, setUsers] = useState<any[]>([]);
     const [totalBalance, setTotalBalance] = useState(0);
@@ -59,6 +60,9 @@ export function Dashboard() {
 
         const betsEarnedData= await countBetsEarned(startDate,endDate);
         setTotalRemitAmount(betsEarnedData.count);
+
+        const betsEarnedFreeCredits= await countBetsEarnedFreeCredits(startDate,endDate);
+        setTotalBetsFreeCredits(betsEarnedFreeCredits.count);
 
         const data2= await totalWins(startDate,endDate);
           setTotalRedeemAmount(data2.count);
@@ -174,7 +178,7 @@ export function Dashboard() {
       </div>
 
       <FinancialMetricsGrid StartDate={startDate} EndDate={endDate} TotalCashin={totalCashins} TotalCashout={totalCashouts} TotalPlayers={totalPlayersAmount} TotalPlayersActive={totalPlayersActiveCount} 
-      TotalPlayersInactive={totalPlayersInactiveCount} TotalBetsEarned={totalRemitAmount} TotalCommissions={totalComm} TotalWins={totalRedeemAmount}/>
+      TotalPlayersInactive={totalPlayersInactiveCount} TotalBetsEarned={totalRemitAmount} TotalCommissions={totalComm} TotalWins={totalRedeemAmount} TotalBetsFreeCredits={totalBetsFreeCredits}/>
 
       <Card>
         <CardHeader>

@@ -3,7 +3,7 @@ import { RecentOrders } from "./RecentOrders";
 import { SalesChart } from "./SalesChart";
 import { HandIcon , HandMetalIcon, ShoppingCart, Users, Boxes, Wallet, CoinsIcon, Wallet2, BookAIcon, BookCheck, BookHeart, Banknote } from "lucide-react";
 import { useAuth0 } from '@auth0/auth0-react';
-import { countBetsEarned, countBetsEarnedTeam, getRateChartData, getRateChartDataTeam, loginAdmin, totalBalancePlayers, totalBalancePlayersTeam, totalCashin, totalCashinTeam, totalCashOut, totalCashOutTeam, totalClients, totalClientsTeam, totalCommissions, totalCommissionsTeam, totalPlayers, totalPlayersActiveTeam, totalPlayersTeam, totalWins, totalWinsTeam } from './api/apiCalls';
+import { countBetsEarned, countBetsEarnedFreeCreditsTeam, countBetsEarnedTeam, getRateChartData, getRateChartDataTeam, loginAdmin, totalBalancePlayers, totalBalancePlayersTeam, totalCashin, totalCashinTeam, totalCashOut, totalCashOutTeam, totalClients, totalClientsTeam, totalCommissions, totalCommissionsTeam, totalPlayers, totalPlayersActiveTeam, totalPlayersTeam, totalWins, totalWinsTeam } from './api/apiCalls';
 import { useEffect, useState } from "react";
 import { formatPeso } from "./utils/utils";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ export function TeamDashboard() {
     const [dbUpdated, setDbUpdated] = useState(false);
     const [transactions, setTransactions] = useState<any[]>([]);
     const [totalRemitAmount, setTotalRemitAmount] = useState(0);
+    const [totalBetsFreeCredits, setTotalBetsFreeCredits] = useState(0);
     const [totalRedeemAmount, setTotalRedeemAmount] = useState(0);
     const [users, setUsers] = useState<any[]>([]);
     const [totalBalance, setTotalBalance] = useState(0);
@@ -43,6 +44,9 @@ export function TeamDashboard() {
 
           const betsEarnedData= await countBetsEarnedTeam(userID,startDate,endDate);
           setTotalRemitAmount(betsEarnedData.count);
+
+          const betsEarnedFreeCredits= await countBetsEarnedFreeCreditsTeam(userID,startDate,endDate);
+          setTotalBetsFreeCredits(betsEarnedFreeCredits.count);
           
           const data2= await totalWinsTeam(userID,startDate,endDate);
           setTotalRedeemAmount(data2.count);
@@ -124,6 +128,10 @@ export function TeamDashboard() {
     return <div>...</div>;
   }
 
+  const cashinPermission = permissionsString.includes("team_dashboard_cashin");
+  const netCashPermission = permissionsString.includes("team_net_cash");
+  const cashoutPermission = permissionsString.includes("team_dashboard_cashout");
+  const revenueRecognitionPermission = permissionsString.includes("team_revenue_recognition");
 
   const stats = [
     {
@@ -222,29 +230,31 @@ export function TeamDashboard() {
         </div>
   
         <TeamFinancialMetricsGrid StartDate={startDate} EndDate={endDate} TotalCashin={totalCashins} TotalCashout={totalCashouts} TotalPlayers={totalPlayersAmount} TotalPlayersActive={totalPlayersActiveCount} 
-        TotalPlayersInactive={0} TotalBetsEarned={totalRemitAmount} TotalCommissions={totalComm} TotalWins={totalRedeemAmount}/>
-  
-        <Card>
-          <CardHeader>
-            <CardTitle>Revenue Recognition</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={rateChartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="Cash_In" stroke="#8884d8" name="Cash In" />
-                  <Line type="monotone" dataKey="Cash_Out" stroke="#ff7300" name="Cash Out" />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-  
+        TotalPlayersInactive={0} TotalBetsEarned={totalRemitAmount} TotalCommissions={totalComm} TotalWins={totalRedeemAmount} CashinPermission={cashinPermission} CashoutPermission={cashoutPermission} NetCashPermission={netCashPermission}
+        TotalFreeBets={totalBetsFreeCredits}/>
+
+        {revenueRecognitionPermission && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Revenue Recognition</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={rateChartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="Cash_In" stroke="#8884d8" name="Cash In" />
+                    <Line type="monotone" dataKey="Cash_Out" stroke="#ff7300" name="Cash Out" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        )}
         
       </div>
     );

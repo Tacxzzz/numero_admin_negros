@@ -12,7 +12,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { addBalance, cashinHourlyData, cashoutHourlyData, countBetsEarned, countClientBetsEarned, countSelfBetsEarned, getBetsData, getBetsWins4D, getBetsWinsPerGame, getBetsWinsPerGameType, getBetsWinsPerTimeSlot, getCashinData, getCashoutData, getCommissionsData, getPlayersAdminChoice, getPlayersData, getTotalBetsData, getTotalCashinData, getTotalConversionData, getWinnersData, loginAdmin, totalCashoutFromCommissions, totalCashoutFromWinnings, totalCommissions, totalPlayers, totalPlayersActive, totalPlayersInactive, totalWins, updatePlayer } from "./api/apiCalls";
+import { addBalance, cashinHourlyData, cashoutHourlyData, countBetsEarned, countBetsEarnedFreeCredits, countClientBetsEarned, countSelfBetsEarned, getBetsData, getBetsWins4D, getBetsWinsPerGame, getBetsWinsPerGameType, getBetsWinsPerTimeSlot, getCashinData, getCashoutData, getCommissionsData, getPlayersAdminChoice, getPlayersData, getTotalBetsData, getTotalCashinData, getTotalConversionData, getWinnersData, loginAdmin, totalCashoutFromCommissions, totalCashoutFromWinnings, totalCommissions, totalPlayers, totalPlayersActive, totalPlayersInactive, totalWins, updatePlayer } from "./api/apiCalls";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
@@ -1077,6 +1077,7 @@ export function MetricDetailView() {
   const [playerStatus, setPlayerStatus] = useState(() => searchParams.get('status') ?? "all");
   const [adminChoice, setAdminChoice] = useState<any[]>([]);
   const [totalBetsEarned, setTotalBetsEarned] = useState(0);
+  const [totalBetsFreeCredits, setTotalBetsFreeCredits] = useState(0);
   const [totalSelfBetsEarned, setSelfTotalBetsEarned] = useState(0);
   const [totalClientBetsEarned, setTotalClientBetsEarned] = useState(0);
   const [totalCommissionsCount, setTotalCommissionsCount] = useState(0);
@@ -1324,6 +1325,9 @@ export function MetricDetailView() {
             } else if (metricId === "total-bets-earned" || metricId === "total-free-bets" || metricId === "total-bets-conversions") {
               const totalBetsEarnedCount= await countBetsEarned(startDate,endDate);
               setTotalBetsEarned(totalBetsEarnedCount.count);
+
+              const betsEarnedFreeCredits= await countBetsEarnedFreeCredits(startDate,endDate);
+              setTotalBetsFreeCredits(betsEarnedFreeCredits.count);
 
               const totalSelfBetsEarnedCount= await countSelfBetsEarned(startDate,endDate);
               setSelfTotalBetsEarned(totalSelfBetsEarnedCount.count);
@@ -1821,6 +1825,15 @@ export function MetricDetailView() {
             <div className="flex justify-between items-center">
               <span className="font-bold w-1/2">TOTAL BETS FROM NON-REGISTERED PLAYER</span>
               <span className="font-bold w-1/2 text-right">₱{totalClientBetsEarned.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex justify-between items-center">
+              <span className="font-bold w-1/2">TOTAL BETS FROM FREE CREDITS</span>
+              <span className="font-bold w-1/2 text-right">₱{totalBetsFreeCredits.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           </CardContent>
         </Card>
