@@ -17,6 +17,8 @@ export const loginAdmin = async (user: any , getAccessTokenSilently: any) => {
       { email: user.email },
       { headers: { Authorization: `Bearer ${token}` } }
     );
+
+    console.log(response.data);
     if (response.data && response.data.authenticated) {
         const userData = response.data;
         return {
@@ -327,7 +329,27 @@ export const updateGameType = async (formData: FormData): Promise<boolean> => {
   }
 };
 
+export const updateUserType = async (formData: FormData): Promise<boolean> => {
+  try 
+  {
+      const response = await axios.post(
+          import.meta.env.VITE_DATABASE_URL+'/admin/updateUserType',
+          formData,
+          { headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${API_KEY}`,  
+          } }
+      );
 
+      console.log(response);
+      return response.data.authenticated;
+  } 
+  catch (error) 
+  {
+      console.error('Error authenticating user:', error);
+      return false;
+  }
+};
 
 
 export const getBetsHistory = async () => {
@@ -2660,6 +2682,30 @@ export const getTotalConversionData = async (start_date:string, end_date:string)
 export const getTotalBetsData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getTotalBetsData`, { start_date: start_date, end_date: end_date},{
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        }
+      });
+    console.log(response);
+    if (response.data) 
+      {
+      const userData = response.data;
+      return userData;
+    } 
+    else 
+    {
+      console.warn("User data is empty or invalid.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    return [];
+  }
+};
+
+export const getUserType = async () => {
+  try {
+    const response = await axios.post(`${API_URL}/admin/getUserType`, { },{
         headers: {
           Authorization: `Bearer ${API_KEY}`,
         }

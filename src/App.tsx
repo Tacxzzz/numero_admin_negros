@@ -20,6 +20,7 @@ import { HierarchyFourth } from "./components/HierarchyFourth";
 import { AdminManagement } from "./components/AdminManagement";
 import { useAuth0 } from "@auth0/auth0-react";
 import { GamesTypes } from "./components/GamesTypes";
+import { UserTypes } from "./components/UserTypes";
 import { TransactionsCashin } from "./components/TransactionsCashin";
 import { TransactionsCashOut } from "./components/TransactionsCashout";
 import { WinnerBets } from "./components/WinnersBets";
@@ -102,6 +103,7 @@ function App() {
                     <Route path="/bets" element={<Bets />} />
                     <Route path="/combinationLimits" element={<CombinationLimit />} />
                     <Route path="/gametypes" element={<GamesTypes />} />
+                    <Route path="/usertypes" element={<UserTypes />} />
                     <Route path="/draws" element={<Draws />} />
                     <Route path="/cashinhistory" element={<TransactionsCashin />} />
                     <Route path="/cashouthistory" element={<TransactionsCashOut />} />
