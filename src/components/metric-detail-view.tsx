@@ -12,7 +12,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { addBalance, cashinHourlyData, cashoutHourlyData, countBetsEarned, countBetsEarnedFreeCredits, countClientBetsEarned, countSelfBetsEarned, getBetsData, getBetsWins4D, getBetsWinsPerGame, getBetsWinsPerGameType, getBetsWinsPerTimeSlot, getCashinData, getCashoutData, getCommissionsData, getPlayersAdminChoice, getPlayersData, getTotalBetsData, getTotalCashinData, getTotalConversionData, getWinnersData, loginAdmin, totalCashoutFromCommissions, totalCashoutFromWinnings, totalCommissions, totalPlayers, totalPlayersActive, totalPlayersInactive, totalWins, updatePlayer } from "./api/apiCalls";
+import { addBalance, cashinHourlyData, cashoutHourlyData, countBetsEarned, countBetsEarnedFreeCredits, countClientBetsEarned, countSelfBetsEarned, getBetsData, getBetsWins4D, getBetsWinsPerGame, getBetsWinsPerGameType, getBetsWinsPerTimeSlot, getCashinData, getCashoutData, getCommissionsData, getPlayersAdminChoice, getPlayersData, getTotalBetsData, getTotalCashinData, getTotalConversionData, getUserType, getWinnersData, loginAdmin, totalCashoutFromCommissions, totalCashoutFromWinnings, totalCommissions, totalPlayers, totalPlayersActive, totalPlayersInactive, totalWins, updatePlayer } from "./api/apiCalls";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
@@ -130,6 +130,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddBalanceModalOpen, setIsAddBalanceModalOpen] = useState(false);
   const [selectedGameBet, setSelectedGameBet] = useState(null);
+  const [userType, setUserType] = useState<any[]>([]);
 
   const navigate = useNavigate();
 
@@ -139,8 +140,10 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
     currentPage * itemsPerPage
   );
 
-  const handleEditClick = (game) => {
+  const handleEditClick = async (game) => {
       setSelectedGameBet(game);
+      const userTypes = await getUserType();
+      setUserType(userTypes);
       setIsModalOpen(true);
     };
   
@@ -165,6 +168,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
       formData.append('maintaining_balance', selectedGameBet.maintaining_balance);
       formData.append('bypass_device', selectedGameBet.bypass_device);
       formData.append('employer', selectedGameBet.employer);
+      formData.append('type', selectedGameBet.type);
   
       const isAuthenticated = await updatePlayer(formData);
   
@@ -238,7 +242,25 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setSelectedGameBet((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "type") {
+      const selectedUserType = userType.find((option) => option.type === value);
+      console.log(selectedUserType);
+      setSelectedGameBet((prev) => ({
+        ...prev,
+        type: selectedUserType.type,
+        bet_commission_percent: selectedUserType.bet_commission_percent,
+        under_employer: selectedUserType.under_employer,
+        employer: selectedUserType.employer,
+        employer_commission_share: selectedUserType.employer_commission_share,
+        agent: selectedUserType.agent,
+        quota_allow: selectedUserType.quota_allow
+      }));
+    } else {
+      setSelectedGameBet((prev) => ({ ...prev, [name]: value }));
+    }
+    console.log('updated data:');
+    console.log(selectedGameBet);
   };
 
   useEffect(() => {
@@ -476,6 +498,28 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                         </div>
                         <br/>
                         <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Select User Type</label>
+                          <select
+                            name="type"
+                            value={selectedGameBet?.type || ""}
+                            onChange={handleChange}
+                            required
+                            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+                                      placeholder-gray-400 focus:outline-none focus:ring-indigo-500 
+                                      focus:border-indigo-500 sm:text-sm"
+                          >
+                            <option value="" disabled>
+                              Select a Status
+                            </option>
+                            {userType.map((option) => (
+                              <option key={option.type} value={option.type}>
+                                {option.type}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <br/>
+                        {/* <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Referral Limit</label>
                           <select
                             name="level"
@@ -494,8 +538,8 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                               </option>
                           </select>
                         </div>
-                        <br/>
-                        <div>
+                        <br/> */}
+                        {/* <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Is Agent</label>
                           <select
                             name="agent"
@@ -514,7 +558,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                               </option>
                           </select>
                         </div>
-                        <br/>
+                        <br/> */}
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                       Amount Quota
                       <Input
@@ -543,6 +587,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Bet Commission %
                       <Input
+                        disabled
                         type="number"
                         name="bet_commission_percent"
                         value={selectedGameBet?.bet_commission_percent|| ""}
@@ -590,7 +635,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                         </style> 
                     </label>
       
-                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                     {/* <label className="block text-sm font-medium text-gray-700 mb-2">
                       Level 2 %
                       <Input
                         type="number"
@@ -613,9 +658,9 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                                   }
                                   `}
                         </style> 
-                    </label>
+                    </label> */}
                         
-                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                     {/* <label className="block text-sm font-medium text-gray-700 mb-2">
                       % Commission if Quota is no limit
                       <Input
                         type="number"
@@ -638,7 +683,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                                   }
                                   `}
                         </style> 
-                    </label>
+                    </label> */}
                         <br/>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Quota Schedule</label>
@@ -748,8 +793,8 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                         </style> 
                       </label>
                         <br/>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Is Employer</label>
+                        {/* <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Is Coordinator</label>
                           <select
                             name="employer"
                             value={selectedGameBet?.employer || "no"}
@@ -767,7 +812,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                               </option>
                           </select>
                         </div>
-                        <br/>
+                        <br/> */}
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Set Under Admin Team</label>
                           <select

@@ -13,11 +13,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useAuth0 } from '@auth0/auth0-react';
-import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType, getUserType } from './api/apiCalls';
+import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType, getUserType, updateUserType } from './api/apiCalls';
 import { formatPeso } from './utils/utils';
 
 
-export function GamesTypes() {
+export function UserTypes() {
 
   const { user,getAccessTokenSilently , logout} = useAuth0();
   const [showGameDialog, setshowGameDialog] = useState(false);
@@ -35,8 +35,7 @@ export function GamesTypes() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [permissionsString, setPermissionsString] = useState([]);
-  const [selectedUserType, setSelectedUserType] = useState(null);
-  const [userType, setUserType] = useState<any[]>([]);
+  
 
   useEffect(() => {
       if (user && !dbUpdated) {
@@ -49,11 +48,11 @@ export function GamesTypes() {
             setPermissionsString(JSON.parse(dataUpdated.permissions));
             setLoading(false);
   
-            const gamesData = await getGamesTypes();
+            const gamesData = await getUserType();
             setGamebets(gamesData);
+        
+  
             
-            const userTypeData = await getUserType();
-            setUserType(userTypeData);
           }
           else
           {
@@ -66,15 +65,6 @@ export function GamesTypes() {
       }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
-
-    useEffect(() => {
-      if (userType.length > 0 && selectedUserType === null) {
-        const bettor = userType.find((u) => u.type === "bettor");
-        if (bettor) {
-          setSelectedUserType(bettor.type);
-        }
-      }
-    }, [userType, selectedUserType]);
   
     if (loading ) {
       return <div>...</div>;
@@ -98,17 +88,14 @@ export function GamesTypes() {
     
 
     const formData = new FormData();
-    formData.append('userID', selectedGameBet.id);
-    formData.append('game_type', selectedGameBet.game_type);
-    formData.append('bet', selectedGameBet.bet);
-    formData.append('jackpot', selectedGameBet.jackpot);
-    formData.append('status', selectedGameBet.status);
-
-   
-
+    formData.append('id', selectedGameBet.id);
+    formData.append('type', selectedGameBet.type);
+    formData.append('bet_commission_percent', selectedGameBet.bet_commission_percent);
+    formData.append('employer_commission_share', selectedGameBet.employer_commission_share);
+    formData.append('quota_allow', selectedGameBet.quota_allow);
 
     setLoading(true);
-    const isAuthenticated = await updateGameType(formData);
+    const isAuthenticated = await updateUserType(formData);
     if (!isAuthenticated) {
       alert("an error occurred!");
       setUpdating(false);
@@ -122,7 +109,7 @@ export function GamesTypes() {
       setIsModalOpen(false);
       setLoading(false);
         alert("game type updated successfully.");
-        const gamesData = await getGamesTypes();
+        const gamesData = await getUserType();
           setGamebets(gamesData);
     }
   };
@@ -156,12 +143,12 @@ export function GamesTypes() {
     // Filter games based on search query and status filter
     const filteredGames = gamebets.filter(
       (game) =>
-        game.game_name.toLowerCase().includes(searchQuery.toLowerCase()) 
+        game.type.toLowerCase().includes(searchQuery.toLowerCase()) 
       ).sort((a, b) => {
         if (sortOrder === "asc") {
-          return a.game_name.localeCompare(b.game_name);
+          return a.type.localeCompare(b.type);
         } else {
-          return b.game_name.localeCompare(a.game_name);
+          return b.type.localeCompare(a.type);
         }
       });
   
@@ -175,7 +162,7 @@ export function GamesTypes() {
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl md:text-3xl font-bold">Game Types</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">User Types</h2>
        {/*  <Button onClick={() => setshowGameDialog(true)}>
           <Plus className="mr-2 h-4 w-4" /> Add Bet Games
         </Button> */}
@@ -185,7 +172,7 @@ export function GamesTypes() {
             {/* Search Box */}
             <Input
               type="text"
-              placeholder="Search games..."
+              placeholder="Search user..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="border p-2 rounded w-full sm:w-auto"
@@ -198,24 +185,6 @@ export function GamesTypes() {
             </Button>
           </div>
       </div>
-
-      <div className="flex gap-2 mb-4">
-              {userType.map((type) => (
-                <button
-                  key={type.type}
-                  onClick={() => setSelectedUserType(type.type)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition 
-                    ${
-                      selectedUserType === type.type
-                        ? "bg-blue-500 text-white shadow"
-                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                    }`}
-                >
-                  {type.type}
-                </button>
-              ))}
-            </div>
-
       <div className="overflow-x-auto">
       <Card className="lg:col-span-7">
          
@@ -223,27 +192,14 @@ export function GamesTypes() {
           <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-center">Game Name</TableHead>
-              <TableHead className="text-center">Game Type</TableHead>
-              <TableHead className="text-center">Bet</TableHead>
-              <TableHead className="text-center">Jackpot</TableHead>
-              <TableHead className="text-center">Status</TableHead>
+              <TableHead className="text-center">USER</TableHead>
               <TableHead className="text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredGames
-            .filter(
-                (game) =>
-                  game.user_type === selectedUserType
-              )
-            .map((product) => (
+            {filteredGames.map((product) => (
               <TableRow key={product.id}>
-                <TableCell className="text-center">{product.game_name}</TableCell>
-                <TableCell className="text-center">{product.game_type}</TableCell>
-                <TableCell className="text-center">{formatPeso(product.bet)}</TableCell>
-                <TableCell className="text-center">{formatPeso(product.jackpot)}</TableCell>
-                <TableCell className="text-center">{product.status}</TableCell>
+                <TableCell className="text-center">{product.type}</TableCell>
                 <TableCell className="text-center">
                   <Button
                     className="w-full sm:w-auto bg-blue-500 border-blue-500 text-black-600 hover:bg-blue-500/20 hover:text-blue-700"
@@ -265,96 +221,56 @@ export function GamesTypes() {
   <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
     <DialogContent className="bg-gray-50 border-[#34495e] max-h-[90vh] w-96 overflow-y-auto">
       <DialogHeader>
-        <DialogTitle className="text-xl text-blue-600">Update Game Type</DialogTitle>
+        <DialogTitle className="text-xl text-blue-600">User Type Settings</DialogTitle>
       </DialogHeader>
       <div className="space-y-3">
       <form onSubmit={handleSave}>
 
       <label className="block text-sm font-medium text-gray-700 mb-2">
-          Game Name : {selectedGameBet.game_name}
+          User : {selectedGameBet.type}
           
         </label>
 
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Game Type Title
+          Bet Commission Percent
           <Input
             type="text"
-            name="game_type"
-            value={selectedGameBet.game_type || ""}
+            name="bet_commission_percent"
+            value={selectedGameBet.bet_commission_percent || ""}
             onChange={handleChange}
             className="border p-1 mt-2 w-full"
             placeholder="Enter Game Type Title"
           />
         </label>
 
-
-
-
-<label className="block text-sm font-medium text-gray-700 mb-2">
-          Bet
-          <Input
-            type="number"
-            name="bet"
-            value={selectedGameBet?.bet || ""}
-            onChange={handleChange}
-            required
-            className="border p-1 mt-2 w-full"
-            placeholder="Enter Range Start"
-            style={{ appearance: 'textfield' }}
-          />
-            <style>{`
-                      input[type=number]::-webkit-outer-spin-button,
-                      input[type=number]::-webkit-inner-spin-button {
-                      -webkit-appearance: none;
-                      margin: 0;
-                      }
-                      input[type=number] {
-                      -moz-appearance: textfield;
-                      }
-                      `}
-            </style> 
-</label>
-<label className="block text-sm font-medium text-gray-700 mb-2">
-          Jackpot
-          <Input
-            type="number"
-            name="jackpot"
-            value={selectedGameBet?.jackpot || ""}
-            onChange={handleChange}
-            required
-            className="border p-1 mt-2 w-full"
-            placeholder="Enter Range Start"
-            style={{ appearance: 'textfield' }}
-          />
-            <style>{`
-                      input[type=number]::-webkit-outer-spin-button,
-                      input[type=number]::-webkit-inner-spin-button {
-                      -webkit-appearance: none;
-                      margin: 0;
-                      }
-                      input[type=number] {
-                      -moz-appearance: textfield;
-                      }
-                      `}
-            </style> 
-</label>
-
+        {selectedGameBet.type === "usher" && (
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+            Coordinator Commission
+            <Input
+                type="text"
+                name="employer_commission_share"
+                value={selectedGameBet.employer_commission_share || ""}
+                onChange={handleChange}
+                className="border p-1 mt-2 w-full"
+                placeholder="Enter Game Type Title"
+            />
+            </label>
+        )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Select Status</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Allow Quota</label>
         <select
-          name="status"
-          value={selectedGameBet?.status || ""}
+          name="quota_allow"
+          value={selectedGameBet?.quota_allow || ""}
           onChange={handleChange}
           required
           className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
           <option value="" disabled>
-            Select a Game Option
+            Allow Quota
           </option>
-          <option value="enabled">Enabled</option>
-          <option value="hidden">Hidden</option>
-          <option value="disabled">Disabled</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
         </select>
       </div>
 

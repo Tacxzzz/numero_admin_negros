@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { X, LogOut, UserCheck2, Grid, Calendar } from "lucide-react";
+import { X, LogOut, UserCheck2, Grid, Calendar, User } from "lucide-react";
 import {
   LayoutDashboard,
   Coins,
@@ -72,6 +72,7 @@ export function Sidebar({ onClose }: SidebarProps) {
     { icon: LayoutDashboard, label: "Dashboard", path: "/", permission: "dashboard" },
     { icon: Cuboid, label: "Games", path: "/bets", permission: "games" },
     { icon: Crosshair, label: "Game Types", path: "/gametypes", permission: "games_types" },
+    { icon: User, label: "User Types", path: "/usertypes", permission: "players" },
     { icon: CalendarCheck2, label: "Draws", path: "/draws", permission: "draws" },
     { icon: Grid, label: "Draw Results", path: "/drawsresults", permission: "draws_results" },
     { icon: Banknote, label: "Cash in history", path: `/metric/total-cash-in?startDate=${startDateDefault}&endDate=${endDateDefault}&status=all`, permission: "cashin" },
