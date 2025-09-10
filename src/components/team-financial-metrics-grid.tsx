@@ -148,18 +148,18 @@ export function TeamFinancialMetricsGrid({StartDate, EndDate, TotalCashin, Total
       category: "bets",
       visible: true
     },
-    {
-      id: "total-free-bets",
-      title: "TOTAL BETS USING FREE CREDITS",
-      value: TotalFreeBets.toLocaleString("en-PH", {
-        style: "currency",
-        currency: "PHP",
-        minimumFractionDigits: 2
-      }),
-      icon: <TrendingUp size={18} />,
-      category: "bets",
-      visible: true
-    },
+    // {
+    //   id: "total-free-bets",
+    //   title: "TOTAL BETS USING FREE CREDITS",
+    //   value: TotalFreeBets.toLocaleString("en-PH", {
+    //     style: "currency",
+    //     currency: "PHP",
+    //     minimumFractionDigits: 2
+    //   }),
+    //   icon: <TrendingUp size={18} />,
+    //   category: "bets",
+    //   visible: true
+    // },
     {
       id: "total-commissions",
       title: "TOTAL COMMISSIONS",

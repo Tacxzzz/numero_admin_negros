@@ -1170,19 +1170,19 @@ export function MetricDetailView() {
             { key: 'commissions', label: 'Commissions' },
             { key: 'bet_commission_percent', label: 'Bet Commission Percentage' },
             { key: 'level_one_percent', label: 'Lvl 1 Percentage' },
-            { key: 'level_two_percent', label: 'Lvl 2 Percentage' },
-            { key: 'agent', label: 'Agent' },
+            // { key: 'level_two_percent', label: 'Lvl 2 Percentage' },
+            // { key: 'agent', label: 'Agent' },
             { key: 'referrer_mobile', label: 'Referred by' },
             { key: 'referral_count', label: '# of Referrals' },
-            { key: 'level', label: 'Referral Limit' },
+            // { key: 'level', label: 'Referral Limit' },
             { key: 'quota', label: 'Quota' },
-            { key: 'nolimit_percent', label: '# of Commission if no Limit' },
+            // { key: 'nolimit_percent', label: '# of Commission if no Limit' },
             { key: 'quota_time', label: 'Quota Schedule' },
             { key: 'quota_allow', label: 'Bypass Quota?' },
             { key: 'has_maintaining_balance', label: 'Has Maintaining Balance' },
             { key: 'maintaining_balance', label: 'Maintaining Balance' },
-            { key: 'employer', label: 'Is Employer' },
-            { key: 'bypass_device', label: 'Bypass Device ID Check' },
+            // { key: 'employer', label: 'Is Employer' },
+            // { key: 'bypass_device', label: 'Bypass Device ID Check' },
             { key: 'under_admin_mail', label: 'Admin Team' },
             { key: 'status', label: 'Player Status' },
             { key: 'action', label: 'Action' }
@@ -1874,14 +1874,14 @@ export function MetricDetailView() {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* <Card>
           <CardContent className="p-4">
             <div className="flex justify-between items-center">
               <span className="font-bold w-1/2">TOTAL BETS FROM FREE CREDITS</span>
               <span className="font-bold w-1/2 text-right">₱{totalBetsFreeCredits.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* <Card>
           <CardContent className="p-4">

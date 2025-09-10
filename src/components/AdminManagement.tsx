@@ -120,7 +120,7 @@ export function AdminManagement() {
     { id: "games", label: "ACCESS GAMES" },
     { id: "games_types", label: "ACCESS GAMES TYPES" },
     { id: "draws", label: "ACCESS DRAWS" },
-    { id: "draws_results", label: "ACCESS MANAGE DRAW RESULTS" },
+    // { id: "draws_results", label: "ACCESS MANAGE DRAW RESULTS" },
     { id: "cashin", label: "ACCESS CASHIN HISTORY" },
     { id: "cashout", label: "ACCESS CASHOUT HISTORY" },
     { id: "bets", label: "ACCESS BETS" },
@@ -135,9 +135,13 @@ export function AdminManagement() {
     { id: "logs", label: "ACCESS USER LOGS" },
     { id: "commission_history", label: "ACCESS COMMISSION HISTORY" },
     { id: "add_balance", label: "ADD BALANCE TO USER" },
+    { id: "dashboard_cashin", label: "DASHBOARD CASHIN" },
+    { id: "dashboard_cashout", label: "DASHBOARD CASHOUT" },
+    { id: "net_earnings", label: "DASHBOARD NET EARNINGS" },
+    { id: "revenue_recognition", label: "DASHBOARD REVENUE RECOGNITION" },
     { id: "team_dashboard_cashin", label: "TEAM DASHBOARD CASHIN" },
     { id: "team_dashboard_cashout", label: "TEAM DASHBOARD CASHOUT" },
-    { id: "team_net_cash", label: "TEAM DASHBOARD NET CASH" },
+    { id: "team_net_earnings", label: "TEAM DASHBOARD NET EARNINGS" },
     { id: "team_revenue_recognition", label: "TEAM DASHBOARD REVENUE RECOGNITION" },
   ];
 

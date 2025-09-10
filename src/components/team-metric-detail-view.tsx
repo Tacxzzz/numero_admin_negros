@@ -1494,14 +1494,14 @@ export function TeamMetricDetailView() {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* <Card>
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center">
                       <span className="font-bold w-1/2">TOTAL BETS FROM FREE CREDITS</span>
                       <span className="font-bold w-1/2 text-right">₱{totalBetsFreeCredits.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
                   </CardContent>
-                </Card>
+                </Card> */}
 
         {/* <Card>
           <CardContent className="p-4">

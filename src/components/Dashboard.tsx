@@ -126,6 +126,11 @@ export function Dashboard() {
     return <div>...</div>;
   }
 
+  const cashinPermission = permissionsString.includes("dashboard_cashin");
+  const netCashPermission = permissionsString.includes("net_earnings");
+  const cashoutPermission = permissionsString.includes("dashboard_cashout");
+  const revenueRecognitionPermission = permissionsString.includes("revenue_recognition");
+
   const resetDateFilters = () => {
     setStartDate("");
     setEndDate("");
@@ -178,29 +183,31 @@ export function Dashboard() {
       </div>
 
       <FinancialMetricsGrid StartDate={startDate} EndDate={endDate} TotalCashin={totalCashins} TotalCashout={totalCashouts} TotalPlayers={totalPlayersAmount} TotalPlayersActive={totalPlayersActiveCount} 
-      TotalPlayersInactive={totalPlayersInactiveCount} TotalBetsEarned={totalRemitAmount} TotalCommissions={totalComm} TotalWins={totalRedeemAmount} TotalBetsFreeCredits={totalBetsFreeCredits}/>
+      TotalPlayersInactive={totalPlayersInactiveCount} TotalBetsEarned={totalRemitAmount} TotalCommissions={totalComm} TotalWins={totalRedeemAmount} TotalBetsFreeCredits={totalBetsFreeCredits} CashinPermission={cashinPermission}
+      CashoutPermission={cashoutPermission} NetCashPermission={netCashPermission}/>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Revenue Recognition</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={rateChartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="Cash_In" stroke="#8884d8" name="Cash In" />
-                <Line type="monotone" dataKey="Cash_Out" stroke="#ff7300" name="Cash Out" />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
-
+      {revenueRecognitionPermission && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Revenue Recognition</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={rateChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="Cash_In" stroke="#8884d8" name="Cash In" />
+                  <Line type="monotone" dataKey="Cash_Out" stroke="#ff7300" name="Cash Out" />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
       
     </div>
   );

@@ -129,7 +129,7 @@ export function TeamDashboard() {
   }
 
   const cashinPermission = permissionsString.includes("team_dashboard_cashin");
-  const netCashPermission = permissionsString.includes("team_net_cash");
+  const netCashPermission = permissionsString.includes("team_net_earnings");
   const cashoutPermission = permissionsString.includes("team_dashboard_cashout");
   const revenueRecognitionPermission = permissionsString.includes("team_revenue_recognition");
 
