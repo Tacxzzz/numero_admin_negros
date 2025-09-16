@@ -71,7 +71,8 @@ export function FinancialMetricsGrid({StartDate, EndDate, TotalCashin, TotalCash
     { value: "commissions", label: "Commissions", icon: <BarChart2 size={16} /> },
   ];
 
-  const TotalNetCash = TotalBetsEarned - TotalCashout;
+  const SOP = TotalBetsEarned * 0.05;
+  const TotalNetCash = TotalBetsEarned - TotalCommissions - TotalWins - SOP;
 
   // Define all metrics with their categories
   const metrics = [
@@ -107,7 +108,20 @@ export function FinancialMetricsGrid({StartDate, EndDate, TotalCashin, TotalCash
         currency: "PHP",
         minimumFractionDigits: 2
       }),
-      description: "= TOTAL BETS EARNED - TOTAL CASH OUTS PAID",
+      description: "= TOTAL BETS EARNED - TOTAL COMMISSION - TOTAL WINS - SOP",
+      icon: <DollarSign size={18} />,
+      category: "cash",
+      visible: NetCashPermission
+    },
+    {
+      id: "sop",
+      title: "SOP",
+      value: SOP.toLocaleString("en-PH", {
+        style: "currency",
+        currency: "PHP",
+        minimumFractionDigits: 2
+      }),
+      description: "= 5% of TOTAL BETS EARNED",
       icon: <DollarSign size={18} />,
       category: "cash",
       visible: NetCashPermission
