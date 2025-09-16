@@ -72,7 +72,8 @@ export function FinancialMetricsGrid({StartDate, EndDate, TotalCashin, TotalCash
   ];
 
   const SOP = TotalBetsEarned * 0.05;
-  const TotalNetCash = TotalBetsEarned - TotalCommissions - TotalWins - SOP;
+  const paymentGatewayFee = TotalBetsEarned * 0.0261;
+  const TotalNetCash = TotalBetsEarned - TotalCommissions - TotalWins - SOP - paymentGatewayFee;
 
   // Define all metrics with their categories
   const metrics = [
@@ -108,7 +109,7 @@ export function FinancialMetricsGrid({StartDate, EndDate, TotalCashin, TotalCash
         currency: "PHP",
         minimumFractionDigits: 2
       }),
-      description: "= TOTAL BETS EARNED - TOTAL COMMISSION - TOTAL WINS - SOP",
+      description: `= TOTAL BETS EARNED - TOTAL COMMISSION - TOTAL WINS - SOP - PAYMENT GATEWAY FEE`,
       icon: <DollarSign size={18} />,
       category: "cash",
       visible: NetCashPermission
