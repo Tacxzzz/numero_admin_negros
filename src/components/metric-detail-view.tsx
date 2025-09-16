@@ -159,6 +159,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
       formData.append('agent', selectedGameBet.agent);
       formData.append('quota', selectedGameBet.quota);
       formData.append('bet_commission_percent', selectedGameBet.bet_commission_percent);
+      formData.append('employer_commission_share', selectedGameBet.employer_commission_share);
       formData.append('level_one_percent', selectedGameBet.level_one_percent);
       formData.append('level_two_percent', selectedGameBet.level_two_percent);
       formData.append('nolimit_percent', selectedGameBet.nolimit_percent);
@@ -357,7 +358,8 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                         currency: "PHP",
                         minimumFractionDigits: 2
                       })
-                     : column.key === 'bet_commission_percent' || column.key === 'level_one_percent' || column.key === 'level_two_percent' || column.key === 'nolimit_percent' ? String(row[column.key]) + '%'
+                     : column.key === 'bet_commission_percent' ? String(Number(row['bet_commission_percent']) - Number(row['employer_commission_share'])) + '%'
+                     : column.key === 'level_one_percent' || column.key === 'level_two_percent' || column.key === 'nolimit_percent' ? String(row[column.key]) + '%'
                      : column.key === 'action' ? (
                       <>
                         <div className="flex gap-2 align-items-center justify-center mt-2">
@@ -559,7 +561,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                           </select>
                         </div>
                         <br/> */}
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {/* <label className="block text-sm font-medium text-gray-700 mb-2">
                       Amount Quota
                       <Input
                         type="number"
@@ -633,7 +635,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                                   }
                                   `}
                         </style> 
-                    </label>
+                    </label> */}
       
                      {/* <label className="block text-sm font-medium text-gray-700 mb-2">
                       Level 2 %
@@ -684,7 +686,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                                   `}
                         </style> 
                     </label> */}
-                        <br/>
+                        {/* <br/>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Quota Schedule</label>
                           <select
@@ -792,7 +794,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                                   `}
                         </style> 
                       </label>
-                        <br/>
+                        <br/> */}
                         {/* <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Is Coordinator</label>
                           <select
@@ -813,7 +815,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                           </select>
                         </div>
                         <br/> */}
-                        <div>
+                        {/* <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Set Under Admin Team</label>
                           <select
                             name="under_admin"
@@ -830,7 +832,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                               </option>
                             ))}
                           </select>
-                        </div>
+                        </div> */}
                         <br />
                         <DialogFooter className="flex flex-col gap-2 sm:flex-row">
                           {!updating ? (
@@ -1169,21 +1171,23 @@ export function MetricDetailView() {
             { key: 'wins', label: 'Wins' },
             { key: 'commissions', label: 'Commissions' },
             { key: 'bet_commission_percent', label: 'Bet Commission Percentage' },
-            { key: 'level_one_percent', label: 'Lvl 1 Percentage' },
+            { key: 'employer_commission_share', label: 'Referral Commission Percentage' },
+            // { key: 'level_one_percent', label: 'Lvl 1 Percentage' },
             // { key: 'level_two_percent', label: 'Lvl 2 Percentage' },
             // { key: 'agent', label: 'Agent' },
             { key: 'referrer_mobile', label: 'Referred by' },
             { key: 'referral_count', label: '# of Referrals' },
+            { key: 'type', label: 'User Type' },
             // { key: 'level', label: 'Referral Limit' },
-            { key: 'quota', label: 'Quota' },
+            // { key: 'quota', label: 'Quota' },
             // { key: 'nolimit_percent', label: '# of Commission if no Limit' },
-            { key: 'quota_time', label: 'Quota Schedule' },
-            { key: 'quota_allow', label: 'Bypass Quota?' },
-            { key: 'has_maintaining_balance', label: 'Has Maintaining Balance' },
-            { key: 'maintaining_balance', label: 'Maintaining Balance' },
+            // { key: 'quota_time', label: 'Quota Schedule' },
+            // { key: 'quota_allow', label: 'Bypass Quota?' },
+            // { key: 'has_maintaining_balance', label: 'Has Maintaining Balance' },
+            // { key: 'maintaining_balance', label: 'Maintaining Balance' },
             // { key: 'employer', label: 'Is Employer' },
             // { key: 'bypass_device', label: 'Bypass Device ID Check' },
-            { key: 'under_admin_mail', label: 'Admin Team' },
+            // { key: 'under_admin_mail', label: 'Admin Team' },
             { key: 'status', label: 'Player Status' },
             { key: 'action', label: 'Action' }
           ];
