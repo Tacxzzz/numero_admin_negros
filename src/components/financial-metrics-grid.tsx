@@ -230,7 +230,7 @@ export function FinancialMetricsGrid({StartDate, EndDate, TotalCashin, TotalCash
       );
 
   const handleCardClick = (metricId: string, startDate: string, endDate: string) => {
-    if (metricId !== "net-cash" && metricId !== "total-free-bets-earned")
+    if (metricId !== "net-cash" && metricId !== "total-free-bets-earned" && metricId !== 'sop')
     {
       navigate(`/metric/${metricId}?startDate=${startDate}&endDate=${endDate}&status=${metricId === 'active-players' ? 'active' : metricId === 'inactive-players' ? 'inactive' : 'all'}`);
     }
