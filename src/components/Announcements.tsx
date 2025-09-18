@@ -56,6 +56,7 @@ export function Announcements() {
           else
           {
             alert("UNAUTHORIZED USER!");
+            localStorage.setItem("isLoggedIn", "false");
             logout({ logoutParams: { returnTo: window.location.origin } });
           }
           

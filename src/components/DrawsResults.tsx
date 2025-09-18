@@ -58,7 +58,6 @@ export function DrawsResults() {
                 setGames(todayData); 
 
 
-                console.log(todayData);
                  const allResults = [];
 
                  for (const draw of todayData) {
@@ -73,12 +72,12 @@ export function DrawsResults() {
                   });
                 }
                 setDraws(allResults);
-                console.log(allResults);
               }
             }
             else
             {
               alert("UNAUTHORIZED USER!");
+              localStorage.setItem("isLoggedIn", "false");
               logout({ logoutParams: { returnTo: window.location.origin } });
             }
             
