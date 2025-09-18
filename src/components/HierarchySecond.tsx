@@ -52,6 +52,7 @@ export function HierarchySecond() {
         else
         {
           alert("UNAUTHORIZED USER!");
+          localStorage.setItem("isLoggedIn", "false");
           logout({ logoutParams: { returnTo: window.location.origin } });
         }
         

@@ -55,6 +55,8 @@ export function Sidebar({ onClose }: SidebarProps) {
 
   useEffect(() => {
       if (user && !dbUpdated) {
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+
         const handleUpdate = async () => {
           const dataUpdated = await loginAdmin(user, getAccessTokenSilently);
           if (dataUpdated.dbUpdate) {
@@ -62,9 +64,11 @@ export function Sidebar({ onClose }: SidebarProps) {
             setUserID(dataUpdated.userID);
             setPermissionsString(JSON.parse(dataUpdated.permissions));
             
-          } 
+          }
         };
-        handleUpdate();
+        if (isLoggedIn === 'true') {
+          handleUpdate();
+        }
       }
     }, [user, dbUpdated, getAccessTokenSilently, logout]);
 
@@ -141,7 +145,10 @@ export function Sidebar({ onClose }: SidebarProps) {
           <Button 
             variant="ghost" 
             className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-            onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+            onClick={() => {
+              logout({ logoutParams: { returnTo: window.location.origin } });
+              localStorage.setItem("isLoggedIn", "false");
+            }}
           >
             <LogOut className="mr-3 h-5 w-5" />
             Logout

@@ -10,15 +10,46 @@ const API_KEY = btoa(rawToken);
 
 export const loginAdmin = async (user: any , getAccessTokenSilently: any) => {
   try {
-    console.log(user.email);
+    const token = await getAccessTokenSilently();
+    const response = await axios.post(
+      `${API_URL}/admin/fetchUserData`,
+      { email: user.email },
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+
+    console.log('fetching user data');
+    if (response.data && response.data.authenticated) {
+        const userData = response.data;
+        return {
+          userID: userData.userID,
+          permissions: userData.permissions,
+          dbUpdate: true,
+        };
+      } else {
+        return { dbUpdate: false,permissions: "", userID: "id"};
+      }
+  } catch (error) {
+    console.error("Database update failed:", error);
+    return { dbUpdate: false,permissions: "", userID: "id" };
+  } 
+};
+
+export const oneLoginAdmin = async (user: any , getAccessTokenSilently: any) => {
+  try {
     const token = await getAccessTokenSilently();
     const response = await axios.post(
       `${API_URL}/admin/loginAdmin`,
       { email: user.email },
-      { headers: { Authorization: `Bearer ${token}` } }
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
     );
 
-    console.log(response.data);
+    console.log('logging in');
     if (response.data && response.data.authenticated) {
         const userData = response.data;
         return {
@@ -36,14 +67,12 @@ export const loginAdmin = async (user: any , getAccessTokenSilently: any) => {
   } 
 };
 
-
 export const fetchUserData = async (id: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getUserData`, { userID: id },
       {
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (response.data && response.data.length > 0) {
@@ -65,9 +94,8 @@ export const fetchUserData = async (id: string) => {
 export const getGames = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getGames`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -84,9 +112,8 @@ export const getGames = async () => {
 export const getGamesData = async (userID: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getGamesData`, { userID},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (Array.isArray(response.data)) {
@@ -103,9 +130,8 @@ export const getGamesData = async (userID: string) => {
 export const getCombinationLimits = async (userID: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getCombinationLimits`, { userID},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (Array.isArray(response.data)) {
@@ -125,10 +151,10 @@ export const addCombinationLimit = async (formData: FormData): Promise<boolean> 
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/addCombinationLimit',
           formData,
-          { headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${API_KEY}`, 
-          } }
+          {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
       );
 
       
@@ -148,10 +174,10 @@ export const updateCombinationLimit = async (formData: FormData): Promise<boolea
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/updateCombinationLimit',
           formData,
-          { headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${API_KEY}`,  
-          } }
+          {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
       );
 
       
@@ -167,9 +193,8 @@ export const updateCombinationLimit = async (formData: FormData): Promise<boolea
 export const getGamesTypes = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getGamesTypes`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -187,9 +212,8 @@ export const getGamesTypes = async () => {
 export const getDraws = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getDraws`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -208,9 +232,8 @@ export const getTeamTransactionsCashin = async (id:string) => {
   try {
 
     const response = await axios.post(`${API_URL}/admin/getTeamTransactionsCashin`, { userID: id },{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     if (Array.isArray(response.data)) {
       return response.data;
@@ -227,9 +250,8 @@ export const getTeamTransactionsCashout = async (id:string) => {
   try {
 
     const response = await axios.post(`${API_URL}/admin/getTeamTransactionsCashout`, { userID: id },{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     if (Array.isArray(response.data)) {
       return response.data;
@@ -245,9 +267,8 @@ export const getTeamTransactionsCashout = async (id:string) => {
 export const getTransactionsCashin = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getTransactionsCashin`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -265,9 +286,8 @@ export const getTransactionsCashin = async () => {
 export const getTransactionsCashout = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getTransactionsCashout`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -288,10 +308,10 @@ export const updateGame = async (formData: FormData): Promise<boolean> => {
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/updateGame',
           formData,
-          { headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${API_KEY}`, 
-          } }
+          {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
       );
 
       
@@ -313,10 +333,10 @@ export const updateGameType = async (formData: FormData): Promise<boolean> => {
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/updateGameType',
           formData,
-          { headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${API_KEY}`,  
-          } }
+          {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
       );
 
       
@@ -335,13 +355,12 @@ export const updateUserType = async (formData: FormData): Promise<boolean> => {
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/updateUserType',
           formData,
-          { headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${API_KEY}`,  
-          } }
+          {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
       );
 
-      console.log(response);
       return response.data.authenticated;
   } 
   catch (error) 
@@ -355,9 +374,8 @@ export const updateUserType = async (formData: FormData): Promise<boolean> => {
 export const getBetsHistory = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getBetsHistory`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -373,9 +391,8 @@ export const getBetsHistory = async () => {
 export const getClientWinners = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getClientWinners`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -392,9 +409,8 @@ export const getClientWinners = async () => {
 export const getBetsHistoryWinners = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getBetsHistoryWinners`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -412,9 +428,8 @@ export const getBetsHistoryWinners = async () => {
 export const getPlayersAdmin = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getPlayersAdmin`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -431,9 +446,8 @@ export const getPlayersAdmin = async () => {
 export const getPlayersAdminChoice = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getPlayersAdminChoice`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -449,9 +463,8 @@ export const getPlayersAdminChoice = async () => {
 export const getPlayers = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getPlayers`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -468,9 +481,8 @@ export const getPlayers = async () => {
 export const getPlayersTeam = async (id: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getPlayersTeam`, { userID: id },{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -487,9 +499,8 @@ export const getPlayersTeam = async (id: string) => {
 export const getPlayersAgents = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getPlayersAgents`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -507,9 +518,8 @@ export const getPlayersAgents = async () => {
 export const getClients = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getClients`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -529,10 +539,10 @@ export const updateClient = async (formData: FormData): Promise<boolean> => {
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/updateClient',
           formData,
-          { headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${API_KEY}`, 
-          } }
+          {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
       );
 
       
@@ -552,10 +562,10 @@ export const updateAdmin = async (formData: FormData): Promise<boolean> => {
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/updateAdmin',
           formData,
-          { headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${API_KEY}`,  
-          } }
+          {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
       );
 
       
@@ -574,10 +584,10 @@ export const revokeAccess = async (formData: FormData): Promise<boolean> => {
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/revokeAccess',
           formData,
-          { headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${API_KEY}`, 
-          } }
+          {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
       );
 
       
@@ -597,10 +607,10 @@ export const allowAccess = async (formData: FormData): Promise<boolean> => {
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/allowAccess',
           formData,
-          { headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${API_KEY}`, 
-          } }
+          {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
       );
 
       
@@ -619,10 +629,10 @@ export const addBalance = async (formData: FormData): Promise<boolean> => {
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/addBalance',
           formData,
-          { headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${API_KEY}`, 
-          } }
+          {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
       );
 
       
@@ -641,10 +651,10 @@ export const updatePlayer = async (formData: FormData): Promise<boolean> => {
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/updatePlayer',
           formData,
-          { headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${API_KEY}`, 
-          } }
+          {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
       );
 
       
@@ -663,10 +673,10 @@ export const updatePlayerTeam = async (formData: FormData): Promise<boolean> => 
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/updatePlayerTeam',
           formData,
-          { headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${API_KEY}`, 
-          } }
+          {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
       );
 
       
@@ -683,9 +693,8 @@ export const updatePlayerTeam = async (formData: FormData): Promise<boolean> => 
 export const getLevel1Referrals = async (id: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getLevel1Referrals`, { userID: id },{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     if (Array.isArray(response.data)) {
       return response.data;
@@ -704,9 +713,8 @@ export const getLevel1Referrals = async (id: string) => {
 export const getLevel1ReferralsCount = async (id: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getLevel1ReferralsCount`, { userID: id },{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     if (response.data) 
     {
@@ -730,14 +738,12 @@ export const getLevel1ReferralsCount = async (id: string) => {
 export const getLevel2ReferralsCount = async (id: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getLevel2ReferralsCount`, { userID: id },{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
       return {
         count: userData.count,
       };
@@ -757,9 +763,8 @@ export const getLevel2ReferralsCount = async (id: string) => {
 export const getRateChartData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getRateChartData`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     if (Array.isArray(response.data)) {
       return response.data;
@@ -777,15 +782,13 @@ export const getRateChartData = async (start_date:string, end_date:string) => {
 export const countBetsEarned = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countBetsEarned`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
       return {
         count: userData.count,
       };
@@ -804,15 +807,13 @@ export const countBetsEarned = async (start_date:string, end_date:string) => {
 export const countBetsEarnedFreeCredits = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countBetsEarnedFreeCredits`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
       return {
         count: userData.count,
       };
@@ -831,15 +832,13 @@ export const countBetsEarnedFreeCredits = async (start_date:string, end_date:str
 export const countSelfBetsEarned = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countSelfBetsEarned`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
       return {
         count: userData.count,
       };
@@ -858,15 +857,13 @@ export const countSelfBetsEarned = async (start_date:string, end_date:string) =>
 export const countClientBetsEarned = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countClientBetsEarned`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
       return {
         count: userData.count,
       };
@@ -885,15 +882,13 @@ export const countClientBetsEarned = async (start_date:string, end_date:string) 
 export const totalWins = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalWins`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
       return {
         count: userData.count,
       };
@@ -913,15 +908,13 @@ export const totalWins = async (start_date:string, end_date:string) => {
 export const totalBalancePlayers = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalBalancePlayers`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
       return {
         count: userData.count,
       };
@@ -940,15 +933,13 @@ export const totalBalancePlayers = async (start_date:string, end_date:string) =>
 export const totalCommissions = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalCommissions`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
       return {
         count: userData.count,
       };
@@ -967,15 +958,13 @@ export const totalCommissions = async (start_date:string, end_date:string) => {
 export const totalPlayers = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalPlayers`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
       return {
         count: userData.count,
       };
@@ -994,15 +983,14 @@ export const totalPlayers = async (start_date:string, end_date:string) => {
 export const totalPlayersActive = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalPlayersActive`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
+       
       return {
         count: userData.count,
       };
@@ -1021,15 +1009,14 @@ export const totalPlayersActive = async (start_date:string, end_date:string) => 
 export const totalPlayersInactive = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalPlayersInactive`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
+       
       return {
         count: userData.count,
       };
@@ -1048,15 +1035,14 @@ export const totalPlayersInactive = async (start_date:string, end_date:string) =
 export const totalClients = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalClients`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
+       
       return {
         count: userData.count,
       };
@@ -1076,15 +1062,14 @@ export const totalClients = async (start_date:string, end_date:string) => {
 export const totalCashin = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalCashin`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
+       
       return {
         count: userData.count,
       };
@@ -1104,15 +1089,14 @@ export const totalCashin = async (start_date:string, end_date:string) => {
 export const totalCashOut = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalCashOut`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
+       
       return {
         count: userData.count,
       };
@@ -1146,9 +1130,8 @@ export const totalCashOut = async (start_date:string, end_date:string) => {
 export const getRateChartDataTeam = async (id:string,start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getRateChartDataTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (Array.isArray(response.data)) {
@@ -1166,15 +1149,14 @@ export const getRateChartDataTeam = async (id:string,start_date:string, end_date
 export const countBetsEarnedTeam = async (id:string,start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countBetsEarnedTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
+       
       return {
         count: userData.count,
       };
@@ -1193,15 +1175,14 @@ export const countBetsEarnedTeam = async (id:string,start_date:string, end_date:
 export const countBetsEarnedFreeCreditsTeam = async (id:string,start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countBetsEarnedFreeCreditsTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
+       
       return {
         count: userData.count,
       };
@@ -1221,15 +1202,14 @@ export const countBetsEarnedFreeCreditsTeam = async (id:string,start_date:string
 export const totalWinsTeam = async (id:string,start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalWinsTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
+       
       return {
         count: userData.count,
       };
@@ -1250,15 +1230,14 @@ export const totalBalancePlayersTeam = async (id:string,start_date:string, end_d
   try {
 
     const response = await axios.post(`${API_URL}/admin/totalBalancePlayersTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
+       
       return {
         count: userData.count,
       };
@@ -1278,15 +1257,14 @@ export const totalCommissionsTeam = async (id:string,start_date:string, end_date
   try {
 
     const response = await axios.post(`${API_URL}/admin/totalCommissionsTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
+       
       return {
         count: userData.count,
       };
@@ -1306,9 +1284,8 @@ export const totalPlayersTeam = async (id:string,start_date:string, end_date:str
   try {
 
     const response = await axios.post(`${API_URL}/admin/totalPlayersTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -1333,15 +1310,14 @@ export const totalClientsTeam = async (id:string,start_date:string, end_date:str
   try {
 
     const response = await axios.post(`${API_URL}/admin/totalClientsTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
+       
       return {
         count: userData.count,
       };
@@ -1361,15 +1337,14 @@ export const totalCashinTeam = async (id:string,start_date:string, end_date:stri
   try {
 
     const response = await axios.post(`${API_URL}/admin/totalCashinTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
+       
       return {
         count: userData.count,
       };
@@ -1389,15 +1364,14 @@ export const totalCashOutTeam = async (id:string,start_date:string, end_date:str
   try {
 
     const response = await axios.post(`${API_URL}/admin/totalCashOutTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
+       
       return {
         count: userData.count,
       };
@@ -1423,9 +1397,8 @@ export const totalCashOutTeam = async (id:string,start_date:string, end_date:str
 export const getAnnouncements = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getAnnouncements`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -1445,10 +1418,10 @@ export const addAnnouncement = async (formData: FormData): Promise<boolean> => {
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/addAnnouncement',
           formData,
-          { headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${API_KEY}`, 
-          } }
+          {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
       );
 
       
@@ -1468,10 +1441,10 @@ export const updateAnnouncement = async (formData: FormData): Promise<boolean> =
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/updateAnnouncement',
           formData,
-          { headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${API_KEY}`,  
-          } }
+          {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
       );
 
       
@@ -1489,9 +1462,8 @@ export const updateAnnouncement = async (formData: FormData): Promise<boolean> =
 export const getTodayDraws = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getTodayDraws`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -1511,11 +1483,9 @@ export const getTodayDraws = async () => {
 export const getWebData = async (id: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getWebData`, { gameID: id },{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
-    console.log('Raw Response:', response.data);
 
     // This is already parsed JSON (Axios does it automatically)
     return response.data;
@@ -1535,10 +1505,10 @@ export const setResultsDraw = async (formData: FormData): Promise<boolean> => {
       const response = await axios.post(
           import.meta.env.VITE_DATABASE_URL+'/admin/setResultsDraw',
           formData,
-          { headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${API_KEY}`, 
-          } }
+          {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
       );
 
       
@@ -1563,7 +1533,6 @@ export const cashOutCashko = async (
 ) => {
   try {
     const timestamp = Date.now().toString();
-    console.log(timestamp);
     const clientNo = `PPCO${timestamp}`;
     const clientCode = import.meta.env.VITE_CLIENT_CODE;
     const privateKey = import.meta.env.VITE_PRIVATE_KEY;
@@ -1582,11 +1551,9 @@ export const cashOutCashko = async (
         sign,
         timestamp
       },{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
-      console.log(res.data);
       if (res.data && res.data.authenticated) {
         return { error: false };
       } else {
@@ -1611,9 +1578,8 @@ const generateSign = (clientCode: string, clientNo: string, latest_requestTimest
 export const getLogs = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getLogs`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -1631,9 +1597,8 @@ export const getLogs = async () => {
 export const getLogsByUser = async (userID: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getLogsByUser`, { userID},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (Array.isArray(response.data)) {
@@ -1651,9 +1616,8 @@ export const getLogsByUser = async (userID: string) => {
 export const getAuditLogs = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getAuditLogs`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (Array.isArray(response.data)) {
@@ -1670,9 +1634,8 @@ export const getAuditLogs = async () => {
 export const getBackups = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getBackups`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (Array.isArray(response.data)) {
@@ -1690,9 +1653,8 @@ export const getBackups = async () => {
 export const deleteBackup = async (userID: string) => {
   try {
     await axios.post(`${API_URL}/admin/deleteBackup`, { userID},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
   } catch (error) {
@@ -1704,9 +1666,8 @@ export const deleteBackup = async (userID: string) => {
 export const backupAndCleanupDBLOGS = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/backupAndCleanupDBLOGS`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     return response.data;
   } catch (error) {
@@ -1718,9 +1679,8 @@ export const backupAndCleanupDBLOGS = async () => {
 export const backupAndCleanupLOGS = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/backupAndCleanupLOGS`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     return response.data;
   } catch (error) {
@@ -1735,10 +1695,10 @@ export const createDraws = async (): Promise<boolean> => {
   {
       const response = await axios.get(
           import.meta.env.VITE_DATABASE_URL+'/admin/createDraws',
-          { headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${API_KEY}`, 
-          } }
+          {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      }
       );
 
       
@@ -1754,9 +1714,8 @@ export const createDraws = async (): Promise<boolean> => {
 export const getCommission = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getCommissions`,{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
 
     if (Array.isArray(response.data)) {
@@ -1773,9 +1732,8 @@ export const getCommission = async () => {
 export const cashinHourlyData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/cashinHourlyData`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -1797,9 +1755,8 @@ export const cashinHourlyData = async (start_date:string, end_date:string) => {
 export const getCashinData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getCashinData`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -1821,9 +1778,8 @@ export const getCashinData = async (start_date:string, end_date:string) => {
 export const cashoutHourlyData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/cashoutHourlyData`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -1845,9 +1801,8 @@ export const cashoutHourlyData = async (start_date:string, end_date:string) => {
 export const totalCashoutFromCommissions = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalCashoutFromCommissions`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -1871,9 +1826,8 @@ export const totalCashoutFromCommissions = async (start_date:string, end_date:st
 export const totalCashoutFromWinnings = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalCashoutFromWinnings`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -1897,9 +1851,8 @@ export const totalCashoutFromWinnings = async (start_date:string, end_date:strin
 export const getCashoutData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getCashoutData`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -1921,9 +1874,8 @@ export const getCashoutData = async (start_date:string, end_date:string) => {
 export const getPlayersData = async (start_date:string, end_date:string, status:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getPlayersData`, { start_date: start_date, end_date: end_date, status: status},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -1945,9 +1897,8 @@ export const getPlayersData = async (start_date:string, end_date:string, status:
 export const getBetsWinsPerTimeSlot = async (start_date:string, end_date:string, time_slot:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsWinsPerTimeSlot`, { start_date: start_date, end_date: end_date, time_slot: time_slot},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -1969,9 +1920,8 @@ export const getBetsWinsPerTimeSlot = async (start_date:string, end_date:string,
 export const getBetsWinsPerGameType = async (start_date:string, end_date:string, game_name:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsWinsPerGameType`, { start_date: start_date, end_date: end_date, game_name: game_name},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -1993,9 +1943,8 @@ export const getBetsWinsPerGameType = async (start_date:string, end_date:string,
 export const getBetsWins4D = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsWins4D`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2017,9 +1966,8 @@ export const getBetsWins4D = async (start_date:string, end_date:string) => {
 export const getBetsWinsPerGame = async (start_date:string, end_date:string, game_name:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsWinsPerGame`, { start_date: start_date, end_date: end_date, game_name: game_name},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2041,9 +1989,8 @@ export const getBetsWinsPerGame = async (start_date:string, end_date:string, gam
 export const getBetsData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsData`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2065,9 +2012,8 @@ export const getBetsData = async (start_date:string, end_date:string) => {
 export const getCommissionsData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getCommissionsData`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2089,9 +2035,8 @@ export const getCommissionsData = async (start_date:string, end_date:string) => 
 export const getWinnersData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getWinnersData`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2114,9 +2059,8 @@ export const totalPlayersActiveTeam = async (id:string,start_date:string, end_da
   try {
 
     const response = await axios.post(`${API_URL}/admin/totalPlayersActiveTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2140,12 +2084,11 @@ export const totalPlayersActiveTeam = async (id:string,start_date:string, end_da
 export const cashinHourlyDataTeam = async (start_date:string, end_date:string, id: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/cashinHourlyDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
-    console.log(response);
+     
     if (response.data) 
       {
       const userData = response.data;
@@ -2165,9 +2108,8 @@ export const cashinHourlyDataTeam = async (start_date:string, end_date:string, i
 export const getCashinDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getCashinDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2189,9 +2131,8 @@ export const getCashinDataTeam = async (start_date:string, end_date:string, id:s
 export const cashoutHourlyDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/cashoutHourlyDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2213,9 +2154,8 @@ export const cashoutHourlyDataTeam = async (start_date:string, end_date:string, 
 export const totalCashoutFromCommissionsTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalCashoutFromCommissionsTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2239,9 +2179,8 @@ export const totalCashoutFromCommissionsTeam = async (start_date:string, end_dat
 export const totalCashoutFromWinningsTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalCashoutFromWinningsTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2265,9 +2204,8 @@ export const totalCashoutFromWinningsTeam = async (start_date:string, end_date:s
 export const getCashoutDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getCashoutDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2289,15 +2227,14 @@ export const getCashoutDataTeam = async (start_date:string, end_date:string, id:
 export const totalPlayersInactiveTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalPlayersInactiveTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
+       
       return {
         count: userData.count,
       };
@@ -2316,9 +2253,8 @@ export const totalPlayersInactiveTeam = async (start_date:string, end_date:strin
 export const getPlayersDataTeam = async (start_date:string, end_date:string, status:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getPlayersDataTeam`, { start_date: start_date, end_date: end_date, status: status, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2340,15 +2276,14 @@ export const getPlayersDataTeam = async (start_date:string, end_date:string, sta
 export const countSelfBetsEarnedTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countSelfBetsEarnedTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
+       
       return {
         count: userData.count,
       };
@@ -2367,15 +2302,14 @@ export const countSelfBetsEarnedTeam = async (start_date:string, end_date:string
 export const countClientBetsEarnedTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countClientBetsEarnedTeam`, { start_date: start_date, end_date: end_date, userID:id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
       {
       const userData = response.data;
-      console.log(response);
+       
       return {
         count: userData.count,
       };
@@ -2394,9 +2328,8 @@ export const countClientBetsEarnedTeam = async (start_date:string, end_date:stri
 export const getBetsWinsPerTimeSlotTeam = async (start_date:string, end_date:string, time_slot:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsWinsPerTimeSlotTeam`, { start_date: start_date, end_date: end_date, time_slot: time_slot, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2418,9 +2351,8 @@ export const getBetsWinsPerTimeSlotTeam = async (start_date:string, end_date:str
 export const getBetsWinsPerGameTypeTeam = async (start_date:string, end_date:string, game_name:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsWinsPerGameTypeTeam`, { start_date: start_date, end_date: end_date, game_name: game_name, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2442,9 +2374,8 @@ export const getBetsWinsPerGameTypeTeam = async (start_date:string, end_date:str
 export const getBetsWins4DTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsWins4DTeam`, { start_date: start_date, end_date: end_date, userID:id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2466,9 +2397,8 @@ export const getBetsWins4DTeam = async (start_date:string, end_date:string, id:s
 export const getBetsWinsPerGameTeam = async (start_date:string, end_date:string, game_name:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsWinsPerGameTeam`, { start_date: start_date, end_date: end_date, game_name: game_name, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2490,9 +2420,8 @@ export const getBetsWinsPerGameTeam = async (start_date:string, end_date:string,
 export const getBetsDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2514,9 +2443,8 @@ export const getBetsDataTeam = async (start_date:string, end_date:string, id:str
 export const getCommissionsDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getCommissionsDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2538,9 +2466,8 @@ export const getCommissionsDataTeam = async (start_date:string, end_date:string,
 export const getWinnersDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getWinnersDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2562,9 +2489,8 @@ export const getWinnersDataTeam = async (start_date:string, end_date:string, id:
 export const getTotalCashinDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getTotalCashinDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2586,11 +2512,10 @@ export const getTotalCashinDataTeam = async (start_date:string, end_date:string,
 export const getTotalConversionDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getTotalConversionDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
-    console.log(response);
+     
     if (response.data) 
       {
       const userData = response.data;
@@ -2610,11 +2535,10 @@ export const getTotalConversionDataTeam = async (start_date:string, end_date:str
 export const getTotalBetsDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getTotalBetsDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
-    console.log(response);
+     
     if (response.data) 
       {
       const userData = response.data;
@@ -2634,9 +2558,8 @@ export const getTotalBetsDataTeam = async (start_date:string, end_date:string, i
 export const getTotalCashinData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getTotalCashinData`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
     
     if (response.data) 
@@ -2658,11 +2581,10 @@ export const getTotalCashinData = async (start_date:string, end_date:string) => 
 export const getTotalConversionData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getTotalConversionData`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
-    console.log(response);
+     
     if (response.data) 
       {
       const userData = response.data;
@@ -2682,11 +2604,10 @@ export const getTotalConversionData = async (start_date:string, end_date:string)
 export const getTotalBetsData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getTotalBetsData`, { start_date: start_date, end_date: end_date},{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
-    console.log(response);
+     
     if (response.data) 
       {
       const userData = response.data;
@@ -2706,11 +2627,10 @@ export const getTotalBetsData = async (start_date:string, end_date:string) => {
 export const getUserType = async () => {
   try {
     const response = await axios.post(`${API_URL}/admin/getUserType`, { },{
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        }
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
       });
-    console.log(response);
+     
     if (response.data) 
       {
       const userData = response.data;

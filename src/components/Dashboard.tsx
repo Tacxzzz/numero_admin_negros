@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {Users, CoinsIcon, BookCheck, BookHeart, Banknote, TrendingUp, DollarSign, Award } from "lucide-react";
 import { useAuth0 } from '@auth0/auth0-react';
-import { countBetsEarned, countBetsEarnedFreeCredits, getRateChartData, loginAdmin, totalBalancePlayers, totalCashin, totalCashOut, totalClients, totalCommissions, totalPlayers, totalPlayersActive, totalPlayersInactive, totalWins } from './api/apiCalls';
+import { countBetsEarned, countBetsEarnedFreeCredits, getRateChartData, loginAdmin, oneLoginAdmin, totalBalancePlayers, totalCashin, totalCashOut, totalClients, totalCommissions, totalPlayers, totalPlayersActive, totalPlayersInactive, totalWins } from './api/apiCalls';
 import { useEffect, useRef, useState } from "react";
 import { formatPeso } from "./utils/utils";
 import { Button } from "@/components/ui/button";
@@ -11,24 +11,9 @@ import { FinancialMetricsGrid } from "../components/financial-metrics-grid";
 
 export function Dashboard() {
 
-  const { user,getAccessTokenSilently , logout} = useAuth0();
+  const { isAuthenticated,user,getAccessTokenSilently , logout} = useAuth0();
   const initialStartDate = new Date();
-          initialStartDate.setDate(initialStartDate.getDate() - 20); // Subtract 20 days from the current date
-
-          const startDateDefault = new Intl.DateTimeFormat('en-GB', {
-            timeZone: 'Asia/Manila',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-          }).format(initialStartDate).split('/').reverse().join('-'); // Format the date as YYYY-MM-DD
-          
-          const endDateDefault = new Intl.DateTimeFormat('en-GB', {
-            timeZone: 'Asia/Manila',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-          }).format(new Date()).split('/').reverse().join('-');
-
+  initialStartDate.setDate(initialStartDate.getDate() - 20);
     const [loading, setLoading] = useState(true);
     const [userID, setUserID] = useState("none");
     const [dbUpdated, setDbUpdated] = useState(false);
@@ -45,10 +30,11 @@ export function Dashboard() {
     const [totalNonRegisteredPlayers, setTotalNonRegisteredPlayers] = useState(0);
     const [totalCashins, setTotalCashins] = useState(0);
     const [totalCashouts, setTotalCashouts] = useState(0);
-    const [startDate, setStartDate] = useState<string>(startDateDefault);
-    const [endDate, setEndDate] = useState<string>(endDateDefault);
+    const [startDate, setStartDate] = useState<string>("");
+    const [endDate, setEndDate] = useState<string>("");
     const [rateChartData, setRateChartData] = useState<any[]>([]);
     const [permissionsString, setPermissionsString] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState("");
 
     const hasInitializedRef = useRef(false);
 
@@ -98,9 +84,40 @@ export function Dashboard() {
     fetchRateChartData(); // Fetch data when startDate or endDate changes
   }, [startDate, endDate]);
 
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+    if (isLoggedIn !== "true") {
+      
+      const handleLogin = async () => {
+        const login= await oneLoginAdmin(user,getAccessTokenSilently);
+
+        if(!login.dbUpdate)
+        {
+          alert("UNAUTHORIZED USER!");
+          localStorage.setItem("isLoggedIn", "false");
+          setIsLoggedIn("false");
+          logout({ logoutParams: { returnTo: window.location.origin } });
+        }
+        else {
+          localStorage.setItem("isLoggedIn", "true");
+          setIsLoggedIn("true");
+        }
+        
+      }
+
+      handleLogin();
+    }
+  }, [user])
 
   useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+    if (isLoggedIn === 'false') {
+      return;
+    }
+    
     if (user && !dbUpdated) {
+      console.log('-fetching');
       const handleUpdate = async () => {
         const dataUpdated= await loginAdmin(user,getAccessTokenSilently);
         if(dataUpdated.dbUpdate)
@@ -108,11 +125,30 @@ export function Dashboard() {
           setDbUpdated(dataUpdated.dbUpdate);
           setUserID(dataUpdated.userID);
           setPermissionsString(JSON.parse(dataUpdated.permissions));
+
+          const startDateDefault = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Asia/Manila',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }).format(initialStartDate).split('/').reverse().join('-'); // Format the date as YYYY-MM-DD
+          
+          const endDateDefault = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Asia/Manila',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }).format(new Date()).split('/').reverse().join('-');
+
+          setStartDate(startDateDefault);
+          setEndDate(endDateDefault);
+
           setLoading(false);
         }
         else
         {
           alert("UNAUTHORIZED USER!");
+          localStorage.setItem("isLoggedIn", "false");
           logout({ logoutParams: { returnTo: window.location.origin } });
         }
         
@@ -120,7 +156,7 @@ export function Dashboard() {
       handleUpdate();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [isLoggedIn]);
 
   if (loading ) {
     return <div>...</div>;

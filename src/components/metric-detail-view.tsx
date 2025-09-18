@@ -246,7 +246,6 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
 
     if (name === "type") {
       const selectedUserType = userType.find((option) => option.type === value);
-      console.log(selectedUserType);
       setSelectedGameBet((prev) => ({
         ...prev,
         type: selectedUserType.type,
@@ -260,8 +259,6 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
     } else {
       setSelectedGameBet((prev) => ({ ...prev, [name]: value }));
     }
-    console.log('updated data:');
-    console.log(selectedGameBet);
   };
 
   useEffect(() => {
@@ -1334,6 +1331,7 @@ export function MetricDetailView() {
             setAdminChoice(adminData);
           } else {
             alert("UNAUTHORIZED USER!");
+            localStorage.setItem("isLoggedIn", "false");
             logout({ logoutParams: { returnTo: window.location.origin } });
           }
         };

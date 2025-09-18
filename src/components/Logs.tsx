@@ -43,6 +43,7 @@ export function Logs() {
             setFilteredGamebets(gamesData);
           } else {
             alert("UNAUTHORIZED USER!");
+            localStorage.setItem("isLoggedIn", "false");
             logout({ logoutParams: { returnTo: window.location.origin } });
           }
         } catch (error) {
