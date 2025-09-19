@@ -48,8 +48,7 @@ export const oneLoginAdmin = async (user: any , getAccessTokenSilently: any) => 
         headers: { "Content-Type": "application/json" }
       }
     );
-
-    console.log('logging in');
+    
     if (response.data && response.data.authenticated) {
         const userData = response.data;
         return {
@@ -153,7 +152,7 @@ export const addCombinationLimit = async (formData: FormData): Promise<boolean> 
           formData,
           {
         withCredentials: true,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "multipart/form-data" }
       }
       );
 
@@ -176,7 +175,7 @@ export const updateCombinationLimit = async (formData: FormData): Promise<boolea
           formData,
           {
         withCredentials: true,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "multipart/form-data" }
       }
       );
 
@@ -310,7 +309,7 @@ export const updateGame = async (formData: FormData): Promise<boolean> => {
           formData,
           {
         withCredentials: true,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "multipart/form-data" }
       }
       );
 
@@ -335,7 +334,7 @@ export const updateGameType = async (formData: FormData): Promise<boolean> => {
           formData,
           {
         withCredentials: true,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "multipart/form-data" }
       }
       );
 
@@ -357,7 +356,7 @@ export const updateUserType = async (formData: FormData): Promise<boolean> => {
           formData,
           {
         withCredentials: true,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "multipart/form-data" }
       }
       );
 
@@ -541,7 +540,7 @@ export const updateClient = async (formData: FormData): Promise<boolean> => {
           formData,
           {
         withCredentials: true,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "multipart/form-data" }
       }
       );
 
@@ -564,7 +563,7 @@ export const updateAdmin = async (formData: FormData): Promise<boolean> => {
           formData,
           {
         withCredentials: true,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "multipart/form-data" }
       }
       );
 
@@ -631,7 +630,7 @@ export const addBalance = async (formData: FormData): Promise<boolean> => {
           formData,
           {
         withCredentials: true,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "multipart/form-data" }
       }
       );
 
@@ -653,11 +652,11 @@ export const updatePlayer = async (formData: FormData): Promise<boolean> => {
           formData,
           {
         withCredentials: true,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "multipart/form-data" }
       }
       );
-
-      
+      console.log(formData);
+      console.log(response);
       return response.data.authenticated;
   } 
   catch (error) 
@@ -675,7 +674,7 @@ export const updatePlayerTeam = async (formData: FormData): Promise<boolean> => 
           formData,
           {
         withCredentials: true,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "multipart/form-data" }
       }
       );
 
@@ -1420,7 +1419,7 @@ export const addAnnouncement = async (formData: FormData): Promise<boolean> => {
           formData,
           {
         withCredentials: true,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "multipart/form-data" }
       }
       );
 
@@ -1443,7 +1442,7 @@ export const updateAnnouncement = async (formData: FormData): Promise<boolean> =
           formData,
           {
         withCredentials: true,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "multipart/form-data" }
       }
       );
 
