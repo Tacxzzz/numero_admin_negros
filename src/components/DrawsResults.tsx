@@ -12,7 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { backupAndCleanupDBLOGS, backupAndCleanupLOGS, createDraws, getDraws, getTodayDraws, getWebData, setResultsDraw } from "./api/apiCalls";
+import { backupAndCleanupDBLOGS, backupAndCleanupLOGS, createDraws, getDraws, getTodayDraws, getWebData } from "./api/apiCalls";
 import { useAuth0 } from '@auth0/auth0-react';
 import { loginAdmin,getGames, updateGame, getGamesTypes, updateGameType } from './api/apiCalls';
 import { formatPeso, getFormattedDate, getTransCode } from './utils/utils';
@@ -97,48 +97,48 @@ export function DrawsResults() {
 
   const formattedDate = getFormattedDate();
 
-  const refetchResults = async (gameId) => {
-    try {
+  // const refetchResults = async (gameId) => {
+  //   try {
 
-      console.log("IS THIS CALLED?");
-      const data = await getWebData(gameId);
-      const newResults = data[gameId] || [];
+  //     console.log("IS THIS CALLED?");
+  //     const data = await getWebData(gameId);
+  //     const newResults = data[gameId] || [];
   
-      let updatedGame = null;
-      console.log("IS THIS CALLED?"+newResults);
-      setDraws((prevDraws) => {
-        return prevDraws.map((game) => {
-          if (game.id === gameId) {
-            const oldResults = game.result || [];
-            const nonEmptyNewResults = newResults.filter(
-              (r) => r.numbers && r.numbers.trim() !== ""
-            );
+  //     let updatedGame = null;
+  //     console.log("IS THIS CALLED?"+newResults);
+  //     setDraws((prevDraws) => {
+  //       return prevDraws.map((game) => {
+  //         if (game.id === gameId) {
+  //           const oldResults = game.result || [];
+  //           const nonEmptyNewResults = newResults.filter(
+  //             (r) => r.numbers && r.numbers.trim() !== ""
+  //           );
   
-            const mergedResultsMap = new Map();
-            oldResults.forEach((r) => mergedResultsMap.set(r.time, r));
-            nonEmptyNewResults.forEach((r) => mergedResultsMap.set(r.time, r));
+  //           const mergedResultsMap = new Map();
+  //           oldResults.forEach((r) => mergedResultsMap.set(r.time, r));
+  //           nonEmptyNewResults.forEach((r) => mergedResultsMap.set(r.time, r));
   
-            const mergedResults = Array.from(mergedResultsMap.values()).sort(
-              (a, b) => a.time.localeCompare(b.time)
-            );
+  //           const mergedResults = Array.from(mergedResultsMap.values()).sort(
+  //             (a, b) => a.time.localeCompare(b.time)
+  //           );
   
-            updatedGame = {
-              ...game,
-              result: mergedResults,
-            };
+  //           updatedGame = {
+  //             ...game,
+  //             result: mergedResults,
+  //           };
   
-            return updatedGame;
-          }
-          return game;
-        });
-      });
+  //           return updatedGame;
+  //         }
+  //         return game;
+  //       });
+  //     });
   
-      return updatedGame;
-    } catch (err) {
-      console.error("Failed to refetch draw results:", err);
-      return null;
-    }
-  };
+  //     return updatedGame;
+  //   } catch (err) {
+  //     console.error("Failed to refetch draw results:", err);
+  //     return null;
+  //   }
+  // };
   
   
   
@@ -216,7 +216,7 @@ export function DrawsResults() {
             </TableRow>
           </TableHeader>
           <TableBody>
-                {draws.map((game) =>
+                {/* {draws.map((game) =>
                   game.result?.map((res, index) => {
                     const key = `${game.id}-${res.time}`;
                     const alreadyTriggered = triggeredMap.current.has(key);
@@ -318,7 +318,7 @@ export function DrawsResults() {
 
                     );
                   })
-                )}
+                )} */}
               </TableBody>
 
         </Table>

@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuth0 } from '@auth0/auth0-react';
-import { loginAdmin, getBetsHistory, getClientWinners, cashOutCashko } from './api/apiCalls';
+import { loginAdmin, getBetsHistory, getClientWinners } from './api/apiCalls';
 import { formatPeso } from './utils/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
@@ -91,38 +91,38 @@ export function NonRegisteredPlayers() {
     setIsModalOpen(true);
   };
 
-  const handleSave = async () => {
-      setLoading(true);
-      setIsModalOpen(false);
+  // const handleSave = async () => {
+  //     setLoading(true);
+  //     setIsModalOpen(false);
   
   
-      const data = await cashOutCashko(
-        selectedGameBet.id,
-        selectedGameBet.amount,
-        selectedGameBet.full_name,
-        selectedGameBet.bank,
-        selectedGameBet.account);
+  //     const data = await cashOutCashko(
+  //       selectedGameBet.id,
+  //       selectedGameBet.amount,
+  //       selectedGameBet.full_name,
+  //       selectedGameBet.bank,
+  //       selectedGameBet.account);
 
-      console.log(data);
-      if (data.error) 
-      {
-        alert(data.message);
-      } 
-      else 
-      {
-        alert("Payout request created successfully.");
+  //     console.log(data);
+  //     if (data.error) 
+  //     {
+  //       alert(data.message);
+  //     } 
+  //     else 
+  //     {
+  //       alert("Payout request created successfully.");
         
-      }
+  //     }
 
 
-      const gamesData = await getClientWinners();
-      setGamebets(gamesData);
-      setFilteredGamebets(gamesData);
-      setSortedGamebets(gamesData); // Initialize sorted data
+  //     const gamesData = await getClientWinners();
+  //     setGamebets(gamesData);
+  //     setFilteredGamebets(gamesData);
+  //     setSortedGamebets(gamesData); // Initialize sorted data
       
-      setLoading(false);
+  //     setLoading(false);
       
-    };
+  //   };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -196,7 +196,7 @@ export function NonRegisteredPlayers() {
                     <TableCell className="text-center">{product.bank}</TableCell>
                     <TableCell className="text-center">{product.account}</TableCell>
                     <TableCell className="text-center">
-                    {
+                    {/* {
                     product.status ==="syncing" && (
                       <>
                        <Button
@@ -207,7 +207,7 @@ export function NonRegisteredPlayers() {
                       </Button>
                       </>
                     )
-                    }
+                    } */}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -227,7 +227,7 @@ export function NonRegisteredPlayers() {
               <DialogTitle className="text-xl text-blue-600">Process Payout for client</DialogTitle>
             </DialogHeader>
             <div className="space-y-3">
-              <form onSubmit={handleSave}>
+              <form>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Full Name

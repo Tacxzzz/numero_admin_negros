@@ -1498,79 +1498,79 @@ export const getWebData = async (id: string) => {
 
 
 
-export const setResultsDraw = async (formData: FormData): Promise<boolean> => {
-  try 
-  {
-      const response = await axios.post(
-          import.meta.env.VITE_DATABASE_URL+'/admin/setResultsDraw',
-          formData,
-          {
-        withCredentials: true,
-        headers: { "Content-Type": "application/json" }
-      }
-      );
+// export const setResultsDraw = async (formData: FormData): Promise<boolean> => {
+//   try 
+//   {
+//       const response = await axios.post(
+//           import.meta.env.VITE_DATABASE_URL+'/admin/setResultsDraw',
+//           formData,
+//           {
+//         withCredentials: true,
+//         headers: { "Content-Type": "application/json" }
+//       }
+//       );
 
       
-      return response.data.authenticated;
-  } 
-  catch (error) 
-  {
-      console.error('Error authenticating user:', error);
-      return false;
-  }
-};
+//       return response.data.authenticated;
+//   } 
+//   catch (error) 
+//   {
+//       console.error('Error authenticating user:', error);
+//       return false;
+//   }
+// };
 
 
 
 
-export const cashOutCashko = async (
-  transID: string,
-  winnings: string,
-  full_name: string,
-  bank: string,
-  account: string
-) => {
-  try {
-    const timestamp = Date.now().toString();
-    const clientNo = `PPCO${timestamp}`;
-    const clientCode = import.meta.env.VITE_CLIENT_CODE;
-    const privateKey = import.meta.env.VITE_PRIVATE_KEY;
-    const callbackurl = `${API_URL}/main/requestCashOutCashko`;
-    const sign = generateSign(clientCode, clientNo, timestamp, privateKey);
+// export const cashOutCashko = async (
+//   transID: string,
+//   winnings: string,
+//   full_name: string,
+//   bank: string,
+//   account: string
+// ) => {
+//   try {
+//     const timestamp = Date.now().toString();
+//     const clientNo = `PPCO${timestamp}`;
+//     const clientCode = import.meta.env.VITE_CLIENT_CODE;
+//     const privateKey = import.meta.env.VITE_PRIVATE_KEY;
+//     const callbackurl = `${API_URL}/main/requestCashOutCashko`;
+//     const sign = generateSign(clientCode, clientNo, timestamp, privateKey);
 
-    const res = await axios.post(`${API_URL}/admin/cashOutRequest`, {
-        transID,
-        clientNo,
-        winnings,
-        full_name,
-        bank,
-        account,
-        clientCode,
-        callbackurl,
-        sign,
-        timestamp
-      },{
-        withCredentials: true,
-        headers: { "Content-Type": "application/json" }
-      });
-      if (res.data && res.data.authenticated) {
-        return { error: false };
-      } else {
-        const message = res.data?.error || "User data is empty or invalid.";
-        return { error: true, message };
-      }
-  } catch (error) {
-    console.error("Cashko request failed:", error);
-    return { error: true , message:"Cashko request failed." };
-  }
-};
+//     const res = await axios.post(`${API_URL}/admin/cashOutRequest`, {
+//         transID,
+//         clientNo,
+//         winnings,
+//         full_name,
+//         bank,
+//         account,
+//         clientCode,
+//         callbackurl,
+//         sign,
+//         timestamp
+//       },{
+//         withCredentials: true,
+//         headers: { "Content-Type": "application/json" }
+//       });
+//       if (res.data && res.data.authenticated) {
+//         return { error: false };
+//       } else {
+//         const message = res.data?.error || "User data is empty or invalid.";
+//         return { error: true, message };
+//       }
+//   } catch (error) {
+//     console.error("Cashko request failed:", error);
+//     return { error: true , message:"Cashko request failed." };
+//   }
+// };
 
 
-const generateSign = (clientCode: string, clientNo: string, latest_requestTimestamp: string, privateKey: string) => {
-  const signString = `${clientCode}&BANK&PHP&${clientNo}&${latest_requestTimestamp}${privateKey}`;
-  const resultHash = CryptoJS.MD5(signString).toString(CryptoJS.enc.Hex);
-  return resultHash;
-};
+// const generateSign = (clientCode: string, clientNo: string, latest_requestTimestamp: string, privateKey: string) => {
+//   const signString = `${clientCode}&BANK&PHP&${clientNo}&${latest_requestTimestamp}${privateKey}`;
+//   const resultHash = CryptoJS.MD5(signString).toString(CryptoJS.enc.Hex);
+//   return resultHash;
+// };
 
 
 
