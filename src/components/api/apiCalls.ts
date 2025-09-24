@@ -5,8 +5,13 @@ const API_URL = import.meta.env.VITE_DATABASE_URL;
 const rawToken = import.meta.env.VITE_API_KEY;
 const API_KEY = btoa(rawToken);
 
-
-
+axios.interceptors.request.use((config) => {
+  const token = sessionStorage.getItem("authToken"); // or sessionStorage
+  if (token) {
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
+  return config;
+});
 
 export const loginAdmin = async (user: any , getAccessTokenSilently: any) => {
   try {
@@ -15,7 +20,7 @@ export const loginAdmin = async (user: any , getAccessTokenSilently: any) => {
       `${API_URL}/admin/fetchUserData`,
       { email: user.email },
       {
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       }
     );
@@ -37,24 +42,25 @@ export const loginAdmin = async (user: any , getAccessTokenSilently: any) => {
   } 
 };
 
-export const oneLoginAdmin = async (user: any , getAccessTokenSilently: any) => {
+export const oneLoginAdmin = async (getAccessTokenSilently: any) => {
   try {
     const token = await getAccessTokenSilently();
     const response = await axios.post(
       `${API_URL}/admin/loginAdmin`,
-      { email: user.email },
+      { token: token },
       {
-        withCredentials: true,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }
       }
     );
-    
+
+    console.log('logging in');
     if (response.data && response.data.authenticated) {
         const userData = response.data;
         return {
           userID: userData.userID,
           permissions: userData.permissions,
           dbUpdate: true,
+          authToken: userData.authToken
         };
       } else {
         console.warn("User data is empty or invalid.");
@@ -70,7 +76,7 @@ export const fetchUserData = async (id: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getUserData`, { userID: id },
       {
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -93,7 +99,7 @@ export const fetchUserData = async (id: string) => {
 export const getGames = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getGames`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -111,7 +117,7 @@ export const getGames = async () => {
 export const getGamesData = async (userID: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getGamesData`, { userID},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -129,7 +135,7 @@ export const getGamesData = async (userID: string) => {
 export const getCombinationLimits = async (userID: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getCombinationLimits`, { userID},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -151,7 +157,7 @@ export const addCombinationLimit = async (formData: FormData): Promise<boolean> 
           import.meta.env.VITE_DATABASE_URL+'/admin/addCombinationLimit',
           formData,
           {
-        withCredentials: true,
+        
         headers: { "Content-Type": "multipart/form-data" }
       }
       );
@@ -174,7 +180,7 @@ export const updateCombinationLimit = async (formData: FormData): Promise<boolea
           import.meta.env.VITE_DATABASE_URL+'/admin/updateCombinationLimit',
           formData,
           {
-        withCredentials: true,
+        
         headers: { "Content-Type": "multipart/form-data" }
       }
       );
@@ -192,7 +198,7 @@ export const updateCombinationLimit = async (formData: FormData): Promise<boolea
 export const getGamesTypes = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getGamesTypes`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -211,7 +217,7 @@ export const getGamesTypes = async () => {
 export const getDraws = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getDraws`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -231,7 +237,7 @@ export const getTeamTransactionsCashin = async (id:string) => {
   try {
 
     const response = await axios.post(`${API_URL}/admin/getTeamTransactionsCashin`, { userID: id },{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     if (Array.isArray(response.data)) {
@@ -249,7 +255,7 @@ export const getTeamTransactionsCashout = async (id:string) => {
   try {
 
     const response = await axios.post(`${API_URL}/admin/getTeamTransactionsCashout`, { userID: id },{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     if (Array.isArray(response.data)) {
@@ -266,7 +272,7 @@ export const getTeamTransactionsCashout = async (id:string) => {
 export const getTransactionsCashin = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getTransactionsCashin`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -285,7 +291,7 @@ export const getTransactionsCashin = async () => {
 export const getTransactionsCashout = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getTransactionsCashout`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -308,7 +314,7 @@ export const updateGame = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/updateGame',
           formData,
           {
-        withCredentials: true,
+        
         headers: { "Content-Type": "multipart/form-data" }
       }
       );
@@ -333,7 +339,7 @@ export const updateGameType = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/updateGameType',
           formData,
           {
-        withCredentials: true,
+        
         headers: { "Content-Type": "multipart/form-data" }
       }
       );
@@ -355,7 +361,7 @@ export const updateUserType = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/updateUserType',
           formData,
           {
-        withCredentials: true,
+        
         headers: { "Content-Type": "multipart/form-data" }
       }
       );
@@ -373,7 +379,7 @@ export const updateUserType = async (formData: FormData): Promise<boolean> => {
 export const getBetsHistory = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getBetsHistory`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -390,7 +396,7 @@ export const getBetsHistory = async () => {
 export const getClientWinners = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getClientWinners`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -408,7 +414,7 @@ export const getClientWinners = async () => {
 export const getBetsHistoryWinners = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getBetsHistoryWinners`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -427,7 +433,7 @@ export const getBetsHistoryWinners = async () => {
 export const getPlayersAdmin = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getPlayersAdmin`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -445,7 +451,7 @@ export const getPlayersAdmin = async () => {
 export const getPlayersAdminChoice = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getPlayersAdminChoice`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -462,7 +468,7 @@ export const getPlayersAdminChoice = async () => {
 export const getPlayers = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getPlayers`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -480,7 +486,7 @@ export const getPlayers = async () => {
 export const getPlayersTeam = async (id: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getPlayersTeam`, { userID: id },{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -498,7 +504,7 @@ export const getPlayersTeam = async (id: string) => {
 export const getPlayersAgents = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getPlayersAgents`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -517,7 +523,7 @@ export const getPlayersAgents = async () => {
 export const getClients = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getClients`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -539,7 +545,7 @@ export const updateClient = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/updateClient',
           formData,
           {
-        withCredentials: true,
+        
         headers: { "Content-Type": "multipart/form-data" }
       }
       );
@@ -562,7 +568,7 @@ export const updateAdmin = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/updateAdmin',
           formData,
           {
-        withCredentials: true,
+        
         headers: { "Content-Type": "multipart/form-data" }
       }
       );
@@ -584,7 +590,7 @@ export const revokeAccess = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/revokeAccess',
           formData,
           {
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       }
       );
@@ -607,7 +613,7 @@ export const allowAccess = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/allowAccess',
           formData,
           {
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       }
       );
@@ -629,7 +635,7 @@ export const addBalance = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/addBalance',
           formData,
           {
-        withCredentials: true,
+        
         headers: { "Content-Type": "multipart/form-data" }
       }
       );
@@ -651,7 +657,7 @@ export const updatePlayer = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/updatePlayer',
           formData,
           {
-        withCredentials: true,
+        
         headers: { "Content-Type": "multipart/form-data" }
       }
       );
@@ -673,7 +679,7 @@ export const updatePlayerTeam = async (formData: FormData): Promise<boolean> => 
           import.meta.env.VITE_DATABASE_URL+'/admin/updatePlayerTeam',
           formData,
           {
-        withCredentials: true,
+        
         headers: { "Content-Type": "multipart/form-data" }
       }
       );
@@ -692,7 +698,7 @@ export const updatePlayerTeam = async (formData: FormData): Promise<boolean> => 
 export const getLevel1Referrals = async (id: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getLevel1Referrals`, { userID: id },{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     if (Array.isArray(response.data)) {
@@ -712,7 +718,7 @@ export const getLevel1Referrals = async (id: string) => {
 export const getLevel1ReferralsCount = async (id: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getLevel1ReferralsCount`, { userID: id },{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     if (response.data) 
@@ -737,7 +743,7 @@ export const getLevel1ReferralsCount = async (id: string) => {
 export const getLevel2ReferralsCount = async (id: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getLevel2ReferralsCount`, { userID: id },{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     if (response.data) 
@@ -762,7 +768,7 @@ export const getLevel2ReferralsCount = async (id: string) => {
 export const getRateChartData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getRateChartData`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     if (Array.isArray(response.data)) {
@@ -781,7 +787,7 @@ export const getRateChartData = async (start_date:string, end_date:string) => {
 export const countBetsEarned = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countBetsEarned`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -806,7 +812,7 @@ export const countBetsEarned = async (start_date:string, end_date:string) => {
 export const countBetsEarnedFreeCredits = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countBetsEarnedFreeCredits`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -831,7 +837,7 @@ export const countBetsEarnedFreeCredits = async (start_date:string, end_date:str
 export const countSelfBetsEarned = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countSelfBetsEarned`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -856,7 +862,7 @@ export const countSelfBetsEarned = async (start_date:string, end_date:string) =>
 export const countClientBetsEarned = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countClientBetsEarned`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -881,7 +887,7 @@ export const countClientBetsEarned = async (start_date:string, end_date:string) 
 export const totalWins = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalWins`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -907,7 +913,7 @@ export const totalWins = async (start_date:string, end_date:string) => {
 export const totalBalancePlayers = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalBalancePlayers`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -932,7 +938,7 @@ export const totalBalancePlayers = async (start_date:string, end_date:string) =>
 export const totalCommissions = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalCommissions`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -957,7 +963,7 @@ export const totalCommissions = async (start_date:string, end_date:string) => {
 export const totalPlayers = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalPlayers`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -982,7 +988,7 @@ export const totalPlayers = async (start_date:string, end_date:string) => {
 export const totalPlayersActive = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalPlayersActive`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1008,7 +1014,7 @@ export const totalPlayersActive = async (start_date:string, end_date:string) => 
 export const totalPlayersInactive = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalPlayersInactive`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1034,7 +1040,7 @@ export const totalPlayersInactive = async (start_date:string, end_date:string) =
 export const totalClients = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalClients`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1061,7 +1067,7 @@ export const totalClients = async (start_date:string, end_date:string) => {
 export const totalCashin = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalCashin`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1088,7 +1094,7 @@ export const totalCashin = async (start_date:string, end_date:string) => {
 export const totalCashOut = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalCashOut`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1129,7 +1135,7 @@ export const totalCashOut = async (start_date:string, end_date:string) => {
 export const getRateChartDataTeam = async (id:string,start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getRateChartDataTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1148,7 +1154,7 @@ export const getRateChartDataTeam = async (id:string,start_date:string, end_date
 export const countBetsEarnedTeam = async (id:string,start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countBetsEarnedTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1174,7 +1180,7 @@ export const countBetsEarnedTeam = async (id:string,start_date:string, end_date:
 export const countBetsEarnedFreeCreditsTeam = async (id:string,start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countBetsEarnedFreeCreditsTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1201,7 +1207,7 @@ export const countBetsEarnedFreeCreditsTeam = async (id:string,start_date:string
 export const totalWinsTeam = async (id:string,start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalWinsTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1229,7 +1235,7 @@ export const totalBalancePlayersTeam = async (id:string,start_date:string, end_d
   try {
 
     const response = await axios.post(`${API_URL}/admin/totalBalancePlayersTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1256,7 +1262,7 @@ export const totalCommissionsTeam = async (id:string,start_date:string, end_date
   try {
 
     const response = await axios.post(`${API_URL}/admin/totalCommissionsTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1283,7 +1289,7 @@ export const totalPlayersTeam = async (id:string,start_date:string, end_date:str
   try {
 
     const response = await axios.post(`${API_URL}/admin/totalPlayersTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1309,7 +1315,7 @@ export const totalClientsTeam = async (id:string,start_date:string, end_date:str
   try {
 
     const response = await axios.post(`${API_URL}/admin/totalClientsTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1336,7 +1342,7 @@ export const totalCashinTeam = async (id:string,start_date:string, end_date:stri
   try {
 
     const response = await axios.post(`${API_URL}/admin/totalCashinTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1363,7 +1369,7 @@ export const totalCashOutTeam = async (id:string,start_date:string, end_date:str
   try {
 
     const response = await axios.post(`${API_URL}/admin/totalCashOutTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1396,7 +1402,7 @@ export const totalCashOutTeam = async (id:string,start_date:string, end_date:str
 export const getAnnouncements = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getAnnouncements`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -1418,7 +1424,7 @@ export const addAnnouncement = async (formData: FormData): Promise<boolean> => {
           import.meta.env.VITE_DATABASE_URL+'/admin/addAnnouncement',
           formData,
           {
-        withCredentials: true,
+        
         headers: { "Content-Type": "multipart/form-data" }
       }
       );
@@ -1441,7 +1447,7 @@ export const updateAnnouncement = async (formData: FormData): Promise<boolean> =
           import.meta.env.VITE_DATABASE_URL+'/admin/updateAnnouncement',
           formData,
           {
-        withCredentials: true,
+        
         headers: { "Content-Type": "multipart/form-data" }
       }
       );
@@ -1461,7 +1467,7 @@ export const updateAnnouncement = async (formData: FormData): Promise<boolean> =
 export const getTodayDraws = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getTodayDraws`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -1482,7 +1488,7 @@ export const getTodayDraws = async () => {
 export const getWebData = async (id: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getWebData`, { gameID: id },{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -1505,7 +1511,7 @@ export const getWebData = async (id: string) => {
 //           import.meta.env.VITE_DATABASE_URL+'/admin/setResultsDraw',
 //           formData,
 //           {
-//         withCredentials: true,
+//         
 //         headers: { "Content-Type": "application/json" }
 //       }
 //       );
@@ -1550,7 +1556,7 @@ export const getWebData = async (id: string) => {
 //         sign,
 //         timestamp
 //       },{
-//         withCredentials: true,
+//         
 //         headers: { "Content-Type": "application/json" }
 //       });
 //       if (res.data && res.data.authenticated) {
@@ -1577,7 +1583,7 @@ export const getWebData = async (id: string) => {
 export const getLogs = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getLogs`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -1596,7 +1602,7 @@ export const getLogs = async () => {
 export const getLogsByUser = async (userID: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getLogsByUser`, { userID},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1615,7 +1621,7 @@ export const getLogsByUser = async (userID: string) => {
 export const getAuditLogs = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getAuditLogs`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1633,7 +1639,7 @@ export const getAuditLogs = async () => {
 export const getBackups = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getBackups`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1652,7 +1658,7 @@ export const getBackups = async () => {
 export const deleteBackup = async (userID: string) => {
   try {
     await axios.post(`${API_URL}/admin/deleteBackup`, { userID},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1665,7 +1671,7 @@ export const deleteBackup = async (userID: string) => {
 export const backupAndCleanupDBLOGS = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/backupAndCleanupDBLOGS`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     return response.data;
@@ -1678,7 +1684,7 @@ export const backupAndCleanupDBLOGS = async () => {
 export const backupAndCleanupLOGS = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/backupAndCleanupLOGS`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     return response.data;
@@ -1695,7 +1701,7 @@ export const createDraws = async (): Promise<boolean> => {
       const response = await axios.get(
           import.meta.env.VITE_DATABASE_URL+'/admin/createDraws',
           {
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       }
       );
@@ -1713,7 +1719,7 @@ export const createDraws = async (): Promise<boolean> => {
 export const getCommission = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/getCommissions`,{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
 
@@ -1731,7 +1737,7 @@ export const getCommission = async () => {
 export const cashinHourlyData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/cashinHourlyData`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1754,7 +1760,7 @@ export const cashinHourlyData = async (start_date:string, end_date:string) => {
 export const getCashinData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getCashinData`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1777,7 +1783,7 @@ export const getCashinData = async (start_date:string, end_date:string) => {
 export const cashoutHourlyData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/cashoutHourlyData`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1800,7 +1806,7 @@ export const cashoutHourlyData = async (start_date:string, end_date:string) => {
 export const totalCashoutFromCommissions = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalCashoutFromCommissions`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1825,7 +1831,7 @@ export const totalCashoutFromCommissions = async (start_date:string, end_date:st
 export const totalCashoutFromWinnings = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalCashoutFromWinnings`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1850,7 +1856,7 @@ export const totalCashoutFromWinnings = async (start_date:string, end_date:strin
 export const getCashoutData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getCashoutData`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1873,7 +1879,7 @@ export const getCashoutData = async (start_date:string, end_date:string) => {
 export const getPlayersData = async (start_date:string, end_date:string, status:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getPlayersData`, { start_date: start_date, end_date: end_date, status: status},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1896,7 +1902,7 @@ export const getPlayersData = async (start_date:string, end_date:string, status:
 export const getBetsWinsPerTimeSlot = async (start_date:string, end_date:string, time_slot:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsWinsPerTimeSlot`, { start_date: start_date, end_date: end_date, time_slot: time_slot},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1919,7 +1925,7 @@ export const getBetsWinsPerTimeSlot = async (start_date:string, end_date:string,
 export const getBetsWinsPerGameType = async (start_date:string, end_date:string, game_name:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsWinsPerGameType`, { start_date: start_date, end_date: end_date, game_name: game_name},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1942,7 +1948,7 @@ export const getBetsWinsPerGameType = async (start_date:string, end_date:string,
 export const getBetsWins4D = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsWins4D`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1965,7 +1971,7 @@ export const getBetsWins4D = async (start_date:string, end_date:string) => {
 export const getBetsWinsPerGame = async (start_date:string, end_date:string, game_name:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsWinsPerGame`, { start_date: start_date, end_date: end_date, game_name: game_name},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -1988,7 +1994,7 @@ export const getBetsWinsPerGame = async (start_date:string, end_date:string, gam
 export const getBetsData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsData`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2011,7 +2017,7 @@ export const getBetsData = async (start_date:string, end_date:string) => {
 export const getCommissionsData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getCommissionsData`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2034,7 +2040,7 @@ export const getCommissionsData = async (start_date:string, end_date:string) => 
 export const getWinnersData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getWinnersData`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2058,7 +2064,7 @@ export const totalPlayersActiveTeam = async (id:string,start_date:string, end_da
   try {
 
     const response = await axios.post(`${API_URL}/admin/totalPlayersActiveTeam`, { userID: id ,start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2083,7 +2089,7 @@ export const totalPlayersActiveTeam = async (id:string,start_date:string, end_da
 export const cashinHourlyDataTeam = async (start_date:string, end_date:string, id: string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/cashinHourlyDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2107,7 +2113,7 @@ export const cashinHourlyDataTeam = async (start_date:string, end_date:string, i
 export const getCashinDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getCashinDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2130,7 +2136,7 @@ export const getCashinDataTeam = async (start_date:string, end_date:string, id:s
 export const cashoutHourlyDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/cashoutHourlyDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2153,7 +2159,7 @@ export const cashoutHourlyDataTeam = async (start_date:string, end_date:string, 
 export const totalCashoutFromCommissionsTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalCashoutFromCommissionsTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2178,7 +2184,7 @@ export const totalCashoutFromCommissionsTeam = async (start_date:string, end_dat
 export const totalCashoutFromWinningsTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalCashoutFromWinningsTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2203,7 +2209,7 @@ export const totalCashoutFromWinningsTeam = async (start_date:string, end_date:s
 export const getCashoutDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getCashoutDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2226,7 +2232,7 @@ export const getCashoutDataTeam = async (start_date:string, end_date:string, id:
 export const totalPlayersInactiveTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/totalPlayersInactiveTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2252,7 +2258,7 @@ export const totalPlayersInactiveTeam = async (start_date:string, end_date:strin
 export const getPlayersDataTeam = async (start_date:string, end_date:string, status:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getPlayersDataTeam`, { start_date: start_date, end_date: end_date, status: status, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2275,7 +2281,7 @@ export const getPlayersDataTeam = async (start_date:string, end_date:string, sta
 export const countSelfBetsEarnedTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countSelfBetsEarnedTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2301,7 +2307,7 @@ export const countSelfBetsEarnedTeam = async (start_date:string, end_date:string
 export const countClientBetsEarnedTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/countClientBetsEarnedTeam`, { start_date: start_date, end_date: end_date, userID:id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2327,7 +2333,7 @@ export const countClientBetsEarnedTeam = async (start_date:string, end_date:stri
 export const getBetsWinsPerTimeSlotTeam = async (start_date:string, end_date:string, time_slot:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsWinsPerTimeSlotTeam`, { start_date: start_date, end_date: end_date, time_slot: time_slot, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2350,7 +2356,7 @@ export const getBetsWinsPerTimeSlotTeam = async (start_date:string, end_date:str
 export const getBetsWinsPerGameTypeTeam = async (start_date:string, end_date:string, game_name:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsWinsPerGameTypeTeam`, { start_date: start_date, end_date: end_date, game_name: game_name, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2373,7 +2379,7 @@ export const getBetsWinsPerGameTypeTeam = async (start_date:string, end_date:str
 export const getBetsWins4DTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsWins4DTeam`, { start_date: start_date, end_date: end_date, userID:id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2396,7 +2402,7 @@ export const getBetsWins4DTeam = async (start_date:string, end_date:string, id:s
 export const getBetsWinsPerGameTeam = async (start_date:string, end_date:string, game_name:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsWinsPerGameTeam`, { start_date: start_date, end_date: end_date, game_name: game_name, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2419,7 +2425,7 @@ export const getBetsWinsPerGameTeam = async (start_date:string, end_date:string,
 export const getBetsDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getBetsDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2442,7 +2448,7 @@ export const getBetsDataTeam = async (start_date:string, end_date:string, id:str
 export const getCommissionsDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getCommissionsDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2465,7 +2471,7 @@ export const getCommissionsDataTeam = async (start_date:string, end_date:string,
 export const getWinnersDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getWinnersDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2488,7 +2494,7 @@ export const getWinnersDataTeam = async (start_date:string, end_date:string, id:
 export const getTotalCashinDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getTotalCashinDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2511,7 +2517,7 @@ export const getTotalCashinDataTeam = async (start_date:string, end_date:string,
 export const getTotalConversionDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getTotalConversionDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
      
@@ -2534,7 +2540,7 @@ export const getTotalConversionDataTeam = async (start_date:string, end_date:str
 export const getTotalBetsDataTeam = async (start_date:string, end_date:string, id:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getTotalBetsDataTeam`, { start_date: start_date, end_date: end_date, userID: id},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
      
@@ -2557,7 +2563,7 @@ export const getTotalBetsDataTeam = async (start_date:string, end_date:string, i
 export const getTotalCashinData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getTotalCashinData`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
     
@@ -2580,7 +2586,7 @@ export const getTotalCashinData = async (start_date:string, end_date:string) => 
 export const getTotalConversionData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getTotalConversionData`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
      
@@ -2603,7 +2609,7 @@ export const getTotalConversionData = async (start_date:string, end_date:string)
 export const getTotalBetsData = async (start_date:string, end_date:string) => {
   try {
     const response = await axios.post(`${API_URL}/admin/getTotalBetsData`, { start_date: start_date, end_date: end_date},{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
      
@@ -2626,7 +2632,7 @@ export const getTotalBetsData = async (start_date:string, end_date:string) => {
 export const getUserType = async () => {
   try {
     const response = await axios.post(`${API_URL}/admin/getUserType`, { },{
-        withCredentials: true,
+        
         headers: { "Content-Type": "application/json" }
       });
      

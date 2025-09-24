@@ -84,12 +84,14 @@ export function Dashboard() {
     fetchRateChartData(); // Fetch data when startDate or endDate changes
   }, [startDate, endDate]);
 
+  const didFetch = useRef(false);
+
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn");
-    if (isLoggedIn !== "true") {
+    if (isLoggedIn !== "true" && !didFetch.current) {
       
       const handleLogin = async () => {
-        const login= await oneLoginAdmin(user,getAccessTokenSilently);
+        const login= await oneLoginAdmin(getAccessTokenSilently);
 
         if(!login.dbUpdate)
         {
@@ -100,12 +102,14 @@ export function Dashboard() {
         }
         else {
           localStorage.setItem("isLoggedIn", "true");
+          sessionStorage.setItem("authToken", login.authToken);
           setIsLoggedIn("true");
         }
         
       }
 
-      handleLogin();
+      handleLogin(); 
+      didFetch.current = true;
     }
   }, [user])
 
