@@ -120,7 +120,7 @@ export function AdminManagement() {
     { id: "games", label: "ACCESS GAMES" },
     { id: "games_types", label: "ACCESS GAMES TYPES" },
     { id: "draws", label: "ACCESS DRAWS" },
-    // { id: "draws_results", label: "ACCESS MANAGE DRAW RESULTS" },
+    { id: "draws_results", label: "ACCESS MANAGE DRAW RESULTS" },
     { id: "cashin", label: "ACCESS CASHIN HISTORY" },
     { id: "cashout", label: "ACCESS CASHOUT HISTORY" },
     { id: "bets", label: "ACCESS BETS" },

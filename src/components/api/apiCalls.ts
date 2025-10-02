@@ -2651,3 +2651,47 @@ export const getUserType = async () => {
     return [];
   }
 };
+
+// Define the API response shape
+interface DrawResponse {
+  authenticated: boolean;
+  message?: string;
+}
+
+export const setTripleDraw = async (
+  formData: FormData
+): Promise<DrawResponse | null> => {
+  try {
+    const response = await axios.post<DrawResponse>(
+      import.meta.env.VITE_DATABASE_URL + "/admin/setTripleDraw",
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
+
+    return response.data; // ✅ will include both authenticated + error
+  } catch (error) {
+    console.error("Error authenticating user:", error);
+    return null; // indicate network or unexpected error
+  }
+};
+
+export const setDoubleDraw = async (
+  formData: FormData
+): Promise<DrawResponse | null> => {
+  try {
+    const response = await axios.post<DrawResponse>(
+      import.meta.env.VITE_DATABASE_URL + "/admin/setDoubleDraw",
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
+
+    return response.data; // ✅ will include both authenticated + error
+  } catch (error) {
+    console.error("Error authenticating user:", error);
+    return null; // indicate network or unexpected error
+  }
+};

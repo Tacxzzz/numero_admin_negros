@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DtakaLogoBeta from "@/assets/DtakaLogoBeta.svg";
-import PisoPlayAdminLogo from "@/assets/betmotologo.png";
+import PisoPlayAdminLogo from "@/assets/IloIloLogo.png";
 import { useAuth0 } from '@auth0/auth0-react';
 import { MdMoney } from "react-icons/md";
 import { useEffect, useState } from "react";

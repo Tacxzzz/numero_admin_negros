@@ -9,7 +9,7 @@ import { AlertCircle } from "lucide-react";
 import DtakaIcon from "@/assets/DtakaLogoBeta.svg";
 import { FcGoogle } from "react-icons/fc";
 import { useAuth0 } from '@auth0/auth0-react';
-import PisoPlayAdminLogo from "@/assets/betmotologo.png";
+import PisoPlayAdminLogo from "@/assets/IloIloLogo.png";
 
 
 const Login: React.FC = () =>{
