@@ -518,7 +518,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                           </select>
                         </div>
                         <br/>
-                        {/* <div>
+                        <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Referral Limit</label>
                           <select
                             name="level"
@@ -537,7 +537,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                               </option>
                           </select>
                         </div>
-                        <br/> */}
+                        <br/>
                         {/* <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Is Agent</label>
                           <select
@@ -581,12 +581,11 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                                   }
                                   `}
                         </style> 
-                    </label>
+                    </label> */}
       
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Bet Commission %
                       <Input
-                        disabled
                         type="number"
                         name="bet_commission_percent"
                         value={selectedGameBet?.bet_commission_percent|| ""}
@@ -608,8 +607,33 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                                   `}
                         </style> 
                     </label>
+
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Referral Commission %
+                      <Input
+                        type="number"
+                        name="employer_commission_share"
+                        value={selectedGameBet?.employer_commission_share|| ""}
+                        onChange={handleChange}
+                        required
+                        className="border p-1 mt-2 w-full"
+                        placeholder="Enter % of Bet Commission"
+                        style={{ appearance: 'textfield' }}
+                      />
+                        <style>{`
+                                  input[type=number]::-webkit-outer-spin-button,
+                                  input[type=number]::-webkit-inner-spin-button {
+                                  -webkit-appearance: none;
+                                  margin: 0;
+                                  }
+                                  input[type=number] {
+                                  -moz-appearance: textfield;
+                                  }
+                                  `}
+                        </style> 
+                    </label>
       
-                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                     {/* <label className="block text-sm font-medium text-gray-700 mb-2">
                       Level 1 %
                       <Input
                         type="number"
@@ -659,8 +683,8 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                         </style> 
                     </label> */}
                         
-                     {/* <label className="block text-sm font-medium text-gray-700 mb-2">
-                      % Commission if Quota is no limit
+                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                      % Commission if no limit
                       <Input
                         type="number"
                         name="nolimit_percent"
@@ -668,7 +692,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                         onChange={handleChange}
                         required
                         className="border p-1 mt-2 w-full"
-                        placeholder="Enter % Commission if Quota is no limit"
+                        placeholder="Enter % if Commission is no limit"
                         style={{ appearance: 'textfield' }}
                       />
                         <style>{`
@@ -682,7 +706,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                                   }
                                   `}
                         </style> 
-                    </label> */}
+                    </label>
                         {/* <br/>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Quota Schedule</label>
@@ -812,7 +836,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                           </select>
                         </div>
                         <br/> */}
-                        {/* <div>
+                        <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Set Under Admin Team</label>
                           <select
                             name="under_admin"
@@ -829,7 +853,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                               </option>
                             ))}
                           </select>
-                        </div> */}
+                        </div>
                         <br />
                         <DialogFooter className="flex flex-col gap-2 sm:flex-row">
                           {!updating ? (
@@ -1175,16 +1199,16 @@ export function MetricDetailView() {
             { key: 'referrer_mobile', label: 'Referred by' },
             { key: 'referral_count', label: '# of Referrals' },
             { key: 'type', label: 'User Type' },
-            // { key: 'level', label: 'Referral Limit' },
+            { key: 'level', label: 'Referral Limit' },
             // { key: 'quota', label: 'Quota' },
-            // { key: 'nolimit_percent', label: '# of Commission if no Limit' },
+            { key: 'nolimit_percent', label: '# of Commission if no Limit' },
             // { key: 'quota_time', label: 'Quota Schedule' },
             // { key: 'quota_allow', label: 'Bypass Quota?' },
             // { key: 'has_maintaining_balance', label: 'Has Maintaining Balance' },
             // { key: 'maintaining_balance', label: 'Maintaining Balance' },
             // { key: 'employer', label: 'Is Employer' },
             // { key: 'bypass_device', label: 'Bypass Device ID Check' },
-            // { key: 'under_admin_mail', label: 'Admin Team' },
+            { key: 'under_admin_mail', label: 'Admin Team' },
             { key: 'status', label: 'Player Status' },
             { key: 'action', label: 'Action' }
           ];
