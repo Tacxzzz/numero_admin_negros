@@ -146,18 +146,6 @@ export function DrawsResults() {
 
     console.log("Sending to API:", Object.fromEntries(formData.entries()));
 
-    const successTriple = await setTripleDraw(formData);
-
-    if (successTriple) {
-      if (successTriple.authenticated) {
-        alert("Draw result for Triple saved successfully!");
-      } else {
-        alert(successTriple.message ?? "Failed to save draw result.");
-      }
-    } else {
-      alert("Error while saving draw result.");
-    }
-
     const successDouble = await setDoubleDraw(formData);
 
     if (successDouble) {

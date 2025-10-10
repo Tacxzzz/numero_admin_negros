@@ -9,7 +9,7 @@ import { AlertCircle } from "lucide-react";
 import DtakaIcon from "@/assets/DtakaLogoBeta.svg";
 import { FcGoogle } from "react-icons/fc";
 import { useAuth0 } from '@auth0/auth0-react';
-import PisoPlayAdminLogo from "@/assets/CapizLogo.png";
+import PisoPlayAdminLogo from "@/assets/BetMotoLogoOnly.png";
 
 
 const Login: React.FC = () =>{
@@ -24,7 +24,7 @@ const Login: React.FC = () =>{
             alt="Logo"
             className="w-auto h-30 transform group-hover:scale-110 transition-transform duration-200"
           />
-          {/* <CardTitle className="text-2xl font-bold text-center">Piso Play Admin</CardTitle> */}
+          <CardTitle className="text-2xl font-bold text-center">PisoGame Plus</CardTitle>
           <CardDescription className="text-center">
             Enter your admin account
           </CardDescription>
