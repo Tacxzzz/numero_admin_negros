@@ -12,7 +12,7 @@ export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
       <Button variant="ghost" size="icon" onClick={onMenuClick}>
         <Menu className="h-6 w-6" />
       </Button>
-      <h1 className="text-xl font-bold">Capiz Draw Admin</h1>
+      <h1 className="text-xl font-bold">Negros STL Admin</h1>
       {/* <img
             src={DtakaLogoBeta}
             alt="Logo"
