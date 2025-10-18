@@ -21,8 +21,9 @@ import DtakaLogoBeta from "@/assets/DtakaLogoBeta.svg";
 import PisoPlayAdminLogo from "@/assets/NegrosLogo.png";
 import { useAuth0 } from '@auth0/auth0-react';
 import { MdMoney } from "react-icons/md";
-import { useEffect, useState } from "react";
-import { loginAdmin } from "./api/apiCalls";
+import { useEffect, useRef, useState } from "react";
+import { loginAdmin, oneLoginAdmin } from "./api/apiCalls";
+import { useAuth } from './auth/AuthContext';
 
 interface SidebarProps {
   onClose?: () => void;
@@ -30,10 +31,11 @@ interface SidebarProps {
 
 export function Sidebar({ onClose }: SidebarProps) {
   const { user, getAccessTokenSilently, logout } = useAuth0();
-  const [userID, setUserID] = useState("none");
   const [dbUpdated, setDbUpdated] = useState(false);
   const location = useLocation(); 
   const [permissionsString, setPermissionsString] = useState([]);
+  const didFetch = useRef(false);
+  const { isLoggedIn, setIsLoggedIn, setUserID, setPermissions } = useAuth();
 
   const initialStartDate = new Date();
           initialStartDate.setDate(initialStartDate.getDate() - 20); // Subtract 20 days from the current date
@@ -54,23 +56,46 @@ export function Sidebar({ onClose }: SidebarProps) {
 
 
   useEffect(() => {
-      if (user && !dbUpdated) {
-        const isLoggedIn = localStorage.getItem("isLoggedIn");
+    const handleLoginAndUpdate = async () => {
+      if (user && !didFetch.current) {
+        console.log("Loading sidebar...");
+        const storedLogin = localStorage.getItem("isLoggedIn");
 
         const handleUpdate = async () => {
+          console.log("Updating sidebar data...");
           const dataUpdated = await loginAdmin(user, getAccessTokenSilently);
           if (dataUpdated.dbUpdate) {
-            setDbUpdated(dataUpdated.dbUpdate);
+            setIsLoggedIn(true);
             setUserID(dataUpdated.userID);
             setPermissionsString(JSON.parse(dataUpdated.permissions));
-            
           }
         };
-        if (isLoggedIn === 'true') {
-          handleUpdate();
+
+        if (storedLogin !== "true") {
+          console.log("Logging in...");
+          const login = await oneLoginAdmin(getAccessTokenSilently);
+
+          if (!login.dbUpdate) {
+            alert("UNAUTHORIZED USER!");
+            setIsLoggedIn(false);
+            logout({ logoutParams: { returnTo: window.location.origin } });
+            return;
+          }
+
+          setIsLoggedIn(true);
+          sessionStorage.setItem("authToken", login.authToken);
+          await handleUpdate();
+        } else {
+          await handleUpdate();
         }
+
+        didFetch.current = true;
       }
-    }, [user, dbUpdated, getAccessTokenSilently, logout]);
+    };
+
+    handleLoginAndUpdate();
+  }, [user, getAccessTokenSilently, logout, setIsLoggedIn, setPermissions, setUserID]);
+
 
   const menuItemsMain = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/", permission: "dashboard" },

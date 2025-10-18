@@ -7,7 +7,7 @@ import { formatPeso } from "./utils/utils";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { FinancialMetricsGrid } from "../components/financial-metrics-grid";
-
+import { useAuth } from './auth/AuthContext';
 
 export function Dashboard() {
 
@@ -15,7 +15,6 @@ export function Dashboard() {
   const initialStartDate = new Date();
   initialStartDate.setDate(initialStartDate.getDate() - 20);
     const [loading, setLoading] = useState(true);
-    const [userID, setUserID] = useState("none");
     const [dbUpdated, setDbUpdated] = useState(false);
     const [transactions, setTransactions] = useState<any[]>([]);
     const [totalRemitAmount, setTotalRemitAmount] = useState(0);
@@ -34,8 +33,7 @@ export function Dashboard() {
     const [endDate, setEndDate] = useState<string>("");
     const [rateChartData, setRateChartData] = useState<any[]>([]);
     const [permissionsString, setPermissionsString] = useState([]);
-    const [isLoggedIn, setIsLoggedIn] = useState("");
-
+    const { isLoggedIn, userID } = useAuth();
     const hasInitializedRef = useRef(false);
 
   useEffect(() => {
@@ -88,33 +86,6 @@ export function Dashboard() {
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn");
-    if (isLoggedIn !== "true" && !didFetch.current) {
-      
-      const handleLogin = async () => {
-        const login= await oneLoginAdmin(getAccessTokenSilently);
-
-        if(!login.dbUpdate)
-        {
-          alert("UNAUTHORIZED USER!");
-          localStorage.setItem("isLoggedIn", "false");
-          setIsLoggedIn("false");
-          logout({ logoutParams: { returnTo: window.location.origin } });
-        }
-        else {
-          localStorage.setItem("isLoggedIn", "true");
-          sessionStorage.setItem("authToken", login.authToken);
-          setIsLoggedIn("true");
-        }
-        
-      }
-
-      handleLogin(); 
-      didFetch.current = true;
-    }
-  }, [user])
-
-  useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
 
     if (isLoggedIn === 'false') {
       return;
@@ -127,7 +98,6 @@ export function Dashboard() {
         if(dataUpdated.dbUpdate)
         {
           setDbUpdated(dataUpdated.dbUpdate);
-          setUserID(dataUpdated.userID);
           setPermissionsString(JSON.parse(dataUpdated.permissions));
 
           const startDateDefault = new Intl.DateTimeFormat('en-GB', {
@@ -160,7 +130,7 @@ export function Dashboard() {
       handleUpdate();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoggedIn]);
+  }, [isLoggedIn, userID]);
 
   if (loading ) {
     return <div>...</div>;
