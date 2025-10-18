@@ -355,8 +355,8 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                         currency: "PHP",
                         minimumFractionDigits: 2
                       })
-                     : column.key === 'bet_commission_percent' ? String(Number(row['bet_commission_percent']) - Number(row['employer_commission_share'])) + '%'
-                     : column.key === 'level_one_percent' || column.key === 'level_two_percent' || column.key === 'nolimit_percent' ? String(row[column.key]) + '%'
+                     : column.key === 'overall_bet_commission_percent' ? String(Number(row['bet_commission_percent']) - Number(row['employer_commission_share'])) + '%'
+                     : column.key === 'level_one_percent' || column.key === 'level_two_percent' || column.key === 'nolimit_percent' || column.key === 'bet_commission_percent' || column.key === 'employer_commission_share' ? String(row[column.key]) + '%'
                      : column.key === 'action' ? (
                       <>
                         <div className="flex gap-2 align-items-center justify-center mt-2">
@@ -609,7 +609,7 @@ function SortableTable<T>({ data, columns, className, setData, startDate, endDat
                     </label>
 
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Referral Commission %
+                      Referrer Commission %
                       <Input
                         type="number"
                         name="employer_commission_share"
@@ -1191,8 +1191,9 @@ export function MetricDetailView() {
             { key: 'balance', label: 'Account Balance' },
             { key: 'wins', label: 'Wins' },
             { key: 'commissions', label: 'Commissions' },
-            { key: 'bet_commission_percent', label: 'Bet Commission Percentage' },
-            { key: 'employer_commission_share', label: 'Referral Commission Percentage' },
+            { key: 'overall_bet_commission_percent', label: 'Overall Bet Comm. %(Bet % - Referrer %)' },
+            { key: 'bet_commission_percent', label: 'Bet Commission %' },
+            { key: 'employer_commission_share', label: 'Referrer Commission %' },
             // { key: 'level_one_percent', label: 'Lvl 1 Percentage' },
             // { key: 'level_two_percent', label: 'Lvl 2 Percentage' },
             // { key: 'agent', label: 'Agent' },
