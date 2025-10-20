@@ -55,7 +55,7 @@ export function DrawsResults() {
     let n = parseInt(val, 10);
     if (isNaN(n)) return "";
     if (n < 1) n = 1;
-    if (n > 40) n = 40;
+    if (n > 38) n = 38;
     return String(n);
   };
 
@@ -122,12 +122,12 @@ export function DrawsResults() {
   };
 
   const handleSaveResult = async () => {
-    if (!drawDate || !drawTime || !digit1 || !digit2 || !digit3) return;
+    if (!drawDate || !drawTime || !digit1 || !digit2) return;
 
     const formattedDate = formatDate(drawDate);   // "09/02/2025"
     const formattedTime = formatTime(drawTime);   // "02:00:00 PM"
 
-    const numbers = `${digit1}-${digit2}-${digit3}`; // ✅ join into 1-2-3
+    const numbers = `${digit1}-${digit2}`; // ✅ join into 1-2-3
 
     const newResult: DrawResult = {
       id: Date.now(),
@@ -199,27 +199,18 @@ export function DrawsResults() {
                 type="number"
                 value={digit1}
                 onChange={(e) => setDigit1(clampNumber(e.target.value))}
-                placeholder="1–40"
+                placeholder="1–38"
                 min={1}
-                max={40}
+                max={38}
                 className="w-20"
               />
               <Input
                 type="number"
                 value={digit2}
                 onChange={(e) => setDigit2(clampNumber(e.target.value))}
-                placeholder="1–40"
+                placeholder="1–38"
                 min={1}
-                max={40}
-                className="w-20"
-              />
-              <Input
-                type="number"
-                value={digit3}
-                onChange={(e) => setDigit3(clampNumber(e.target.value))}
-                placeholder="1–40"
-                min={1}
-                max={40}
+                max={38}
                 className="w-20"
               />
             </div>
